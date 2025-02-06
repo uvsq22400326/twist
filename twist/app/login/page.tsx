@@ -39,7 +39,7 @@ export default function LoginPage() {
   );
 }
 
-// Styles inline pour éviter un fichier CSS séparé
+
 const styles = {
   container: { maxWidth: "400px", margin: "0 auto", textAlign: "center" },
   form: { display: "flex", flexDirection: "column", gap: "10px" },

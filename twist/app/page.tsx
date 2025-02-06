@@ -10,11 +10,10 @@ export default function HomePage() {
 
   const handleLogin = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
-    // Simule une authentification (remplacer par une vraie API)
+
     if (email === "user@example.com" && password === "password123") {
       alert("Connexion réussie !");
-      router.push("/dashboard"); // Redirige après connexion (ex: /dashboard)
+      router.push("/dashboard"); 
     } else {
       alert("Email ou mot de passe incorrect !");
     }
@@ -22,7 +21,6 @@ export default function HomePage() {
 
   return (
     <div style={styles.container}>
-      <h1>Bienvenue sur Twist</h1>
       <p>Veuillez vous identifier</p>
       
       <form onSubmit={handleLogin} style={styles.form}>
