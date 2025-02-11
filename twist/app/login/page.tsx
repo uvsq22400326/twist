@@ -1,14 +1,21 @@
 "use client";
 
+
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import "../globals.css";
 import styles from "./login.module.css";
 
+import mysql from "mysql2/promise";
+import bcrypt from "bcrypt";
+
+
+
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
 
   const handleLogin = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();

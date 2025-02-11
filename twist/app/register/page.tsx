@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, FormEvent } from "react";
+
 import { useRouter } from "next/navigation";
 import "../globals.css";
 import styles from "./register.module.css";
@@ -17,8 +18,10 @@ export default function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
 
-  const handleRegister = (e: FormEvent<HTMLFormElement>) => {
+
+  async function handleRegister(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
     if (!termsAccepted) {
       alert("Veuillez accepter les termes et conditions.");
       return;
@@ -58,6 +61,7 @@ export default function RegisterPage() {
             <input type="text" placeholder="Prénom" value={firstName} onChange={(e) => setFirstName(e.target.value)} required className={styles.input} />
           </div>
 
+
           {/*  Date de naissance */}
           <label className={styles.label}>Date de naissance</label>
           <div className={styles.birthDateContainer}>
@@ -90,6 +94,7 @@ export default function RegisterPage() {
             </select>
           </div>
 
+
           <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required className={styles.input} />
           <input type="password" placeholder="Mot de passe" value={password} onChange={(e) => setPassword(e.target.value)} required className={styles.input} />
           <input type="password" placeholder="Confirmer le mot de passe" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required className={styles.input} />
@@ -105,3 +110,4 @@ export default function RegisterPage() {
     </div>
   );
 }
+
