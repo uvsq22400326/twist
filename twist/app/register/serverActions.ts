@@ -38,6 +38,6 @@ export async function loginUser(email: string, password: string) {
     return { message: "Connexion réussie !" };
   } catch (error) {
     console.error("Erreur MySQL :", error);
-    return { message: `Erreur lors de la connexion: ${error.message}` };
+    return { message: `Erreur lors de la connexion: ${error}` };
   }
 }
