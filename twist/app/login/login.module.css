@@ -1,0 +1,136 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+    background-color: #000000;
+}
+
+.leftSection {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding-left: 10%;
+}
+
+.logo {
+    width: 350px;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+.rightSection {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-left: 50px;
+   
+}
+
+.formWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 400px;
+}
+
+.title {
+    font-size: 22px;
+    font-weight: bold;
+    
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.subtitle a {
+    color: #0790d5;
+    text-decoration: none;
+}
+
+.subtitle a:hover {
+    text-decoration: underline;
+}
+
+.input {
+    width: 60%;
+    padding: 14px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background-color: #FFFFFF;
+    color: black;
+    margin-bottom: 12px;
+    text-align: left;
+}
+
+
+.button {
+    width: 60%;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: #0790d5;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+   
+    margin-top: 10px;
+}
+
+.button:hover {
+    background-color: #0790d5;
+}
+
+
+.orText {
+   
+    margin-top: 20px;
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+
+.socialButtons {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 10px;
+    width: 60%;
+    margin-top: 10px;
+}
+
+.socialButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 8px;
+    background-color: #bdbcbc;
+    color: black;
+    width: 48%;
+    border: 1px solid #ccc;
+    transition: 0.2s ease-in-out;
+}
+
+.socialButton:hover {
+    background: #F0F0F0;
+}
+
+
+.icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+}

@@ -1,0 +1,118 @@
+.container {
+    display: flex;
+   
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+    background-color: #000000;
+}
+
+.leftSection {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding-left: 10%;
+}
+
+.logo {
+    width: 350px;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+.rightSection {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-left: 50px;
+    
+}
+
+.formWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 400px;
+}
+
+.title {
+    font-size: 22px;
+    font-weight: bold;
+    text-align: left; 
+    width: 100%; 
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    text-align: left;
+    width: 100%; 
+    margin-bottom: 20px;
+}
+
+.subtitle a {
+    color: #0790d5;
+    text-decoration: none;
+}
+
+.subtitle a:hover {
+    color: #0790d5;
+    text-decoration: underline;
+}
+
+.flexRow {
+    display: flex;
+    justify-content: space-between;
+    width: 60%;
+    gap: 10px;
+}
+
+.input, .birthInput {
+    width: 60%;
+    padding: 14px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background-color: #FFFFFF;
+    color: black;
+    margin-bottom: 12px;
+    text-align: left;
+}
+
+.birthDateContainer {
+    display: flex;
+    justify-content: space-between;
+    width: 60%;
+    gap: 10px;
+}
+
+.checkboxContainer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: #0790d5;
+    margin-top: 10px;
+    width: 60%;
+}
+
+.button {
+    width: 60%;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: #0790d5;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.button:hover {
+    background-color: #0790d5;
+}
