@@ -22,7 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <aside className="sidebar">
             <h2 className="logo">Twist</h2>
             <nav>
-              <Link href="/home">🏠 Accueil</Link>
+              <Link href="/home">Accueil</Link>
               <Link href="/search">Recherche</Link>
               <Link href="/messages">Messages</Link>
               <Link href="/profile">Profil</Link>
