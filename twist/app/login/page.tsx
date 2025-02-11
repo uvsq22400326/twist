@@ -1,48 +1,54 @@
-"use client"; 
+"use client";
 
-import React, { useState, FormEvent } from "react";
+import { useState, FormEvent } from "react";
+import { useRouter } from "next/navigation";
+import "../globals.css";
+import styles from "./login.module.css";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleLogin = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Login Attempt:", { email, password });
+    sessionStorage.setItem("user", JSON.stringify({ email }));
+    router.push("/home");
   };
 
   return (
-    <div style={styles.container}>
-      <h1>Connexion</h1>
-      <form onSubmit={handleSubmit} style={styles.form}>
-        <label>Email :</label>
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          style={styles.input}
-        />
+    <div className={styles.container}>
+      {/* agauche avec logo */}
+      <div className={styles.leftSection}>
+        <img src="/twist-logo.png" alt="Twist Logo" className={styles.logo} />
+        <h1 className={styles.tagline}>Reconnecte-toi et rejoins la conversation.</h1>
+        <p className={styles.description}>Sur Twist, chaque message compte. Continue à partager ton monde !</p>
+      </div>
 
-        <label>Mot de passe :</label>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          style={styles.input}
-        />
+      {/* trucdroit vec formulaire */}
+      <div className={styles.rightSection}>
+        <h2 className={styles.title}>Connexion</h2>
+        <p className={styles.subtitle}>
+          Pas encore inscrit ? <a href="/register" className={styles.link}>Crée un compte</a>
+        </p>
 
-        <button type="submit" style={styles.button}>Se connecter</button>
-      </form>
+        <form onSubmit={handleLogin} className={styles.form}>
+          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" required className={styles.input} />
+          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Mot de passe" required className={styles.input} />
+
+          <button type="submit" className={styles.button}>Se connecter</button>
+        </form>
+
+        <p className={styles.orText}>Ou connecte-toi avec</p>
+        <div className={styles.socialButtons}>
+          <button className={styles.socialButton}>
+            <img src="/google.svg" alt="Google" className={styles.icon} /> Google
+          </button>
+          <button className={styles.socialButton}>
+            <img src="/apple.svg" alt="Apple" className={styles.icon} /> Apple
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
-
-
-const styles = {
-  container: { maxWidth: "400px", margin: "0 auto", textAlign: "center" },
-  form: { display: "flex", flexDirection: "column", gap: "10px" },
-  input: { padding: "8px", fontSize: "16px" },
-  button: { padding: "10px", background: "#0070f3", color: "white", border: "none", cursor: "pointer" },
-};
