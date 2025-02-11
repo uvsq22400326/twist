@@ -1,12 +1,9 @@
 "use client";
 
-
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import "../globals.css";
 import styles from "./login.module.css";
-
-
 
 export default function LoginPage() {
   const router = useRouter();
@@ -14,22 +11,35 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
 
-  const handleLogin = (e: FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    sessionStorage.setItem("user", JSON.stringify({ email }));
-    router.push("/home");
+    
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      localStorage.setItem("token", data.token);
+      setMessage("Connexion réussie ! Redirection en cours...");
+      setTimeout(() => router.push("/home"), 2000);
+    } catch (error: any) {
+      setMessage(error.message);
+    }
   };
 
   return (
     <div className={styles.container}>
-      {/* agauche avec logo */}
       <div className={styles.leftSection}>
         <img src="/twist-logo.png" alt="Twist Logo" className={styles.logo} />
         <h1 className={styles.tagline}>Reconnecte-toi et rejoins la conversation.</h1>
         <p className={styles.description}>Sur Twist, chaque message compte. Continue à partager ton monde !</p>
       </div>
 
-      {/* trucdroit vec formulaire */}
       <div className={styles.rightSection}>
         <h2 className={styles.title}>Connexion</h2>
         <p className={styles.subtitle}>
@@ -42,6 +52,7 @@ export default function LoginPage() {
 
           <button type="submit" className={styles.button}>Se connecter</button>
         </form>
+        {message && <p className={styles.message}>{message}</p>}
 
         <p className={styles.orText}>Ou connecte-toi avec</p>
         <div className={styles.socialButtons}>
