@@ -11,5 +11,8 @@ const nextConfig = {
     JWT_SECRET: process.env.JWT_SECRET,
   },
 };
+module.exports = {
+  reactStrictMode: false,
+};
 
 export default nextConfig;
