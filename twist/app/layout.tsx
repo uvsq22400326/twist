@@ -21,26 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </head>
       <body>
-        {isAuthenticated && pathname !== "/login" && pathname !== "/register" && (
-          <aside className="sidebar">
-            <h2 className="logo">Twist</h2>
-            <nav>
-              <Link href="/home">Accueil</Link>
-              <Link href="/search">Recherche</Link>
-              <Link href="/messages">Messages</Link>
-              <Link href="/profile">Profil</Link>
-              <button
-                onClick={() => {
-                  sessionStorage.removeItem("user");
-                  router.push("/login");
-                }}
-                className="logout"
-              >
-                Déconnexion
-              </button>
-            </nav>
-          </aside>
-        )}
+        {isAuthenticated && pathname !== "/login" && pathname !== "/register"}
 
         <main>{children}</main>
       </body>

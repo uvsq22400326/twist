@@ -1,0 +1,132 @@
+@media only screen and (max-width: 768px) {
+    #logo {
+        position: relative;
+        left: 20%;
+    }
+    
+    #nav-sidebar {
+        display: none;
+    }
+    
+    #twist-area {
+        display: block;
+    }
+    
+    textarea {
+        position: relative;
+        left: 25%;
+        border-radius: 8px;
+        background-color: black;
+        color: white;
+    }
+    
+    #publier-button {
+        position: relative;
+        left: 37%;
+        padding: 14px;
+        font-size: 20px;
+    }
+    
+    #post-area {
+        text-align: center;
+    }
+    
+    #open-sidebar {
+        position: relative;
+        left: 40%;
+        padding-right: 20px;
+        padding-left: 20px;
+    }
+    
+    #logout-button {
+        background-color: red;
+        border-radius: 8px;
+        color: bisque;
+        font-weight: 300;
+        position: relative;
+        left: 32%;
+        padding-right: 20px;
+        padding-left: 20px;
+        padding-top: 8px;
+        padding-bottom: 8px;
+    }
+    
+    .sidebar-item {
+        position: relative;
+        left: 30%;
+        font-size: 18px;
+        font-weight: bold;
+        color: white;
+        text-decoration: none;
+        padding: 12px 0;
+    }
+}
+
+@media only screen and (min-width: 768px) {
+    #logo {
+        position: relative;
+        left: 20%;
+    }
+    
+    #nav-sidebar {
+        display: block;
+    }
+    
+    #twist-area {
+        display: block;
+    }
+    
+    textarea {
+        position: relative;
+        left: 25%;
+        border-radius: 8px;
+        background-color: black;
+        color: white;
+        width: 30%;
+        height: 94px;
+    }
+    
+    #publier-button {
+        position: relative;
+        left: 32%;
+        padding: 14px;
+        font-size: 20px;
+    }
+    
+    #post-area {
+        position: relative;
+        left: 25%;
+    }
+    
+    #open-sidebar {
+        display: none;
+        position: relative;
+        left: 40%;
+        padding-right: 20px;
+        padding-left: 20px;
+    }
+    
+    #logout-button {
+        background-color: red;
+        border-radius: 8px;
+        color: bisque;
+        font-weight: 600;
+        position: relative;
+        left: 20%;
+        padding-right: 20px;
+        padding-left: 20px;
+        padding-top: 8px;
+        padding-bottom: 8px;
+    }
+    
+    .sidebar-item {
+        position: relative;
+        left: 30%;
+        font-size: 18px;
+        font-weight: bold;
+        color: white;
+        text-decoration: none;
+        padding: 12px 0;
+    }
+}
+
