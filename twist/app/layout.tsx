@@ -17,6 +17,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <html lang="fr">
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      </head>
       <body>
         {isAuthenticated && pathname !== "/login" && pathname !== "/register" && (
           <aside className="sidebar">
