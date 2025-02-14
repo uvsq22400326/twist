@@ -1,13 +1,10 @@
 "use client";
 
-
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./login.module.css";
 import "../grid.css"
 import "./login.css"
-
-
 
 export default function LoginPage() {
   const router = useRouter();
@@ -15,10 +12,25 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
 
-  const handleLogin = (e: FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    sessionStorage.setItem("user", JSON.stringify({ email }));
-    router.push("/home");
+    
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      localStorage.setItem("token", data.token);
+      setMessage("Connexion réussie ! Redirection en cours...");
+      setTimeout(() => router.push("/home"), 2000);
+    } catch (error: any) {
+      setMessage(error.message);
+    }
   };
 
   return (
@@ -49,6 +61,7 @@ export default function LoginPage() {
           <button type="submit" className="button">Se connecter</button>
           <br></br>
         </form>
+        {message && <p className={styles.message}>{message}</p>}
 
         <p>Ou connecte-toi avec</p>
         <div >

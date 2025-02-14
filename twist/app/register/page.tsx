@@ -2,7 +2,6 @@
 
 import 'purecss'
 import { useState, FormEvent } from "react";
-
 import { useRouter } from "next/navigation";
 /*import "../globals.css";*/
 import "../grid.css"
@@ -20,25 +19,40 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
-
+  const [message, setMessage] = useState("");
 
   async function handleRegister(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     if (!termsAccepted) {
-      alert("Veuillez accepter les termes et conditions.");
+      setMessage("Veuillez accepter les termes et conditions.");
       return;
     }
     if (password !== confirmPassword) {
-      alert("Les mots de passe ne correspondent pas.");
+      setMessage("Les mots de passe ne correspondent pas.");
       return;
     }
-    sessionStorage.setItem(
-      "user",
-      JSON.stringify({ firstName, lastName, birthMonth, birthDay, birthYear, email })
-    );
-    router.push("/home");
-  };
+
+    const birthDate = `${birthYear}-${birthMonth}-${birthDay}`;
+    const userData = { firstName, lastName, email, password, birthDate };
+    console.log("📢 Données envoyées :", userData); // Log des données avant envoi
+
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(userData),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      setMessage("Compte créé avec succès ! Redirection en cours...");
+      setTimeout(() => router.push("/login"), 2000);
+    } catch (error: any) {
+      setMessage(error.message);
+    }
+  }
 
   return (
     <div className='row'>
@@ -68,6 +82,30 @@ export default function RegisterPage() {
             className="name-input"/>
           </div>
 
+  <label>Date de naissance</label>
+  <div>
+    <select value={birthMonth} onChange={(e) => setBirthMonth(e.target.value)} 
+    required className='birth-input'>
+      <option value="">Mois</option>
+      {[...Array(12)].map((_, i) => (
+        <option key={i} value={String(i + 1).padStart(2, "0")}>{i + 1}</option>
+      ))}
+    </select>
+    <select value={birthDay} onChange={(e) => setBirthDay(e.target.value)} 
+    required className='birth-input'>
+      <option value="">Jour</option>
+      {[...Array(31)].map((_, i) => (
+        <option key={i} value={i + 1}>{i + 1}</option>
+      ))}
+    </select>
+    <select value={birthYear} onChange={(e) => setBirthYear(e.target.value)} 
+    required className='birth-input'>
+      <option value="">Année</option>
+      {[...Array(100)].map((_, i) => (
+        <option key={i} value={2024 - i}>{2024 - i}</option>
+      ))}
+    </select>
+  </div>
 
           {/*  Date de naissance */}
           <label>Date de naissance</label>
@@ -104,7 +142,6 @@ export default function RegisterPage() {
             </select>
           </div>
 
-
           <input type="email" placeholder="Email" value={email}
            onChange={(e) => setEmail(e.target.value)} 
            required className='auth-info-input'/>
@@ -128,4 +165,3 @@ export default function RegisterPage() {
     </div>
   );
 }
-
