@@ -1,6 +1,5 @@
 "use client";
 
-import 'purecss'
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 /*import "../globals.css";*/
