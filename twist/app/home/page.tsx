@@ -51,7 +51,7 @@ export default function HomePage() {
           <br></br>
           <a href="#" className="sidebar-item">Notifications</a>
           <br></br>
-          <a href="#" className="sidebar-item">Profil</a>
+          <a href="/profil" className="sidebar-item">Profil</a>
           <br></br>
         </nav>
       </aside>
