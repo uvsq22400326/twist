@@ -20,6 +20,11 @@ export default function HomePage() {
     }
   }, [router]);
 
+  const handleLogout = () => {
+    sessionStorage.removeItem("token"); // Supprime le token
+    router.push("/login"); //vers page login
+  };
+
   const displaySidebar = () => {
     var sidebar = document.getElementById("nav-sidebar");
     var twist_area = document.getElementById("twist-area");
@@ -118,13 +123,7 @@ export default function HomePage() {
         &#x27c1;
       </button>
       <br />
-      <button
-        onClick={() => {
-          sessionStorage.removeItem("user");
-          router.push("/login");
-        }}
-        id="logout-button"
-      >
+      <button onClick={handleLogout} id="logout-button">
         Déconnexion
       </button>
 
