@@ -4,11 +4,14 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import "../grid.css";
 import "./home.css";
+import { pages } from "next/dist/build/templates/app-page";
+import PostArea from "./postArea";
 
 export default function HomePage() {
   const router = useRouter();
   const [content, setContent] = useState("");
-  const [error, setError] = useState("");
+  const [errorPublier, setError] = useState("");
+  const [postContent, setPostContent] = useState(<p></p>);
 
   useEffect(() => {
     const token = sessionStorage.getItem("token");
@@ -87,6 +90,24 @@ export default function HomePage() {
     }
   };
 
+  const afficherTwistsHome = async() => {
+    console.log("afficherTwistsHome");
+    const link = "http:/localhost:3000/api/home/posts";
+    try {
+        const response = await fetch("/api/home/posts", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",                
+            }
+        });
+        const res = await response.json();
+        let rows = res.content;
+        console.log('rows = ' + rows);
+    } catch (err) {
+        console.log('error: afficherTwistsHome : ' + err);
+        }
+    };
+
   return (
     <div>
       <aside className="col-3" id="nav-sidebar">
@@ -143,15 +164,10 @@ export default function HomePage() {
           </button>
           <br />
           <br />
-          {error && <p style={{ color: "red" }}>{error}</p>}{" "}
+          {errorPublier && <p style={{ color: "red" }}>{errorPublier}</p>}{" "}
           {/* Afficher l'erreur s'il y en a une */}
         </div>
-
-        <div>
-          <div>
-            <p id="post-area">Aucun post pour le moment.</p>
-          </div>
-        </div>
+        {PostArea()}
       </main>
     </div>
   );

@@ -1,3 +1,7 @@
+.post-box {
+    border: 2px solid wheat;
+}
+
 @media only screen and (max-width: 768px) {
     #logo {
         position: relative;
