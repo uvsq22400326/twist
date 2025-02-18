@@ -11,8 +11,7 @@ export default function HomePage() {
   const router = useRouter();
   const [content, setContent] = useState("");
   const [errorPublier, setError] = useState("");
-  const [postContent, setPostContent] = useState(<p></p>);
-
+  const [_token, set_Token] = useState("");
   useEffect(() => {
     const token = sessionStorage.getItem("token");
 
@@ -20,6 +19,9 @@ export default function HomePage() {
     if (!token) {
       console.log("Token manquant, redirection vers login");
       router.push("/login");
+    }
+    if (token != null) {
+        set_Token(token);
     }
   }, [router]);
 
@@ -166,7 +168,7 @@ export default function HomePage() {
           {errorPublier && <p style={{ color: "red" }}>{errorPublier}</p>}{" "}
           {/* Afficher l'erreur s'il y en a une */}
         </div>
-        {PostArea()}
+        {PostArea(_token)}
       </main>
     </div>
   );

@@ -1,28 +1,41 @@
+"use client";
+
 import useSWR from "swr";
 
 import "./home.css"
 
-export default function PostArea() {
+const like = async (msg_id, token) => {
+    console.log('msg_id = ' + msg_id);
+    const response = await fetch("/api/like", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Ajouter le token dans entete
+          Msg_id: msg_id
+        },
+        body: JSON.stringify({ msg_id }), // Id Message
+    });
+}
+
+const follow = async (user2, token) => {
+    const response = await fetch("/api/auth/follow", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Ajouter le token dans entete
+          ToFollow: user2,
+        },
+        body: JSON.stringify({ user2 }), // Utilisateur à suivre
+    });
+}
+
+export default function PostArea(token : string) {
+    //const token = sessionStorage.getItem("token");
     const fetcher = (url) => fetch(url).then(res => {
-        console.log('res = ' + res);
         let r = res.json().then((_res) => {
-            console.log(_res);
-            let rows = _res.content;
-            /*return (
-                <div>
-                    <h1>Twists</h1>
-                    {rows.map((row) => {
-                        <div className="post-box">
-                            <p>{row.id}</p>
-                            <p>{row.content}</p>
-                            <p>{row.user_id}</p>
-                        </div>
-                    })}
-                </div>             
-            )*/
+            let rows = _res.content;            
            return rows;
         });
-        console.log('r = ' + r);
         return r;
       });
     
@@ -39,9 +52,16 @@ export default function PostArea() {
         <h1>Twists</h1>
         {[...Array(data.length)].map((_, i) => (
             <div className="post-box" key={i}>
-                <p>{data[i].id}</p>
-                <p>{data[i].content}</p>
-            </div>
+            <p>{data[i].email}</p>
+            <p>{data[i].content}</p>
+            <button onClick={() => {like(data[i].id, token)}}>
+              👍{data[i].like_count}
+            </button>
+            <p>{data.created_at}</p>
+            <button onClick={() => {follow(data[i].user_id, token)}}>
+                <p>Follow</p>
+            </button>
+        </div>
         ))}
       </div>);
 }

@@ -1,3 +1,7 @@
+.post-box {
+    border: 2px solid wheat;
+}
+
 #profile_img_box {
     border-radius: 90%;
     border-style: solid;

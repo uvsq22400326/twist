@@ -3,8 +3,9 @@ import pool from "../../../../lib/db";
 import { verifyToken } from "../../../../lib/auth";
 
 export async function POST(req: Request) {
-  const { userToFollowId } = await req.json();
+  //const { userToFollowId } = await req.json();
   const token = req.headers.get("Authorization")?.split(" ")[1];
+  const userToFollowId = req.headers.get("ToFollow");
 
   if (!token) {
     return NextResponse.json({ error: "Token manquant" }, { status: 401 });
@@ -38,6 +39,7 @@ export async function POST(req: Request) {
       { status: 200 }
     );
   } catch (error) {
+    console.log('error /api/follow/route.ts : ' + error);
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
   }
 }
