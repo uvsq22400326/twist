@@ -37,13 +37,11 @@ export default function PostArea() {
     return (
       <div id="post-container">
         <h1>Twists</h1>
-        <div>
         {[...Array(data.length)].map((_, i) => (
-            <div className="post-box">
+            <div className="post-box" key={i}>
                 <p>{data[i].id}</p>
                 <p>{data[i].content}</p>
             </div>
         ))}
-        </div>
       </div>);
 }
