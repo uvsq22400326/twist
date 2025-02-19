@@ -21,7 +21,7 @@ export default function HomePage() {
       router.push("/login");
     }
     if (token != null) {
-        set_Token(token);
+      set_Token(token);
     }
   }, [router]);
 
@@ -75,7 +75,7 @@ export default function HomePage() {
     }
 
     try {
-      const response = await fetch("/api/auth/posts", {
+      const response = await fetch("/api/home/publier", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -93,27 +93,28 @@ export default function HomePage() {
         setError(result.error || "Erreur lors de la publication du tweet");
       }
     } catch (error) {
+      console.log(error);
       setError("Erreur serveur");
     }
   };
 
-  const afficherTwistsHome = async() => {
+  const afficherTwistsHome = async () => {
     console.log("afficherTwistsHome");
     const link = "http:/localhost:3000/api/home/posts";
     try {
-        const response = await fetch("/api/home/posts", {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",                
-            }
-        });
-        const res = await response.json();
-        let rows = res.content;
-        console.log('rows = ' + rows);
+      const response = await fetch("/api/home/posts", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const res = await response.json();
+      let rows = res.content;
+      console.log("rows = " + rows);
     } catch (err) {
-        console.log('error: afficherTwistsHome : ' + err);
-        }
-    };
+      console.log("error: afficherTwistsHome : " + err);
+    }
+  };
 
   return (
     <div>
