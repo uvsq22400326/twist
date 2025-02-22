@@ -12,6 +12,7 @@ export default function HomePage() {
   const [file, setFile] = useState<File | null>(null); // Ajout pour l'upload d'image/vidéo
   const [errorPublier, setError] = useState("");
   const [_token, set_Token] = useState("");
+  const [showMenu, setShowMenu] = useState(false);
 
   useEffect(() => {
     const token = sessionStorage.getItem("token");
@@ -73,7 +74,7 @@ if (file && !allowedTypes.includes(file.type)) {
         setError("");
         alert("Tweet publié avec succès !");
         setContent("");
-        setFile(null); // Réinitialiser l'input fichier
+        setFile(null); 
       } else {
         setError(result.error || "Erreur lors de la publication du tweet");
       }
@@ -82,8 +83,10 @@ if (file && !allowedTypes.includes(file.type)) {
       setError("Erreur serveur");
     }
   };
+  
 
   return (
+    
     <div>
       <aside className="col-3" id="nav-sidebar">
         <img src="/twist-logo.png" alt="Twist Logo" id="logo" />
@@ -96,30 +99,50 @@ if (file && !allowedTypes.includes(file.type)) {
         </nav>
       </aside>
 
-      <button id="open-sidebar" onClick={() => displaySidebar()}>&#x27c1;</button>
-      <br />
-      <button onClick={handleLogout} id="logout-button">Déconnexion</button>
+       <header>
+       <div className="header-divider"></div> 
 
-{/* Contenu principal */}
-<main className="col-8" id="twist-area">
-  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-    <textarea
-      placeholder="Quoi de neuf ?"
-      value={content}
-      onChange={(e) => setContent(e.target.value)}
-    />
-    
-    {/*  Ajout du champ pour uploader une image/vidéo */}
-    <input type="file" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+        <input type="text" placeholder="Rechercher..." />
 
-    <button id="publier-button" onClick={handlePostTweet}>Publier</button>
-  </div>
-  
-  <br />
-  {errorPublier && <p style={{ color: "red" }}>{errorPublier}</p>}
-
-  {PostArea(_token)}
-</main>
+<div className="user-menu">
+    <span className="menu-icon" onClick={() => setShowMenu(!showMenu)}>⋮</span>
+    {showMenu && (
+        <div className="dropdown-menu">
+            <button onClick={handleLogout}>Se déconnecter</button>
+        </div>
+    )}
 </div>
-);
+
+      </header>
+
+      <main id="twist-area">
+<div className="tweet-box">
+    <textarea
+        placeholder="Quoi de neuf ?"
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
+    />
+
+    
+<label className="icon-label">
+    <img src="/icons/image.png" alt="Ajouter une image ou vidéo" />
+    <span className="upload-text">Médias</span>
+    <input 
+        type="file" 
+        className="hidden-input"
+        accept="image/png, image/jpeg, image/gif, image/webp, video/mp4, video/webm, video/ogg"
+        onChange={(e) => setFile(e.target.files?.[0] || null)}
+    />
+</label>
+
+    <button onClick={handlePostTweet}>Publier</button>
+</div>
+
+        {errorPublier && <p className="error-text">{errorPublier}</p>}
+
+        {/* Affichage des posts */}
+        <PostArea token={_token} />
+      </main>
+    </div>
+  );
 }
