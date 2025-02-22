@@ -6,9 +6,9 @@ export async function GET(req:Request) {
     try {    
         // On charge les 20 twists les plus récents.
         const [rows, fields] = await pool.query(
-          "SELECT p.id, p.user_id, p.content, p.like_count, p.created_at, u.email " 
-          + " from posts p, users u where p.user_id = u.id "
-          + " order by p.id desc limit 20"
+          "SELECT p.id, p.user_id, p.content, p.like_count, p.created_at, p.media_url, u.email " +
+          "FROM posts p JOIN users u ON p.user_id = u.id " +
+          "ORDER BY p.id DESC LIMIT 20"
         );
         fields.forEach((field) => {
             console.log('field: ' + field.name);

@@ -80,7 +80,7 @@
         display: block;
     }
     
-    textarea {
+   textarea {
         position: relative;
         left: 25%;
         border-radius: 8px;
@@ -97,7 +97,7 @@
         font-size: 20px;
     }
     
-    #post-area {
+   #post-area {
         position: relative;
         left: 25%;
     }
@@ -132,5 +132,28 @@
         text-decoration: none;
         padding: 12px 0;
     }
+}
+
+/* Supprimer le fond jaune et la bordure rouge */
+.post-box img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    border: none; /* Enlève la bordure rouge */
+}
+
+/* Style du post pour mieux organiser le contenu */
+.post-box {
+    background-color: #111; /* Fond noir comme Twitter */
+    color: white; /* Texte blanc */
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    box-shadow: 0px 2px 5px rgba(255, 255, 255, 0.1);
+}
+
+/* Enlever le texte "Image" et "Voir l'image" */
+.post-box .image-container p {
+    display: none;
 }
 
