@@ -1,10 +1,10 @@
 import useSWR from "swr";
 
 import "./profil.css"
+import { useEffect } from "react";
 
-export default function AbonnementArea() {
-    const token = sessionStorage.getItem("token");
-    const fetcher = (url) => fetch(url, {
+export default function AbonnementArea(token: string) {
+    const fetcher = (url: string) => fetch(url, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

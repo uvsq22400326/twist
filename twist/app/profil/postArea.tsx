@@ -2,7 +2,7 @@ import useSWR from "swr";
 
 import "./profil.css"
 
-const like = async (msg_id, token) => {
+const like = async (msg_id: string, token: string | null) => {
     console.log('msg_id = ' + msg_id);
     const response = await fetch("/api/like", {
         method: "POST",
@@ -15,9 +15,8 @@ const like = async (msg_id, token) => {
     });
 }
 
-export default function PostArea() {
-    const token = sessionStorage.getItem("token");
-    const fetcher = (url) => fetch(url, {
+export default function PostArea(token: string) {
+    const fetcher = (url: string) => fetch(url, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

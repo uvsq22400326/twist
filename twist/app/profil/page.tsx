@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import './profil.css'
 import '../grid.css'
@@ -7,16 +7,25 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import PostArea from "./postArea"
 import AbonnementArea from './abonnementArea';
+import dynamic from 'next/dynamic';
 
 export default function Profil() {
     const router = useRouter();
+    const [_token, set_Token] = useState("");
     useEffect(() => {
-        const token = sessionStorage.getItem("token");
+        if (window.sessionStorage == undefined) {
+            console.log("Pas de sessionStorage, redirection vers login");
+            router.push("/login");    
+        }
+        const token = window.sessionStorage.getItem("token");
 
         // Si pas de token, rediriger vers la page de login
         if (!token) {
-        console.log("Token manquant, redirection vers login");
-        router.push("/login");
+            console.log("Token manquant, redirection vers login");
+            router.push("/login");
+        }
+        if (token != null) {
+            set_Token(token);
         }
     }, [router]);
     /* On prend la ref de l'image de profil de 
@@ -31,11 +40,11 @@ export default function Profil() {
             <div className='row'>
                 <div id='mes_posts_container' className='col-4'>
                     <h1>Mes posts</h1>
-                    {PostArea()}
+                    {PostArea(_token)}
                 </div>
                 <div id='mes_abonnements' className='col-4'>
                     <h1>Mes abonnements</h1>
-                    {AbonnementArea()}
+                    {AbonnementArea(_token)}
                 </div>
                 <div id='mes_followers' className='col-4'>
                     <h1>Mes followers</h1>
