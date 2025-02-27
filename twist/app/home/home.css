@@ -397,3 +397,18 @@ header input::placeholder {
     50% { transform: scale(1.4); }
     100% { transform: scale(1); }
 }
+
+
+.delete-button {
+    background: none;
+    border: none;
+    color: red;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 5px;
+    transition: 0.3s;
+}
+
+.delete-button:hover {
+    color: darkred;
+}

@@ -93,7 +93,7 @@ if (file && !allowedTypes.includes(file.type)) {
         <nav>
           <a href="#" className="sidebar-item">Accueil</a><br />
           <a href="#" className="sidebar-item">Recherche</a><br />
-          <a href="#" className="sidebar-item">Messages</a><br />
+          <a href="/messages" className="sidebar-item">Messages</a><br />
           <a href="#" className="sidebar-item">Notifications</a><br />
           <a href="/profil" className="sidebar-item">Profil</a><br />
         </nav>
