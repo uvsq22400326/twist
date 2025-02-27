@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useState, useEffect, FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import styles from "./login.module.css";
 import "../grid.css";
 import "./login.css";
 
@@ -11,6 +10,21 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [imageIndex, setImageIndex] = useState(0);
+
+  const images = [
+    "/images/photo1.jpg",
+    "/images/photo2.jpg",
+    "/images/photo3.jpg"
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setImageIndex((prev) => (prev + 1) % images.length);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -26,7 +40,7 @@ export default function LoginPage() {
       if (!res.ok) throw new Error(data.error);
 
       sessionStorage.setItem("token", data.token);
-      setMessage("Connexion réussie ! Redirection en cours...");
+      setMessage("Connexion réussie !");
       setTimeout(() => router.push("/home"), 2000);
     } catch (error: any) {
       setMessage(error.message);
@@ -34,23 +48,20 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="row">
-      {/* agauche avec logo */}
-      <div className="col-6">
-        <img src="/twist-logo.png" alt="Twist Logo" id="logo" />
-        <h1 id="logo-h1">Reconnecte-toi et rejoins la conversation.</h1>
-        <p id="logo-p">
-          Sur Twist, chaque message compte. Continue à partager ton monde !
-        </p>
+    <div className="login-container">
+      <div className="phone-container">
+        <img src="/phone-frame.png" alt="Phone" className="phone-frame" />
+        <img src={images[imageIndex]} alt="Diaporama" className="phone-image" />
       </div>
 
-      {/* trucdroit vec formulaire */}
-      <div className="col-6" id="login-info-container">
-        <h2>Connexion</h2>
-        <p>
-          Pas encore inscrit ? <a href="/register">Crée un compte</a>
+      <div className="login-box">
+        <img src="/twist-logo.png" alt="Twist Logo" className="logo" />
+        <h1 className="logo-h1">Reconnecte-toi et rejoins la conversation.</h1>
+        <p className="logo-p">
+          Sur Twist, chaque message compte. Continue à partager ton monde !
         </p>
 
+        <h2>Connexion</h2>
         <form onSubmit={handleLogin}>
           <input
             type="email"
@@ -59,7 +70,6 @@ export default function LoginPage() {
             placeholder="Email"
             required
           />
-          <br></br>
           <input
             type="password"
             value={password}
@@ -67,23 +77,14 @@ export default function LoginPage() {
             placeholder="Mot de passe"
             required
           />
-          <br></br>
           <button type="submit" className="button">
             Se connecter
           </button>
-          <br></br>
+          <p>
+            Pas encore inscrit ? <a href="/register" className="register-link">Crée un compte</a>
+          </p>
         </form>
-        {message && <p className={styles.message}>{message}</p>}
-
-        <p>Ou connecte-toi avec</p>
-        <div>
-          <button className="icon-button">
-            <img src="/google.svg" alt="Google" className="icon" /> Google
-          </button>
-          <button className="icon-button">
-            <img src="/apple.svg" alt="Apple" className="icon" /> Apple
-          </button>
-        </div>
+        {message && <p className="message">{message}</p>}
       </div>
     </div>
   );

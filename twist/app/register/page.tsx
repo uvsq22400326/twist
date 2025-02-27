@@ -2,10 +2,8 @@
 
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
-/*import "../globals.css";*/
-import "../grid.css"
-import "./register.css"
-/*import "./register.module.css"; */
+import "../grid.css";
+import "./register.css";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -34,7 +32,6 @@ export default function RegisterPage() {
 
     const birthDate = `${birthYear}-${birthMonth}-${birthDay}`;
     const userData = { firstName, lastName, email, password, birthDate };
-    console.log("📢 Données envoyées :", userData); // Log des données avant envoi
 
     try {
       const res = await fetch("/api/auth/register", {
@@ -46,7 +43,7 @@ export default function RegisterPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
 
-      setMessage("Compte créé avec succès ! Redirection en cours...");
+      setMessage("Compte créé avec succès ! Redirection...");
       setTimeout(() => router.push("/login"), 2000);
     } catch (error: any) {
       setMessage(error.message);
@@ -54,86 +51,44 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className='row'>
-      {/* gauche (Logo + Texte) */}
-      <div className='col-6'>
-        <img src="/twist-logo.png" alt="Twist Logo" id='logo'/>
-        <h1  id='logo-h1' >Connecte-toi, partage et inspire.</h1>
-        <p  id='logo-p' >
+    <div className="register-container">
+      <div className="logo-container">
+        <img src="/twist-logo.png" alt="Twist Logo" className="logo" />
+        <h1 className="logo-h1">Connecte-toi, partage et inspire.</h1>
+        <p className="logo-p">
           Rejoins la communauté Twist et découvre un monde où chaque twist compte.
         </p>
       </div>
 
-      {/* droiteFormu*/}
-      <div className='col-6' id='register-info-container'>
+      <div className="register-box">
         <h2>Créer un compte</h2>
-        <p>
-          Déjà un compte ? <a href="/login">Connecte-toi</a>
-        </p>
 
         <form onSubmit={handleRegister}>
-          <div>
+          <div className="name-container">
             <input type="text" placeholder="Nom" value={lastName}
-             onChange={(e) => setLastName(e.target.value)} required
-             className="name-input"/>
-            <input type="text" placeholder="Prénom" value={firstName} 
-            onChange={(e) => setFirstName(e.target.value)} required
-            className="name-input"/>
+              onChange={(e) => setLastName(e.target.value)} required />
+            <input type="text" placeholder="Prénom" value={firstName}
+              onChange={(e) => setFirstName(e.target.value)} required />
           </div>
 
-  <label>Date de naissance</label>
-  <div>
-    <select value={birthMonth} onChange={(e) => setBirthMonth(e.target.value)} 
-    required className='birth-input'>
-      <option value="">Mois</option>
-      {[...Array(12)].map((_, i) => (
-        <option key={i} value={String(i + 1).padStart(2, "0")}>{i + 1}</option>
-      ))}
-    </select>
-    <select value={birthDay} onChange={(e) => setBirthDay(e.target.value)} 
-    required className='birth-input'>
-      <option value="">Jour</option>
-      {[...Array(31)].map((_, i) => (
-        <option key={i} value={i + 1}>{i + 1}</option>
-      ))}
-    </select>
-    <select value={birthYear} onChange={(e) => setBirthYear(e.target.value)} 
-    required className='birth-input'>
-      <option value="">Année</option>
-      {[...Array(100)].map((_, i) => (
-        <option key={i} value={2024 - i}>{2024 - i}</option>
-      ))}
-    </select>
-  </div>
-
-          {/*  Date de naissance */}
           <label>Date de naissance</label>
-          <div>
-            <select value={birthMonth} onChange={(e) => setBirthMonth(e.target.value)} 
-            required className='birth-input'>
+          <div className="birth-container">
+            <select value={birthMonth} onChange={(e) => setBirthMonth(e.target.value)}
+              required>
               <option value="">Mois</option>
-              <option value="01">Janvier</option>
-              <option value="02">Février</option>
-              <option value="03">Mars</option>
-              <option value="04">Avril</option>
-              <option value="05">Mai</option>
-              <option value="06">Juin</option>
-              <option value="07">Juillet</option>
-              <option value="08">Août</option>
-              <option value="09">Septembre</option>
-              <option value="10">Octobre</option>
-              <option value="11">Novembre</option>
-              <option value="12">Décembre</option>
+              {[...Array(12)].map((_, i) => (
+                <option key={i} value={String(i + 1).padStart(2, "0")}>{i + 1}</option>
+              ))}
             </select>
             <select value={birthDay} onChange={(e) => setBirthDay(e.target.value)}
-             required className='birth-input'>
+              required>
               <option value="">Jour</option>
               {[...Array(31)].map((_, i) => (
                 <option key={i} value={i + 1}>{i + 1}</option>
               ))}
             </select>
             <select value={birthYear} onChange={(e) => setBirthYear(e.target.value)}
-             required className='birth-input'>
+              required>
               <option value="">Année</option>
               {[...Array(100)].map((_, i) => (
                 <option key={i} value={2024 - i}>{2024 - i}</option>
@@ -141,25 +96,23 @@ export default function RegisterPage() {
             </select>
           </div>
 
-          <input type="email" placeholder="Email" value={email}
-           onChange={(e) => setEmail(e.target.value)} 
-           required className='auth-info-input'/>
-          <br></br>
-          <input type="password" placeholder="Mot de passe" value={password}
-           onChange={(e) => setPassword(e.target.value)} 
-           required className='auth-info-input'/>
-          <br></br>
-          <input type="password" placeholder="Confirmer le mot de passe" value={confirmPassword}
-           onChange={(e) => setConfirmPassword(e.target.value)} 
-           required className='auth-info-input'/>
-          <br></br>
-          <div>
-            <input type="checkbox" checked={termsAccepted} onChange={(e) => setTermsAccepted(e.target.checked)}/>
-            <label>J’accepte les <a href="#" style={{ color: "#0790d5", textDecoration: "none" }}>termes & conditions</a></label>
+          <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          <input type="password" placeholder="Mot de passe" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          <input type="password" placeholder="Confirmer le mot de passe" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
+
+          <div className="terms-container">
+            <input type="checkbox" checked={termsAccepted} onChange={(e) => setTermsAccepted(e.target.checked)} />
+            <label>J’accepte les <a href="#" className="register-link">termes & conditions</a></label>
           </div>
 
-          <button type="submit" id='submit-button'>Créer un compte</button>
+          <button type="submit" className="register-button">Créer un compte</button>
         </form>
+
+        <p className="already-account">
+          Déjà un compte ? <a href="/login">Connecte-toi</a>
+        </p>
+
+        {message && <p className="message">{message}</p>}
       </div>
     </div>
   );

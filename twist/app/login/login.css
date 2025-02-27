@@ -1,74 +1,141 @@
-#logo {
-    position: relative;
-    left:30%;
+body {
+    background-color: black;
+    color: white;
+    font-family: Arial, sans-serif;
 }
 
-.icon {
-    width: 30px;
-    height: 30px;
-    margin-right: 8px;
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    gap: 100px; 
+    
 }
 
-#login-info-container {
+.phone-container {
     position: relative;
-    left: 25%;
+    width: 340px;
+    height: 700px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.phone-frame {
+    position: absolute;
+top : -20px;
+    width: 800px;
+    height: 784px;
+    z-index: 2; 
+    pointer-events: none;
+}
+
+.phone-image {
+    position: absolute;
+    top: 5%;
+    left: 6%;
+    width: 88%;
+    height: 88%;
+    border-radius: 30px;
+    object-fit: cover;
+    transition: opacity 0.5s ease-in-out; 
+}
+
+.login-box {
+    background: none;
+    padding: 40px;
+    text-align: center;
+    width: 350px;
+}
+
+.logo {
+    width: 180px;
+    margin-bottom: 10px;
+}
+
+.logo-h1 {
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.logo-p {
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 20px;
 }
 
 h2 {
-    position: inherit;
-    left: 15%;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 9px;
+}
+
+input {
+    width: 100%;
+    padding: 14px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: none;
+    background: #222;
+    color: white;
+    font-size: 16px;
+    margin-bottom: 5px;
+
 }
 
 .button {
+    width: 100%;
     padding: 14px;
-    font-size: 16px;
-    font-weight: bold;
+    font-size: 18px;
     background-color: #0790d5;
     color: white;
     border: none;
     border-radius: 8px;
     cursor: pointer;
+    transition: 0.3s;
+    margin-bottom: 9px;
+
+}
+
+.button:hover {
+    background-color: #056a9b;
+}
+
+.register-link {
+    color: #0790d5;
+    text-decoration: none;
+}
+
+.message {
+    color: rgb(255, 255, 255);
     margin-top: 10px;
 }
 
-input {
-    padding: 14px;
-    font-size: 16px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    background-color: #FFFFFF;
-    color: black;
-    margin-bottom: 12px;
-    text-align: left;
+@media only screen and (max-width: 768px) {
+    .login-container {
+        flex-direction: column; 
+        gap: 30px; 
+    }
+
+    .phone-container {
+        display: none;
+    }
+
+    .login-box {
+        width: 90%; 
+    }
+
+    .logo {
+        width: 100px; 
+    }
+
+    .logo-h1 {
+        font-size: 18px; 
+    }
+
+    .logo-p {
+        font-size: 12px;
+    }
 }
-
-@media only screen and (min-width: 768px) {
-    #logo {
-        left: 50%;
-    }
-
-    #logo-h1 {
-        position: relative;
-        left:25%;
-    }
-
-    #logo-p {
-        position: relative;
-        left:25%;
-    }
-
-    #login-info-container, h2 {
-        position: relative;
-        left:15%;
-    }
-
-    .icon {
-        width: 40px;
-        height: 40px;
-        margin-right: 16px;
-    }
-
-    .icon-button {
-        font-size: 20px;
-    }
- } 
