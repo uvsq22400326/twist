@@ -83,10 +83,10 @@ export async function POST(req: Request) {
               },
               (error, result) => {
                 if (error) {
-                  console.error("❌ Erreur Cloudinary :", error);
+                  console.error("Erreur Cloudinary :", error);
                   reject(error);
                 } else {
-                  console.log("✅ Upload réussi :", result?.secure_url);
+                  console.log("Upload réussi :", result?.secure_url);
                   resolve(result);
                 }
               }
@@ -97,12 +97,11 @@ export async function POST(req: Request) {
   
           fileUrl = (result as any).secure_url;
         } catch (uploadError) {
-          console.error("❌ Erreur Cloudinary :", uploadError);
+          console.error("Erreur Cloudinary :", uploadError);
           return NextResponse.json({ error: "Échec de l'upload Cloudinary" }, { status: 500 });
         }
       }
   
-      // ✅ Insérer dans la base de données
       await pool.query(
         `INSERT INTO messages (sender_id, receiver_id, content, media_url) VALUES (?, ?, ?, ?)`,
         [userId, conversationId, content || "", fileUrl]
@@ -111,7 +110,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "Message envoyé avec succès", mediaUrl: fileUrl }, { status: 201 });
   
     } catch (error) {
-      console.error("❌ Erreur serveur :", error);
+      console.error("Erreur serveur :", error);
       return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
     }
   }

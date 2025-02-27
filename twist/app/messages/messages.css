@@ -4,11 +4,11 @@
     background: #000000;
     color: white;
     font-family: 'Inter', sans-serif;
-    justify-content: center; /* Centrer horizontalement */
+    justify-content: center; 
 }
 
 .conversations-panel {
-    width: 350px; /* Augmenté pour être plus cohérent */
+    width: 350px; 
     padding: 20px;
     border-right: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -56,7 +56,7 @@
     padding: 20px;
     justify-content: space-between;
     overflow-y: hidden;
-    max-width: 800px; /* Ajusté pour être plus centré */
+    max-width: 800px; 
     width: 100%;
 }
 
@@ -239,7 +239,7 @@
     background: #0d8af0;
 }
 
-/* ✅ Responsive */
+/* Responsive */
 @media (max-width: 768px) {
     .messages-container {
         flex-direction: column;

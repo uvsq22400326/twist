@@ -29,9 +29,8 @@ export default function MessagesPage() {
   const [showNewChatPopup, setShowNewChatPopup] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const messagesEndRef = useRef<HTMLDivElement | null>(null); // ✅ Référence pour scroller en bas
+  const messagesEndRef = useRef<HTMLDivElement | null>(null); 
 
-  // ✅ Récupération de l'ID utilisateur
   useEffect(() => {
     const token = sessionStorage.getItem("token");
     if (!token) {
@@ -49,7 +48,7 @@ export default function MessagesPage() {
     }
   }, [router]);
 
-  // ✅ Récupération des conversations
+
   useEffect(() => {
     if (!userId) return;
 
@@ -63,12 +62,12 @@ export default function MessagesPage() {
       .catch((err) => console.error("Erreur de fetch :", err));
   }, [userId]);
 
-  // ✅ Sélection d'une conversation (scroll directement en bas)
+
   const selectConversation = async (conversationId: number, participantEmail: string) => {
     if (!conversationId) return;
     setSelectedConversation(conversationId);
     setSelectedUserEmail(participantEmail);
-    setShowNewChatPopup(false); // ✅ Ferme la popup
+    setShowNewChatPopup(false); 
 
     try {
       const res = await fetch(`/api/messages/${conversationId}`, {
@@ -79,7 +78,7 @@ export default function MessagesPage() {
       if (res.ok && data.messages) {
         setMessages(data.messages.length > 0 ? data.messages : []);
 
-        // ✅ Scroller vers le dernier message
+
         setTimeout(() => {
           messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
         }, 100);
@@ -89,12 +88,12 @@ export default function MessagesPage() {
     }
   };
 
-  // ✅ Ouvrir la popup
+
   const openNewChatPopup = () => {
     setShowNewChatPopup(true);
   };
 
-  // ✅ Fonction pour envoyer un message texte ou un fichier
+
   const sendMessage = async () => {
     if (!newMessage.trim() && !selectedFile) return;
 
@@ -126,15 +125,14 @@ export default function MessagesPage() {
         setPreviewUrl(null);
 
 
-        // ✅ Scroller en bas après l'envoi
         setTimeout(() => {
           messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
         }, 100);
       } else {
-        console.error("❌ Erreur serveur :", data.error);
+        console.error("Erreur serveur :", data.error);
       }
     } catch (error) {
-      console.error("❌ Erreur d'envoi :", error);
+      console.error("Erreur d'envoi :", error);
     }
   };
   const startConversation = async () => {
@@ -143,14 +141,12 @@ export default function MessagesPage() {
     try {
       const token = sessionStorage.getItem("token");
   
-      // 🔥 Vérifie si la conversation existe déjà
+
       const existingConv = conversations.find(conv => conv.participantEmail === newChatEmail);
   
       if (existingConv) {
-        // ✅ Si elle existe, on l'ouvre
         selectConversation(existingConv.id, newChatEmail);
       } else {
-        // ✅ Sinon, on la crée avec "/api/messages/conversations" (et non "/api/messages/create")
         const res = await fetch("/api/messages/conversations", {
           method: "POST",
           headers: {
@@ -166,7 +162,7 @@ export default function MessagesPage() {
         if (res.ok && data.conversationId) {
           selectConversation(data.conversationId, newChatEmail);
         } else {
-          console.error("❌ Erreur lors de la création de la conversation :", data);
+          console.error("Erreur lors de la création de la conversation :", data);
         }
       }
   
@@ -174,7 +170,7 @@ export default function MessagesPage() {
       setNewChatEmail("");
   
     } catch (error) {
-      console.error("❌ Erreur lors de la requête API :", error);
+      console.error("Erreur lors de la requête API :", error);
     }
   };
   
@@ -182,14 +178,13 @@ export default function MessagesPage() {
     const file = event.target.files?.[0];
     if (file) {
       setSelectedFile(file);
-      setPreviewUrl(URL.createObjectURL(file)); // ✅ Crée un aperçu temporaire
+      setPreviewUrl(URL.createObjectURL(file)); 
     }
   };
   
   
   return (
     <div className="messages-container">
-      {/* 📌 Colonne gauche avec liste des conversations */}
       <div className="conversations-panel">
         <div className="header">
           <h2>Messages</h2>
@@ -197,7 +192,7 @@ export default function MessagesPage() {
             src="/icons/messages.png"
             alt="Nouveau message"
             className="new-message-icon"
-            onClick={openNewChatPopup} // ✅ Ouvre la popup
+            onClick={openNewChatPopup} 
           />
         </div>
 
@@ -212,7 +207,6 @@ export default function MessagesPage() {
         )}
       </div>
 
-      {/* 📌 Zone centrale : Messages */}
       <div className="chat-panel">
         {selectedConversation ? (
           <>
@@ -226,18 +220,16 @@ export default function MessagesPage() {
                       ) : (
                         <img src={msg.media_url} alt="media" className="chat-media" />
                       )}
-                      {msg.content && <p className="media-text">{msg.content}</p>} {/* ✅ Texte sous l'image/vidéo */}
+                      {msg.content && <p className="media-text">{msg.content}</p>} 
                     </>
                   ) : (
                     <p>{msg.content}</p>
                   )}
                 </div>
               ))}
-              {/* ✅ Élément invisible pour scroller au dernier message */}
               <div ref={messagesEndRef}></div>
             </div>
 
-            {/* ✅ Barre d'envoi */}
             <div className="chat-input">
             {previewUrl && (
   <div className="preview-container">

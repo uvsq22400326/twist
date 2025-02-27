@@ -24,11 +24,11 @@ export async function GET(req: Request) {
             [userId, userId, userId, userId]
         );
   
-        console.log("📨 Conversations récupérées :", rows); // 🔹 LOG ICI
+        console.log("Conversations récupérées :", rows); // 🔹 LOG ICI
   
         return NextResponse.json({ conversations: rows }, { status: 200 });
     } catch (error) {
-        console.error("❌ Erreur serveur :", error);
+        console.error("Erreur serveur :", error);
         return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
     }
   }
@@ -71,11 +71,10 @@ export async function GET(req: Request) {
             return NextResponse.json({ conversationId: receiverId }, { status: 200 });
         }
 
-        // ✅ Si aucune conversation existante, on retourne l'ID de l'utilisateur
         return NextResponse.json({ conversationId: receiverId }, { status: 201 });
 
     } catch (error) {
-        console.error("❌ Erreur serveur :", error);
+        console.error("Erreur serveur :", error);
         return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
     }
 }
