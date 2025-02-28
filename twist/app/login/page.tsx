@@ -11,6 +11,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [imageIndex, setImageIndex] = useState(0);
+  const [showPassword, setShowPassword] = useState(false);
 
   const images = [
     "/images/photo1.jpg",
@@ -70,13 +71,18 @@ export default function LoginPage() {
             placeholder="Email"
             required
           />
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Mot de passe"
-            required
-          />
+          <div className="password-container">
+            <input
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Mot de passe"
+              required
+            />
+            <button type="button" onClick={() => setShowPassword(!showPassword)}>
+              {showPassword ? "Masquer" : "Afficher"}
+            </button>
+          </div>
           <button type="submit" className="button">
             Se connecter
           </button>
