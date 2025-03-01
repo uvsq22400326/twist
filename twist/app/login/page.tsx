@@ -14,7 +14,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
 
   const images = [
-    "/images/photo1.jpg",
+    "/images/photo1.png",
     "/images/photo2.jpg",
     "/images/photo3.jpg"
   ];

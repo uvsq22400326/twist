@@ -17,13 +17,22 @@ const follow = async (user2: string, token: string) => {
 // Fonction pour extraire l'ID utilisateur depuis le token
 const getUserIdFromToken = (token: string): string | null => {
     try {
-        const payload = JSON.parse(atob(token.split(".")[1])); // Décodage du JWT
-        return payload.user_id; // Suppose que l'ID utilisateur est stocké sous 'user_id'
+        if (!token || token.split(".").length !== 3) {
+            console.error("Token JWT invalide :", token);
+            return null;
+        }
+
+        const base64Url = token.split(".")[1]; 
+        const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/"); 
+        const payload = JSON.parse(atob(base64));
+
+        return payload.user_id || null;
     } catch (error) {
         console.error("Erreur de décodage du token :", error);
         return null;
     }
 };
+
 
 export default function PostArea({ token }: { token: string }) {
     const [likedPosts, setLikedPosts] = useState<{ [key: string]: boolean }>({});
