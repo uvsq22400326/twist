@@ -4,68 +4,48 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import "../grid.css";
 import "./home.css";
-import { pages } from "next/dist/build/templates/app-page";
 import PostArea from "./postArea";
 
 export default function HomePage() {
   const router = useRouter();
   const [content, setContent] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null); // ajout du state pour l'aperçu de img ou vd avant de publier
+
   const [errorPublier, setError] = useState("");
   const [_token, set_Token] = useState("");
+  const [showMenu, setShowMenu] = useState(false);
+
   useEffect(() => {
     const token = sessionStorage.getItem("token");
+    console.log("Token récupéré depuis sessionStorage :", token); 
 
-    // Si pas de token, rediriger vers la page de login
     if (!token) {
       console.log("Token manquant, redirection vers login");
       router.push("/login");
-    }
-    if (token != null) {
+    } else {
       set_Token(token);
     }
-  }, [router]);
+}, [router]);
+
 
   const handleLogout = () => {
-    sessionStorage.removeItem("token"); // Supprime le token
-    router.push("/login"); //vers page login
+    sessionStorage.removeItem("token"); 
+    router.push("/login");
   };
 
-  const displaySidebar = () => {
-    var sidebar = document.getElementById("nav-sidebar");
-    var twist_area = document.getElementById("twist-area");
-    var thisbutton = document.getElementById("open-sidebar");
-    if (!displaying_sidebar) {
-      if (sidebar) {
-        sidebar.style.display = "block";
-      }
-      if (twist_area) {
-        twist_area.style.display = "none";
-      }
-      if (thisbutton) {
-        thisbutton.innerHTML = "&times;";
-      }
-      displaying_sidebar = true;
-    } else {
-      if (sidebar) {
-        sidebar.style.display = "none";
-      }
-      if (twist_area) {
-        twist_area.style.display = "block";
-      }
-      if (thisbutton) {
-        thisbutton.innerHTML = "&#x27c1;";
-      }
-      displaying_sidebar = false;
-    }
-  };
-  var displaying_sidebar = false;
-
-  // Fonction pour publier un tweet
   const handlePostTweet = async () => {
     const token = sessionStorage.getItem("token");
 
-    if (!content) {
-      setError("Le contenu ne peut pas être vide !");
+    const allowedTypes = ["image/png", "image/jpeg", "image/gif", "image/webp", "video/mp4", "video/webm", "video/ogg"];
+
+    if (!content && !file) {
+      setError("Le contenu ou un fichier est requis !");
+      return;
+    }
+
+    if (file && !allowedTypes.includes(file.type)) {
+      setError("Fichiers autorisés : PNG, JPG, GIF, WEBP, MP4, WEBM, OGG !");
       return;
     }
 
@@ -75,44 +55,29 @@ export default function HomePage() {
     }
 
     try {
+      const formData = new FormData();
+      formData.append("content", content);
+      if (file) formData.append("file", file);
+
       const response = await fetch("/api/home/publier", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // Ajouter le token dans entete
-        },
-        body: JSON.stringify({ content }), // Contenu du tweet
+        body: formData,
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       const result = await response.json();
       if (response.ok) {
         setError("");
-        alert("Tweet publié avec succès !");
+        alert("Tweet publié !");
         setContent("");
+        setFile(null);
+        setPreview(null);
       } else {
-        setError(result.error || "Erreur lors de la publication du tweet");
+        setError(result.error || "Erreur lors de la publication.");
       }
     } catch (error) {
-      console.log(error);
-      setError("Erreur serveur");
-    }
-  };
-
-  const afficherTwistsHome = async () => {
-    console.log("afficherTwistsHome");
-    const link = "http:/localhost:3000/api/home/posts";
-    try {
-      const response = await fetch("/api/home/posts", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const res = await response.json();
-      let rows = res.content;
-      console.log("rows = " + rows);
-    } catch (err) {
-      console.log("error: afficherTwistsHome : " + err);
+      console.error(error);
+      setError("Erreur serveur.");
     }
   };
 
@@ -121,55 +86,73 @@ export default function HomePage() {
       <aside className="col-3" id="nav-sidebar">
         <img src="/twist-logo.png" alt="Twist Logo" id="logo" />
         <nav>
-          <a href="#" className="sidebar-item">
-            Accueil
-          </a>
-          <br />
-          <a href="#" className="sidebar-item">
-            Recherche
-          </a>
-          <br />
-          <a href="#" className="sidebar-item">
-            Messages
-          </a>
-          <br />
-          <a href="#" className="sidebar-item">
-            Notifications
-          </a>
-          <br />
-          <a href="/profil" className="sidebar-item">
-            Profil
-          </a>
-          <br />
+          <a href="/home" className="sidebar-item">Accueil</a>
+          <a href="#" className="sidebar-item">Recherche</a>
+          <a href="/messages" className="sidebar-item">Messages</a>
+          <a href="#" className="sidebar-item">Notifications</a>
+          <a href="/profil" className="sidebar-item">Profil</a>
         </nav>
       </aside>
-      <button id="open-sidebar" onClick={() => displaySidebar()}>
-        &#x27c1;
-      </button>
-      <br />
-      <button onClick={handleLogout} id="logout-button">
-        Déconnexion
-      </button>
 
-      {/* Contenu principal */}
-      <main className="col-8" id="twist-area">
-        <div>
-          <textarea
-            placeholder="Quoi de neuf ?"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-          />
-          <br />
-          <br />
-          <button id="publier-button" onClick={handlePostTweet}>
-            Publier
-          </button>
-          <br />
-          <br />
-          {errorPublier && <p style={{ color: "red" }}>{errorPublier}</p>}{" "}
-          {/* Afficher l'erreur s'il y en a une */}
+      <header>
+        <input type="text" placeholder="Rechercher..." />
+        <div className="user-menu">
+          <span className="menu-icon" onClick={() => setShowMenu(!showMenu)}>⋮</span>
+          {showMenu && <div className="dropdown-menu"><button onClick={handleLogout}>Se déconnecter</button></div>}
         </div>
-        {PostArea(_token)}
+      </header>
+
+      <main id="twist-area">
+      <div className="tweet-box">
+  <textarea
+    placeholder="Quoi de neuf ?"
+    value={content}
+    onChange={(e) => setContent(e.target.value)}
+  />
+
+  <div className="tweet-actions">
+    {/* icone pour uploader une image/vidéo */}
+    <label htmlFor="file-upload" className="icon-label">
+      <img src="/icons/image.png" alt="Ajouter une image ou vidéo" />
+    </label>
+    <input
+      id="file-upload"
+      type="file"
+      accept="image/png, image/jpeg, image/gif, image/webp, video/mp4, video/webm, video/ogg"
+      className="hidden-input"
+      onChange={(e) => {
+        const selectedFile = e.target.files?.[0];
+        setFile(selectedFile);
+        
+        // gener un petit appercu si le fichier est valide
+        if (selectedFile) {
+          const fileUrl = URL.createObjectURL(selectedFile);
+          setPreview(fileUrl);
+        } else {
+          setPreview(null);
+        }
+      }}
+    />
+
+    {/* affiche appercu en petit */}
+    {preview && (
+      <div className="preview-container">
+        {file?.type.startsWith("video/") ? (
+          <video src={preview} className="preview-media" muted />
+        ) : (
+          <img src={preview} className="preview-media" alt="Aperçu" />
+        )}
+      </div>
+    )}
+
+    {/* Bouton Publier */}
+    <button className="publish-button" onClick={handlePostTweet}>Publier</button>
+  </div>
+</div>
+
+
+        {errorPublier && <p className="error-text">{errorPublier}</p>}
+        <PostArea token={_token} />
       </main>
     </div>
   );
