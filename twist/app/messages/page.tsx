@@ -157,7 +157,7 @@ export default function MessagesPage() {
         });
   
         const data = await res.json();
-        console.log("📩 Réponse API :", data);
+        console.log("Réponse API :", data);
   
         if (res.ok && data.conversationId) {
           selectConversation(data.conversationId, newChatEmail);

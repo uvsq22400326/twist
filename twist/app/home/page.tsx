@@ -18,7 +18,7 @@ export default function HomePage() {
 
   useEffect(() => {
     const token = sessionStorage.getItem("token");
-    console.log("Token récupéré depuis sessionStorage :", token); //  Vérification
+    console.log("Token récupéré depuis sessionStorage :", token); 
 
     if (!token) {
       console.log("Token manquant, redirection vers login");
@@ -111,7 +111,7 @@ export default function HomePage() {
   />
 
   <div className="tweet-actions">
-    {/* Icône pour uploader une image/vidéo */}
+    {/* icone pour uploader une image/vidéo */}
     <label htmlFor="file-upload" className="icon-label">
       <img src="/icons/image.png" alt="Ajouter une image ou vidéo" />
     </label>
@@ -124,7 +124,7 @@ export default function HomePage() {
         const selectedFile = e.target.files?.[0];
         setFile(selectedFile);
         
-        // Générer un aperçu si le fichier est valide
+        // gener un petit appercu si le fichier est valide
         if (selectedFile) {
           const fileUrl = URL.createObjectURL(selectedFile);
           setPreview(fileUrl);
@@ -134,7 +134,7 @@ export default function HomePage() {
       }}
     />
 
-    {/* Affichage de l'aperçu en petit */}
+    {/* affiche appercu en petit */}
     {preview && (
       <div className="preview-container">
         {file?.type.startsWith("video/") ? (

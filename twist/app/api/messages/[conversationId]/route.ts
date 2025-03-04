@@ -30,7 +30,7 @@ export async function GET(req: Request) {
           );
           
 
-        console.log("Messages récupérés :", messages); // 🔹 DEBUG ICI
+        console.log("Messages récupérés :", messages); 
 
         return NextResponse.json({ messages }, { status: 200 });
     } catch (error) {
@@ -63,7 +63,7 @@ export async function POST(req: Request) {
       const content = data.get("content") as string | null;
       const file = data.get("file") as File | null;
   
-      console.log("📸 Fichier reçu par l'API :", file?.name || "Aucun fichier");
+      console.log("Fichier reçu par l'API :", file?.name || "Aucun fichier");
   
       let fileUrl = null;
   
@@ -73,7 +73,7 @@ export async function POST(req: Request) {
         const isVideo = file.type.startsWith("video/");
   
         try {
-          console.log("🚀 Upload sur Cloudinary en cours...");
+          console.log("Upload sur Cloudinary en cours...");
           const result = await new Promise((resolve, reject) => {
             const stream = cloudinary.uploader.upload_stream(
               {
