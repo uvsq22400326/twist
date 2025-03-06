@@ -8,7 +8,7 @@ export async function POST(req: Request) {
 
   const data = await req.formData();
   const content = data.get("content") as string;
-  const file = data.get("file");
+  const file = data.get("file") as File;
   const token = req.headers.get("Authorization")?.split(" ")[1];
 
   if (!token) {
@@ -35,6 +35,7 @@ export async function POST(req: Request) {
 
     // Si un fichier est fourni, on l'upload sur Cloudinary
     if (file) {
+      
       const fileType = file.type; // Obtenir le type du fichier
     
       // Types autorisés

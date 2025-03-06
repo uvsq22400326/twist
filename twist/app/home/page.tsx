@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import "../grid.css";
 import "./home.css";
 import PostArea from "./postArea";
+import React from "react";
 
 export default function HomePage() {
   const router = useRouter();
@@ -20,7 +21,7 @@ export default function HomePage() {
     const token = sessionStorage.getItem("token");
     console.log("Token récupéré depuis sessionStorage :", token); 
 
-    if (!token) {
+    if (!token || token == "") {
       console.log("Token manquant, redirection vers login");
       router.push("/login");
     } else {
@@ -121,16 +122,19 @@ export default function HomePage() {
       accept="image/png, image/jpeg, image/gif, image/webp, video/mp4, video/webm, video/ogg"
       className="hidden-input"
       onChange={(e) => {
-        const selectedFile = e.target.files?.[0];
-        setFile(selectedFile);
+        if (e.target.files) {
+            const selectedFile = e.target.files[0];
+            setFile(selectedFile);
         
-        // gener un petit appercu si le fichier est valide
-        if (selectedFile) {
-          const fileUrl = URL.createObjectURL(selectedFile);
-          setPreview(fileUrl);
-        } else {
-          setPreview(null);
+            // gener un petit appercu si le fichier est valide
+            if (selectedFile) {
+              const fileUrl = URL.createObjectURL(selectedFile);
+              setPreview(fileUrl);
+            } else {
+              setPreview(null);
+            }
         }
+        
       }}
     />
 
@@ -152,7 +156,7 @@ export default function HomePage() {
 
 
         {errorPublier && <p className="error-text">{errorPublier}</p>}
-        <PostArea token={_token} />
+        {PostArea(_token)}
       </main>
     </div>
   );

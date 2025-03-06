@@ -15,12 +15,12 @@ export async function POST(request: Request) {
 
     try {
         // Vérifie si le like existe déjà
-        const [[{ count }]] = await pool.query(
+        const [count, _] = await pool.query(
             "SELECT COUNT(*) AS count FROM likes WHERE user_id = ? AND post_id = ?",
             [userId, mid]
         );
 
-        if (count > 0) {
+        if (count) {
             // L'utilisateur a déjà liké, donc unlike
             await pool.query("DELETE FROM likes WHERE user_id = ? AND post_id = ?", [userId, mid]);
             await pool.query("UPDATE posts SET like_count = GREATEST(like_count - 1, 0) WHERE id = ?", [mid]);

@@ -118,6 +118,7 @@ export default function MessagesPage() {
             sender_id: userId!,
             content: newMessage || "",
             media_url: data.mediaUrl || null,
+            created_at: "" + Date.now(),
           },
         ]);
         setNewMessage("");

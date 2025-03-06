@@ -8,22 +8,25 @@ export async function GET(request: Request) {
         return NextResponse.json({ error: "Token manquant" }, { status: 401 });
     }
 
+    let connection;
     try {
         const decodedToken = verifyToken(token);
         const userId = decodedToken.id;
 
-        const [rows] = await pool.query(
+        connection = await pool.getConnection();
+        const [rows, _] = await connection.query(
             "SELECT firstName, lastName, email FROM users WHERE id = ?",
             [userId]
         );
-
-        if (rows.length === 0) {
+        
+        if (!rows) {
             return NextResponse.json({ error: "Utilisateur non trouvé" }, { status: 404 });
         }
 
         return NextResponse.json({
-            name: `${rows[0].firstName} ${rows[0].lastName}`,
-            email: rows[0].email,
+            //name: `${rows[0].firstName} ${rows[0].lastName}`,
+            //email: rows[0].email,
+            content: rows
             
         });
 

@@ -13,8 +13,8 @@ export async function GET(req: Request) {
     try {
         const decodedToken = verifyToken(token);
         const userId = decodedToken.id;
-
-        const urlParts = req.nextUrl.pathname.split("/");
+    
+        const urlParts = req.url.split("/");
         const conversationId = parseInt(urlParts[urlParts.length - 1]);
 
         if (isNaN(conversationId)) {
@@ -52,7 +52,7 @@ export async function POST(req: Request) {
       const decodedToken = verifyToken(token);
       const userId = decodedToken.id;
   
-      const urlParts = req.nextUrl.pathname.split("/");
+      const urlParts = req.url.split("/");
       const conversationId = parseInt(urlParts[urlParts.length - 1]);
   
       if (isNaN(conversationId)) {

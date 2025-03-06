@@ -2,9 +2,11 @@ import useSWR from "swr";
 
 import "./profil.css"
 import { useEffect } from "react";
+import React from "react";
 
 export default function AbonnementArea(token: string) {
-    const fetcher = (url: string) => fetch(url, {
+    console.log("Profile abonnementArea token = " + token);
+    const fetcher = async (url: string, token : string) => fetch(url, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -13,13 +15,13 @@ export default function AbonnementArea(token: string) {
       }).then(res => {
         let r = res.json().then((_res) => {
             let rows = _res.content;
-            console.log('rows = ' + rows);
            return rows;
         });
         return r;
       });
     
-    const { data, error, isLoading} = useSWR("/api/profil/abonnements", fetcher);
+      const { data, error, isLoading } = useSWR("/api/profil/abonnements/" + token, 
+        (url : string, token : string) => fetcher(url, token));
     if (isLoading) return (<div>
         <p>Chargement des abonnements...</p>
     </div>)
