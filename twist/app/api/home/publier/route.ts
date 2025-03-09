@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import pool from "../../../../lib/db";
 import { verifyToken } from "../../../../lib/auth";
 import cloudinary from "../../../../lib/cloudinary";
+import { threadId } from "worker_threads";
 
 export async function POST(req: Request) {
   console.log(" Requête reçue pour publier un post");
@@ -89,17 +90,61 @@ export async function POST(req: Request) {
       }
     }
 
-    console.log("Insertion du post dans la base de données...");
-    await pool.query(
-      "INSERT INTO posts (user_id, content, media_url, like_count) VALUES (?, ?, ?, ?)",
-      [userId, content, fileUrl, 0]
-    );
-    console.log("Post inséré avec succès !");
-
-    return NextResponse.json(
-      { message: "Post publié avec succès", mediaUrl: fileUrl },
-      { status: 200 }
-    );
+    // Moderation du contenu
+    const moderationPullModel = fetch(
+        "https://jealous-minne-twist-ollama-0544ea7b.koyeb.app/api/pull", {
+            method: "POST",
+            body: JSON.stringify({name: "llava"})
+    }).then(async (resp) => {
+        console.log("pull model : " + resp.status);        
+    }).then((_resp) => {
+        fetch("https://jealous-minne-twist-ollama-0544ea7b.koyeb.app/api/generate", {
+                method: "POST",
+                body: JSON.stringify({model: "llava", stream: false})
+            }).then((_resp) => {
+                console.log("Modèle chargé.");
+            }).then((_resp) => {
+            const prompt = "Le message " + "\"" + content + "\"" + " est-il insultant, " 
+                + "vulgaire ou choquant ? Répondre par oui ou non" ;
+            console.log("prompt = " + prompt);
+            fetch(
+                "https://jealous-minne-twist-ollama-0544ea7b.koyeb.app/api/generate", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        model: "llava", 
+                        prompt: prompt,
+                        stream: false
+                    })
+                }).then(async (resp: Response) => {
+                    // Prendre la reply en json et prendre le champ reponse.
+                    const r = resp.json();
+                    r.then(async (response) => {
+                        console.log("json = " + JSON.stringify(response));
+                        console.log("Réponse du modèle de modération : " + response.response);
+                        const rstring = response.response as string;
+                        const words = rstring.split(" ");
+                        if (words.includes("non") || words.includes("Non") ||
+                             words.includes("Non.") || words.includes("non,")) {
+                                console.log("Insertion du post dans la base de données...");
+                                await pool.query(
+                                    "INSERT INTO posts (user_id, content, media_url, like_count) VALUES (?, ?, ?, ?)",
+                                    [userId, content, fileUrl, 0]
+                                );
+                            console.log("Post inséré avec succès !");
+                             }
+                        else {
+                            console.log("Le message  a été considéré comme inapproprié");
+                        }
+                    })
+            });      
+    })})
+    .then((_resp) => {
+        return NextResponse.json(
+            { message: "Post publié avec succès", mediaUrl: fileUrl },
+            { status: 200 }
+            );
+    });
+    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
 
   } catch (error) {
     console.error("Erreur serveur :", error);
