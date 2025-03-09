@@ -9,6 +9,7 @@ export default function RegisterPage() {
   const router = useRouter();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [username, setUsername] = useState("");
   const [birthMonth, setBirthMonth] = useState("");
   const [birthDay, setBirthDay] = useState("");
   const [birthYear, setBirthYear] = useState("");
@@ -17,23 +18,6 @@ export default function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [message, setMessage] = useState("");
-  const [passwordStrength, setPasswordStrength] = useState("");
-  const [passwordValid, setPasswordValid] = useState(false);
-  const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
-  const [showPassword, setShowPassword] = useState(false);
-
-  function checkPasswordStrength(password: string) {
-    const errors: string[] = [];
-    if (password.length < 8) errors.push("Au moins 8 caractères.");
-    if (!/[A-Z]/.test(password)) errors.push("Une majuscule requise.");
-    if (!/[a-z]/.test(password)) errors.push("Une minuscule requise.");
-    if (!/[0-9]/.test(password)) errors.push("Un chiffre requis.");
-    if (!/[!@-_#$%^&*(),.?":{}|<>]/.test(password)) errors.push("Un caractère spécial requis.");
-    
-    setPasswordErrors(errors);
-    setPasswordValid(errors.length === 0);
-    setPasswordStrength(errors.length === 0 ? "Fort" : errors.length <= 2 ? "Moyen" : "Faible");
-  }
 
   async function handleRegister(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -46,17 +30,17 @@ export default function RegisterPage() {
       setMessage("Les mots de passe ne correspondent pas.");
       return;
     }
-    if (!passwordValid) {
-      setMessage("Le mot de passe doit être plus sécurisé.");
-      return;
-    }
     if (parseInt(birthYear) > 2011) {
       setMessage("Vous êtes trop jeune pour vous inscrire.");
       return;
     }
+    if (!username.trim()) {
+      setMessage("Le nom d'utilisateur est obligatoire.");
+      return;
+    }
 
     const birthDate = `${birthYear}-${birthMonth}-${birthDay}`;
-    const userData = { firstName, lastName, email, password, birthDate };
+    const userData = { firstName, lastName, username, email, password, birthDate };
 
     try {
       const res = await fetch("/api/auth/register", {
@@ -92,6 +76,8 @@ export default function RegisterPage() {
             <input type="text" placeholder="Prénom" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
           </div>
 
+          <input type="text" placeholder="Nom d'utilisateur" value={username} onChange={(e) => setUsername(e.target.value)} required />
+
           <label>Date de naissance</label>
           <div className="birth-container">
             <select value={birthMonth} onChange={(e) => setBirthMonth(e.target.value)} required>
@@ -115,16 +101,8 @@ export default function RegisterPage() {
           </div>
 
           <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-          <div className="password-container">
-            <input type={showPassword ? "text" : "password"} placeholder="Mot de passe" value={password} onChange={(e) => {
-              setPassword(e.target.value);
-              checkPasswordStrength(e.target.value);
-            }} required />
-            <button type="button" onClick={() => setShowPassword(!showPassword)}>
-              {showPassword ? "Masquer" : "Afficher"}
-            </button>
-          </div>
-          {password && <ul className="password-errors">{passwordErrors.map((error, i) => <li key={i}>{error}</li>)}</ul>}
+
+          <input type="password" placeholder="Mot de passe" value={password} onChange={(e) => setPassword(e.target.value)} required />
           <input type="password" placeholder="Confirmer le mot de passe" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
 
           <div className="terms-container">
@@ -135,7 +113,6 @@ export default function RegisterPage() {
           <button type="submit" className="register-button">Créer un compte</button>
         </form>
 
-        <p className="already-account">Déjà un compte ? <a href="/login">Connecte-toi</a></p>
         {message && <p className="message">{message}</p>}
       </div>
     </div>
