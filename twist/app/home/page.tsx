@@ -67,7 +67,7 @@ export default function HomePage() {
       });
 
       const result = await response.json();
-      if (response.ok) {
+      if (response.status == 200) {
         setError("");
         alert("Tweet publié !");
         setContent("");
@@ -75,6 +75,7 @@ export default function HomePage() {
         setPreview(null);
       } else {
         setError(result.error || "Erreur lors de la publication.");
+        alert(result.error);
       }
     } catch (error) {
       console.error(error);

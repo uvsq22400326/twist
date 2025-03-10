@@ -95,19 +95,28 @@ export async function POST(req: Request) {
         "https://jealous-minne-twist-ollama-0544ea7b.koyeb.app/api/pull", {
             method: "POST",
             body: JSON.stringify({name: "llava"})
-    }).then(async (resp) => {
-        console.log("pull model : " + resp.status);        
-    }).then((_resp) => {
-        fetch("https://jealous-minne-twist-ollama-0544ea7b.koyeb.app/api/generate", {
+    }).then(async (resp : Response) => {
+        console.log("pull model : " + resp.status);
+        return resp;    
+    }).then((_resp : Response) => {
+        if (_resp.status != 200) {
+            return NextResponse.json({
+                error: "Le modèle de modération est en train d'être téléchargé. Veuillez " +
+                    "réactualiser la page et réessayer de publier"
+            }, {status: 500});
+        }
+        const reponseModel = 
+            fetch("https://jealous-minne-twist-ollama-0544ea7b.koyeb.app/api/generate", {
                 method: "POST",
                 body: JSON.stringify({model: "llava", stream: false})
             }).then((_resp) => {
                 console.log("Modèle chargé.");
+                return _resp;
             }).then((_resp) => {
             const prompt = "Le message " + "\"" + content + "\"" + " est-il insultant, " 
                 + "vulgaire ou choquant ? Répondre par oui ou non" ;
             console.log("prompt = " + prompt);
-            fetch(
+            const reponseFinale = fetch(
                 "https://jealous-minne-twist-ollama-0544ea7b.koyeb.app/api/generate", {
                     method: "POST",
                     body: JSON.stringify({
@@ -118,36 +127,59 @@ export async function POST(req: Request) {
                 }).then(async (resp: Response) => {
                     // Prendre la reply en json et prendre le champ reponse.
                     const r = resp.json();
-                    r.then(async (response) => {
+                    
+                    const modrep = r.then(async (response) => {
                         console.log("json = " + JSON.stringify(response));
                         console.log("Réponse du modèle de modération : " + response.response);
+                        
+                        // Si resp contient une erreur, la renvoyer
+                        const rerror = response.error as string;
+                        if (rerror) {
+                            if (rerror.includes("not found")) {
+                                return NextResponse.json({
+                                    error: "Téléchargement du modèle d'IA." 
+                                        + "Veuillez réactualiser la page puis réessayer."
+                                }, {status: 500});
+                            }
+                        }
                         const rstring = response.response as string;
                         const words = rstring.split(" ");
                         if (words.includes("non") || words.includes("Non") ||
-                             words.includes("Non.") || words.includes("non,")) {
+                             words.includes("Non.") || words.includes("non,") || 
+                             words.includes("Non,")) {
                                 console.log("Insertion du post dans la base de données...");
                                 await pool.query(
                                     "INSERT INTO posts (user_id, content, media_url, like_count) VALUES (?, ?, ?, ?)",
                                     [userId, content, fileUrl, 0]
                                 );
                             console.log("Post inséré avec succès !");
+                            return NextResponse.json(
+                                { message: "Post publié avec succès", mediaUrl: fileUrl },
+                                { status: 200 }
+                                );
                              }
                         else {
                             console.log("Le message  a été considéré comme inapproprié");
+                            return NextResponse.json(
+                                { error: "Le message  a été considéré comme inapproprié"},
+                                { status: 201 }
+                            
+                            );
                         }
-                    })
-            });      
-    })})
-    .then((_resp) => {
-        return NextResponse.json(
-            { message: "Post publié avec succès", mediaUrl: fileUrl },
-            { status: 200 }
-            );
+                    });
+                    return modrep;
+            });    
+        return reponseFinale;  
     });
-    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
+    return reponseModel;
+    }).then((_resp) => {
+        return _resp;   
+    });
+    return moderationPullModel;
+    return NextResponse.json({ error: "Erreur serveur" }, { status: 399 });
 
   } catch (error) {
     console.error("Erreur serveur :", error);
-    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
+    return NextResponse.json({ error: "Erreur serveur 2 " + error}, { status: 500 });
   }
 }
