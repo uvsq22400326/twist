@@ -19,7 +19,7 @@ export default function HomePage() {
 
   useEffect(() => {
     const token = sessionStorage.getItem("token");
-    console.log("Token récupéré depuis sessionStorage :", token); 
+    console.log("Token récupéré depuis sessionStorage :", token);
 
     if (!token || token == "") {
       console.log("Token manquant, redirection vers login");
@@ -27,18 +27,25 @@ export default function HomePage() {
     } else {
       set_Token(token);
     }
-}, [router]);
-
+  }, [router]);
 
   const handleLogout = () => {
-    sessionStorage.removeItem("token"); 
+    sessionStorage.removeItem("token");
     router.push("/login");
   };
 
   const handlePostTweet = async () => {
     const token = sessionStorage.getItem("token");
 
-    const allowedTypes = ["image/png", "image/jpeg", "image/gif", "image/webp", "video/mp4", "video/webm", "video/ogg"];
+    const allowedTypes = [
+      "image/png",
+      "image/jpeg",
+      "image/gif",
+      "image/webp",
+      "video/mp4",
+      "video/webm",
+      "video/ogg",
+    ];
 
     if (!content && !file) {
       setError("Le contenu ou un fichier est requis !");
@@ -82,78 +89,105 @@ export default function HomePage() {
     }
   };
 
+  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      const query = (e.target as HTMLInputElement).value;
+      router.push(`/search?q=${query}`);
+    }
+  };
+
   return (
     <div>
       <aside className="col-3" id="nav-sidebar">
         <img src="/twist-logo.png" alt="Twist Logo" id="logo" />
         <nav>
-          <a href="/home" className="sidebar-item">Accueil</a>
-          <a href="#" className="sidebar-item">Recherche</a>
-          <a href="/messages" className="sidebar-item">Messages</a>
-          <a href="#" className="sidebar-item">Notifications</a>
-          <a href="/profil" className="sidebar-item">Profil</a>
+          <a href="/home" className="sidebar-item">
+            Accueil
+          </a>
+          <a href="/search" className="sidebar-item">
+            Recherche
+          </a>
+          <a href="/messages" className="sidebar-item">
+            Messages
+          </a>
+          <a href="#" className="sidebar-item">
+            Notifications
+          </a>
+          <a href="/profil" className="sidebar-item">
+            Profil
+          </a>
         </nav>
       </aside>
 
       <header>
-        <input type="text" placeholder="Rechercher..." />
+        <input
+          type="text"
+          placeholder="Rechercher..."
+          onKeyDown={handleSearch}
+        />
         <div className="user-menu">
-          <span className="menu-icon" onClick={() => setShowMenu(!showMenu)}>⋮</span>
-          {showMenu && <div className="dropdown-menu"><button onClick={handleLogout}>Se déconnecter</button></div>}
+          <span className="menu-icon" onClick={() => setShowMenu(!showMenu)}>
+            ⋮
+          </span>
+          {showMenu && (
+            <div className="dropdown-menu">
+              <button onClick={handleLogout}>Se déconnecter</button>
+            </div>
+          )}
         </div>
       </header>
 
       <main id="twist-area">
-      <div className="tweet-box">
-  <textarea
-    placeholder="Quoi de neuf ?"
-    value={content}
-    onChange={(e) => setContent(e.target.value)}
-  />
+        <div className="tweet-box">
+          <textarea
+            placeholder="Quoi de neuf ?"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+          />
 
-  <div className="tweet-actions">
-    {/* icone pour uploader une image/vidéo */}
-    <label htmlFor="file-upload" className="icon-label">
-      <img src="/icons/image.png" alt="Ajouter une image ou vidéo" />
-    </label>
-    <input
-      id="file-upload"
-      type="file"
-      accept="image/png, image/jpeg, image/gif, image/webp, video/mp4, video/webm, video/ogg"
-      className="hidden-input"
-      onChange={(e) => {
-        if (e.target.files) {
-            const selectedFile = e.target.files[0];
-            setFile(selectedFile);
-        
-            // gener un petit appercu si le fichier est valide
-            if (selectedFile) {
-              const fileUrl = URL.createObjectURL(selectedFile);
-              setPreview(fileUrl);
-            } else {
-              setPreview(null);
-            }
-        }
-        
-      }}
-    />
+          <div className="tweet-actions">
+            {/* icone pour uploader une image/vidéo */}
+            <label htmlFor="file-upload" className="icon-label">
+              <img src="/icons/image.png" alt="Ajouter une image ou vidéo" />
+            </label>
+            <input
+              id="file-upload"
+              type="file"
+              accept="image/png, image/jpeg, image/gif, image/webp, video/mp4, video/webm, video/ogg"
+              className="hidden-input"
+              onChange={(e) => {
+                if (e.target.files) {
+                  const selectedFile = e.target.files[0];
+                  setFile(selectedFile);
 
-    {/* affiche appercu en petit */}
-    {preview && (
-      <div className="preview-container">
-        {file?.type.startsWith("video/") ? (
-          <video src={preview} className="preview-media" muted />
-        ) : (
-          <img src={preview} className="preview-media" alt="Aperçu" />
-        )}
-      </div>
-    )}
+                  // gener un petit appercu si le fichier est valide
+                  if (selectedFile) {
+                    const fileUrl = URL.createObjectURL(selectedFile);
+                    setPreview(fileUrl);
+                  } else {
+                    setPreview(null);
+                  }
+                }
+              }}
+            />
 
-    {/* Bouton Publier */}
-    <button className="publish-button" onClick={handlePostTweet}>Publier</button>
-  </div>
-</div>
+            {/* affiche appercu en petit */}
+            {preview && (
+              <div className="preview-container">
+                {file?.type.startsWith("video/") ? (
+                  <video src={preview} className="preview-media" muted />
+                ) : (
+                  <img src={preview} className="preview-media" alt="Aperçu" />
+                )}
+              </div>
+            )}
 
+            {/* Bouton Publier */}
+            <button className="publish-button" onClick={handlePostTweet}>
+              Publier
+            </button>
+          </div>
+        </div>
 
         {errorPublier && <p className="error-text">{errorPublier}</p>}
         {PostArea(_token)}
