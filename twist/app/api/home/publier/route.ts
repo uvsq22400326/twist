@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import pool from "../../../../lib/db";
 import { verifyToken } from "../../../../lib/auth";
 import cloudinary from "../../../../lib/cloudinary";
-import { moderation } from "../../moderation/route";
+import { moderation } from "../../moderation/moderation";
 
 export async function POST(req: Request) {
   console.log(" Requête reçue pour publier un post");
