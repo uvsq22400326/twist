@@ -5,25 +5,28 @@ import { verifyToken } from "../../../lib/auth";
 export async function GET(req: Request) {
     try {
         const token = req.headers.get("Authorization")?.split(" ")[1];
-        if (!token) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
 
-        const decoded = verifyToken(token);
-        const userId = decoded.id;
-
-        const [rows] = await pool.query("SELECT bio, profilePic FROM users WHERE id = ?", [userId]);
-
-        if ((rows as any[]).length === 0) {
-            return NextResponse.json({ error: "Utilisateur introuvable" }, { status: 404 });
+        if (!token) {
+            console.error("Token manquant");
+            return NextResponse.json({ error: "Token manquant" }, { status: 401 });
         }
 
-        const user = (rows as any)[0];
+        const decodedToken = verifyToken(token);
+        const userId = decodedToken.id;
 
-        return NextResponse.json({
-            bio: user.bio || "Aucune bio renseignée",
-            profilePic: user.profilePic || "/default-profile.png",
-        });
+        const [rows]: any = await pool.query("SELECT bio FROM users WHERE id = ?", [userId]);
+
+        if (!rows || rows.length === 0) {
+            console.error("Utilisateur non trouvé");
+            return NextResponse.json({ error: "Utilisateur non trouvé" }, { status: 404 });
+        }
+
+        console.log("📩 Bio récupérée :", rows[0].bio);
+
+        return NextResponse.json({ bio: rows[0].bio || "Aucune bio renseignée." }, { status: 200 });
+
     } catch (error) {
-        console.error("❌ Erreur API :", error);
+        console.error("❌ Erreur serveur :", error);
         return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
     }
 }

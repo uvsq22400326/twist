@@ -17,8 +17,8 @@ export default function Profil() {
     const [followers, setFollowers] = useState(0);
     const [following, setFollowing] = useState(0);
     
-    const [editMode, setEditMode] = useState(false); // État pour activer l'édition
-    const [newBio, setNewBio] = useState(""); // Contenu temporaire de la nouvelle bio
+    const [editMode, setEditMode] = useState(false);
+    const [newBio, setNewBio] = useState("");
 
     useEffect(() => {
         const token = window.sessionStorage.getItem("token");
@@ -45,25 +45,42 @@ export default function Profil() {
         });
     }, [router]);
 
-    // Fonction pour mettre à jour la bio
     const handleUpdateBio = async () => {
-        if (!newBio.trim()) return; // Évite les espaces vides
+        if (!newBio.trim()) {
+            alert("La bio ne peut pas être vide !");
+            return;
+        }
 
-        const response = await fetch("/api/profil/update", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${_token}`,
-            },
-            body: JSON.stringify({ bio: newBio }),
-        });
+        if (!_token) {
+            console.error("Token manquant !");
+            return;
+        }
 
-        const data = await response.json();
-        if (response.ok) {
-            setBio(newBio); // Met à jour la bio dans l'affichage
-            setEditMode(false); // Désactive le mode édition
-        } else {
-            console.error("Erreur de mise à jour :", data.error);
+        console.log("📝 Envoi de la bio :", newBio);
+
+        try {
+            const response = await fetch("/api/profil/update", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${_token}`,
+                },
+                body: JSON.stringify({ bio: newBio }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                console.log("✅ Bio mise à jour avec succès :", data);
+                setBio(newBio);
+                setEditMode(false);
+            } else {
+                console.error("❌ Erreur lors de la mise à jour :", data.error);
+                alert("Erreur : " + data.error);
+            }
+        } catch (error) {
+            console.error("❌ Erreur serveur :", error);
+            alert("Erreur serveur");
         }
     };
 
