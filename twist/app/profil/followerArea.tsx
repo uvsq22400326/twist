@@ -2,7 +2,7 @@ import useSWR from "swr";
 import "./profil.css";
 import React from "react";
 
-export default function AbonnementArea({ token }: { token: string }) {
+export default function FollowerArea({ token }: { token: string }) {
     const fetcher = async (url: string) => fetch(url, {
         method: "GET",
         headers: {
@@ -11,16 +11,16 @@ export default function AbonnementArea({ token }: { token: string }) {
         }
     }).then(res => res.json());
 
-    const { data, error, isLoading } = useSWR(token ? "/api/profil/abonnements" : null, fetcher);
+    const { data, error, isLoading } = useSWR(token ? "/api/profil/followers" : null, fetcher);
 
-    console.log("📩 Réponse API abonnements:", data); // Debug
+    console.log("📩 Réponse API followers:", data); // Debug
 
     if (isLoading) return <p>Chargement...</p>;
     if (error) return <p>Erreur lors du chargement</p>;
 
     return (
-        <div id="abonnement-container">
-            <h2>Abonnements</h2>
+        <div id="follower-container">
+            <h2>Followers</h2>
             {data?.length > 0 ? (
                 data.map((user: any) => (
                     <div className="post-box" key={user.id}>
@@ -28,7 +28,7 @@ export default function AbonnementArea({ token }: { token: string }) {
                     </div>
                 ))
             ) : (
-                <p>Aucun abonnement trouvé.</p>
+                <p>Aucun follower trouvé.</p>
             )}
         </div>
     );
