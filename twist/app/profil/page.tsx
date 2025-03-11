@@ -19,7 +19,49 @@ export default function Profil() {
     
     const [editMode, setEditMode] = useState(false);
     const [newBio, setNewBio] = useState("");
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
+    // Fonction pour gérer le choix d'une nouvelle image
+    const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            setSelectedFile(file);
+            setPreviewUrl(URL.createObjectURL(file)); // Affichage de l'aperçu
+        }
+    };
+
+    // Fonction pour mettre à jour la photo de profil
+    const handleUpdateProfilePicture = async () => {
+        if (!selectedFile || !_token) {
+            alert("Veuillez sélectionner une image !");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("file", selectedFile);
+
+        try {
+            const response = await fetch("/api/profil/update", {
+                method: "POST",
+                headers: { Authorization: `Bearer ${_token}` },
+                body: formData,
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                setProfilePic(data.profilePic); // Mise à jour de l'affichage
+                setPreviewUrl(null);
+                setSelectedFile(null);
+            } else {
+                alert("Erreur : " + data.error);
+            }
+        } catch (error) {
+            console.error("Erreur serveur :", error);
+        }
+    };
+
+    // Récupération des informations de l'utilisateur (photo + bio + stats)
     useEffect(() => {
         const token = window.sessionStorage.getItem("token");
 
@@ -45,6 +87,7 @@ export default function Profil() {
         });
     }, [router]);
 
+    // Fonction pour mettre à jour la bio
     const handleUpdateBio = async () => {
         if (!newBio.trim()) {
             alert("La bio ne peut pas être vide !");
@@ -86,12 +129,14 @@ export default function Profil() {
 
     return (
         <div className="profile-container">
+            {/* Image de profil */}
             <div id='profile_img_box' style={{
                 backgroundImage: `url(${profilePic || "/icons/default-profile.png"})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
             }}></div>
 
+            {/* Édition de la bio */}
             <h2>Bio</h2>
             {editMode ? (
                 <div className="bio-edit">
@@ -110,17 +155,36 @@ export default function Profil() {
                 }}>{bio}</p>
             )}
 
-            <div className="follow-info">
-                <p><strong>{followers}</strong> Followers</p>
-                <p><strong>{following}</strong> Abonnements</p>
+            {/* Boutons Followers / Abonnements */}
+            <div className="follow-buttons">
+                <button className="follow-btn">Followers</button>
+                <button className="follow-btn">Abonnements</button>
             </div>
 
+            {/* Section des posts */}
             <div className='row'>
                 <div id='mes_posts_container' className='col-4'>
                     <h1>Mes posts</h1>
                     <PostArea token={_token} />
                 </div>
             </div>  
+
+            {/* Changer la photo de profil */}
+            <div className="profile-picture-section">
+                <label className="upload-icon">
+                    <input type="file" accept="image/*" onChange={handleFileUpload} hidden />
+                    <img src="/icons/image.png" alt="Upload" />
+                </label>
+
+                {previewUrl && (
+                    <div className="preview-container">
+                        <img src={previewUrl} alt="Preview" className="preview-media" />
+                        <button className="remove-preview" onClick={() => setPreviewUrl(null)}>✕</button>
+                        <button onClick={handleUpdateProfilePicture}>Enregistrer</button>
+                    </div>
+                )}
+            </div>
+
         </div>
     );
 }

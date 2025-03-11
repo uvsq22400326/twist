@@ -197,3 +197,47 @@
 }
 
 
+.profile-picture-section {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.upload-icon img {
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    display: block;
+    margin: 10px auto;
+}
+
+.preview-container {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.preview-media {
+    max-width: 150px;
+    border-radius: 10px;
+}
+
+.remove-preview {
+    background: red;
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    margin-top: 5px;
+}
+.upload-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: -30px; /* Remonte le bouton */
+    position: relative;
+}
+
+.upload-icon img {
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+}
