@@ -16,6 +16,7 @@ export default function SearchPage() {
   });
   const [likedPosts, setLikedPosts] = useState<{ [key: string]: boolean }>({});
   const [likeCounts, setLikeCounts] = useState<{ [key: string]: number }>({});
+  const [following, setFollowing] = useState<{ [key: string]: boolean }>({});
   const [showMenu, setShowMenu] = useState(false);
   const userId = "currentUserId"; // Replace with the actual user ID logic
 
@@ -52,15 +53,22 @@ export default function SearchPage() {
 
   const handleFollow = async (userId: string) => {
     try {
-      const res = await fetch(`/api/follow`, {
+      const token = sessionStorage.getItem("token");
+      const isFollowing = following[userId] || false;
+      const res = await fetch(`/api/auth/follow`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+          ToFollow: userId,
         },
-        body: JSON.stringify({ userId }),
+        body: JSON.stringify({ userId, isFollowing }),
       });
       if (res.ok) {
-        // Update the UI or state as needed
+        setFollowing((prev) => ({
+          ...prev,
+          [userId]: !isFollowing,
+        }));
       }
     } catch (error) {
       console.error("Error following user:", error);
@@ -83,10 +91,12 @@ export default function SearchPage() {
     }));
 
     try {
+      const token = sessionStorage.getItem("token");
       const res = await fetch(`/api/like`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ postId }),
       });
@@ -169,7 +179,7 @@ export default function SearchPage() {
                       onClick={() => handleFollow(user.id)}
                       disabled={user.id === userId} // Empêche l'auto-follow
                     >
-                      Follow
+                      {following[user.id] ? "Unfollow" : "Follow"}
                     </button>
                   </li>
                 ))}
@@ -187,7 +197,7 @@ export default function SearchPage() {
                       onClick={() => handleFollow(post.user_id)}
                       disabled={post.user_id === userId} // Empêche l'auto-follow
                     >
-                      Follow
+                      {following[post.user_id] ? "Unfollow" : "Follow"}
                     </button>
 
                     <p>
