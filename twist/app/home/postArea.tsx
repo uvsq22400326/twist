@@ -4,6 +4,7 @@ import useSWR from "swr";
 import "./home.css";
 import { verifyToken } from "../../lib/auth";
 import React from "react";
+import CommentaireInput from "../commentaire/comment";
 
 const follow = async (user2: string, token: string) => {
     await fetch("/api/auth/follow", {
@@ -115,6 +116,8 @@ export default function PostArea(token: string) {
                         </svg>
                         <span>{likeCounts[data[i].id] ?? data[i].like_count}</span>
                     </button>
+                    {/* Champ pour commenter */}
+                    {CommentaireInput(data[i].id)}
                 </div>
             ))}
         </div>
