@@ -5,10 +5,10 @@ import bcrypt from "bcryptjs";
 export async function POST(req: Request) {
     try {
       console.log("Requête reçue pour l'inscription...");
-      const { firstName, lastName, email, password, birthDate } = await req.json();
+      const { firstName, lastName, username, email, password, birthDate } = await req.json();
       console.log("Données reçues :", { firstName, lastName, email, birthDate });
   
-      if (!firstName || !lastName || !email || !password || !birthDate) {
+      if (!firstName || !username|| !lastName || !email || !password || !birthDate) {
         console.log("Erreur : Champs manquants !");
         return NextResponse.json({ error: "Tous les champs sont requis" }, { status: 400 });
       }
@@ -23,8 +23,8 @@ export async function POST(req: Request) {
       // Hachage du mot de passe
       const hashedPassword = await bcrypt.hash(password, 10);
       await pool.query(
-        "INSERT INTO users (firstName, lastName, email, password, birthDate) VALUES (?, ?, ?, ?, ?)",
-        [firstName, lastName, email, hashedPassword, birthDate]
+        "INSERT INTO users (firstName, username,lastName, email, password, birthDate) VALUES (?,?, ?, ?, ?, ?)",
+        [firstName, lastName, username, email, hashedPassword, birthDate]
       );
   
       console.log("Utilisateur ajouté à la base !");
