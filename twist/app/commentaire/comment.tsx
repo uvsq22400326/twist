@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 
-export default function CommentaireInput(token : string, postid) {
+export default function CommentaireInput(token : string, postid: number) {
     var commContent = "";
 
     // Fait apparaître un input field sous le message
@@ -19,7 +19,7 @@ export default function CommentaireInput(token : string, postid) {
     )
 }
 
-export async function sendComment(postid, commContent, token: string) {
+export async function sendComment(postid: number, commContent: string, token: string) {
     alert("post_id = " + postid + " commContent = " + commContent + " token = " + token);
     // Call API pour poster le commentaire
     const response = await fetch("/api/commentaire", {
