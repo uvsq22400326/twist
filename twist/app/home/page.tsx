@@ -110,7 +110,7 @@ export default function HomePage() {
           <a href="/messages" className="sidebar-item">
             Messages
           </a>
-          <a href="#" className="sidebar-item">
+          <a href="/notifications" className="sidebar-item">
             Notifications
           </a>
           <a href="/profil" className="sidebar-item">

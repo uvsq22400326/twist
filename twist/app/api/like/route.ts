@@ -47,6 +47,17 @@ export async function POST(request: Request) {
       [postId]
     );
 
+    // Insert notification
+    const [postOwner] = await pool.query<any[]>(
+      "SELECT user_id FROM posts WHERE id = ?",
+      [postId]
+    );
+    const postOwnerId = postOwner[0].user_id;
+    await pool.query(
+      "INSERT INTO notifications (user_id, type, source_id, post_id) VALUES (?, 'like', ?, ?)",
+      [postOwnerId, userId, postId]
+    );
+
     return NextResponse.json({ message: "Liked" }, { status: 200 });
   } catch (error) {
     console.error("Server error: ", error);

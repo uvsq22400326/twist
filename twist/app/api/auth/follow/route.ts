@@ -36,6 +36,13 @@ export async function POST(req: Request) {
         userId,
         userToFollowId,
       ]);
+
+      // Insert notification
+      await pool.query(
+        "INSERT INTO notifications (user_id, type, source_id) VALUES (?, 'follow', ?)",
+        [userToFollowId, userId]
+      );
+
       return NextResponse.json(
         { message: "Vous suivez maintenant cet utilisateur" },
         { status: 200 }

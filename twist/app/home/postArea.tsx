@@ -110,6 +110,14 @@ export default function PostArea(token: string) {
       </div>
     );
 
+  if (!data || !data.length) {
+    return (
+      <div>
+        <p>Aucun message trouvé.</p>
+      </div>
+    );
+  }
+
   return (
     <div id="twist-area">
       {[...Array(data.length)].map((_, i) => (
