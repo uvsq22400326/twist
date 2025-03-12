@@ -2,8 +2,9 @@ import { NextResponse } from "next/server";
 import pool from "../../../../../lib/db";
 import { verifyToken } from "../../../../../lib/auth";
 
-export async function GET(request: Request, { params }: { params: { token: string } }) {
-    const token = params.token;
+export async function GET(request: Request, { params }: { params: Promise<{ token: string }>}) {
+    const _params = await params;
+    const token = _params.token;
     if (!token) {
         return NextResponse.json({ error: "Token manquant" }, { status: 401 });
     }
