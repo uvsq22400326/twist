@@ -2,34 +2,36 @@ import { NextResponse } from "next/server";
 import pool from "../../../lib/db";
 import { verifyToken } from "../../../lib/auth";
 
-export async function GET(request: Request, { params }: { params: { token: string } }) {
+export async function GET(request: Request) {
+    const token = request.headers.get("Authorization")?.split(" ")[1];
+    if (!token) {
+        return NextResponse.json({ error: "Token manquant" }, { status: 401 });
+    }
+
+    let connection;
     try {
-        const token = params.token;
-
-        if (!token) {
-            return NextResponse.json({ error: "Token manquant" }, { status: 401 });
-        }
-
         const decodedToken = verifyToken(token);
         const userId = decodedToken.id;
 
-        const [rows]: any = await pool.query(
-            "SELECT id, username, bio FROM users WHERE id = ?",
+        connection = await pool.getConnection();
+        const [rows, _] = await connection.query(
+            "SELECT firstName, lastName, email FROM users WHERE id = ?",
             [userId]
         );
-
-        if (!rows || rows.length === 0) {
-            console.error("Utilisateur non trouvé");
+        
+        if (!rows) {
             return NextResponse.json({ error: "Utilisateur non trouvé" }, { status: 404 });
         }
 
-        return NextResponse.json(
-            { id: rows[0].id, username: rows[0].username, bio: rows[0].bio },
-            { status: 200 }
-        );
+        return NextResponse.json({
+            //name: `${rows[0].firstName} ${rows[0].lastName}`,
+            //email: rows[0].email,
+            content: rows
+            
+        });
 
     } catch (error) {
-        console.error("❌ Erreur serveur :", error);
-        return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
-    }
+        console.error("Erreur API profil :", error);
+        return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
+    }
 }
