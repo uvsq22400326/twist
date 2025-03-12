@@ -117,7 +117,7 @@ export default function PostArea(token: string) {
                         <span>{likeCounts[data[i].id] ?? data[i].like_count}</span>
                     </button>
                     {/* Champ pour commenter */}
-                    {CommentaireInput(data[i].id)}
+                    {CommentaireInput(token, data[i].id)}
                 </div>
             ))}
         </div>
