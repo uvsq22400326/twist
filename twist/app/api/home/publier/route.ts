@@ -92,10 +92,6 @@ export async function POST(req: Request) {
 
         
         console.log("Post inséré avec succès !");
-        return NextResponse.json(
-            { message: "Post publié avec succès" },
-            { status: 200 }
-        );
 
       } catch (uploadError) {
         console.log("Échec de l'upload Cloudinary :", uploadError);
@@ -103,6 +99,8 @@ export async function POST(req: Request) {
       }
     }
     console.log("Insertion du post dans la base de données...");
+    console.log("fileURL = " + fileUrl);
+
     await pool.query(
         "INSERT INTO posts (user_id, content, media_url, like_count) VALUES (?, ?, ?, ?)",
         [userId, content, fileUrl, 0]
