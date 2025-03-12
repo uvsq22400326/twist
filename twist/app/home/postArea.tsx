@@ -6,6 +6,13 @@ import { verifyToken } from "../../lib/auth";
 import React from "react";
 import CommentaireInput from "../commentaire/comment";
 
+interface Commentaire {
+    id: number;
+    content: string;
+    username: string;
+    postid: number;
+  }
+
 const follow = async (user2: string, token: string) => {
     await fetch("/api/auth/follow", {
         method: "POST",
@@ -17,34 +24,14 @@ const follow = async (user2: string, token: string) => {
     });
 };
 
-// Fonction pour extraire l'ID utilisateur depuis le token
-const getUserIdFromToken = (token: string): string | null => {
-    const decodedToken = verifyToken(token);
-    const userId = decodedToken.id;
-    return "" + userId;
-    /**try {
-        if (!token || token.split(".").length !== 3) {
-            console.error("Token JWT invalide :", token);
-            return null;
-        }
-
-        const base64Url = token.split(".")[1]; 
-        const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/"); 
-        const payload = JSON.parse(atob(base64));
-
-        return payload.user_id || null;
-    } catch (error) {
-        console.error("Erreur de décodage du token :", error);
-        return null;
-    }*/
-};
-
 
 export default function PostArea(token: string) {
     console.log('postArea:  token = ' + token);
     const [likedPosts, setLikedPosts] = useState<{ [key: string]: boolean }>({});
     const [likeCounts, setLikeCounts] = useState<{ [key: string]: number }>({});
-    //const userId = getUserIdFromToken(token);
+    //const [comms, setComms] = useState<Commentaire[]>([]);
+    const [commForId, setCommForId] = useState<number>(1);
+    const [shouldPrintComm, setShouldPrintComm] = useState<boolean>(false);
     const userId = 1;
     
     const handleLike = async (msg_id: string, initialLikes: number, token: string) => {
@@ -72,6 +59,27 @@ export default function PostArea(token: string) {
 
     const fetcher = (url: string) => fetch(url).then(res => res.json().then(data => data.content));
     const { data, error, isLoading } = useSWR("/api/home/posts", fetcher);
+    const commfetcher = (url: string, postid: string) => fetch(url, {
+        method: "GET",
+        headers: {postid: postid}
+    }).then(res => res.json().then(data => data.content));
+    // Call API pour selectionner tous les commentaires relatifs au post
+    const { data : commdata, error: commerror, isLoading: commloading } = 
+        useSWR(data && shouldPrintComm ? 
+                "/api/commentaire/afficher/" + commForId : null, commfetcher);
+    
+    /*const fetchComms = async (postid: number) => {
+        console.log("comms length before = " + comms.length);
+        fetch("/api/commentaire/afficher/" + postid).then((response) => {
+            response.json().then((json) => {
+                const commentaires = json.content;
+                if (commentaires) {
+                    setComms(commentaires);
+                    console.log("commentaires length = " + comms.length);
+                }
+            })
+        })        
+    }*/
 
     if (isLoading) return <div><p>Chargement des messages...</p></div>;
     if (error) return <div><p>Erreur lors du chargement</p></div>;
@@ -118,6 +126,22 @@ export default function PostArea(token: string) {
                     </button>
                     {/* Champ pour commenter */}
                     {CommentaireInput(token, data[i].id)}
+                    <button onClick={() => {
+                        setCommForId(data[i].id);
+                        setShouldPrintComm(true);
+                    }}>Afficher commentaires</button>
+                    <h3>Commentaires</h3>
+                    {
+                        !shouldPrintComm || commForId != data[i].id ? <></> : 
+                         commloading || !commdata ? <p>Chargement</p> : 
+                        <div>
+                            {[...Array(commdata.length)].map((_, i) => (
+                                <div key={i}>
+                                <h4>{commdata[i].username} : {commdata[i].content}</h4>
+                                </div>
+                            ))}
+                        </div>
+                    }
                 </div>
             ))}
         </div>

@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import "./messages.css";
+import React from "react";
 
 interface Message {
   id: number;

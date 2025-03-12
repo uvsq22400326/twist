@@ -20,9 +20,9 @@ export default function CommentaireInput(token : string, postid: number) {
 }
 
 export async function sendComment(postid: number, commContent: string, token: string) {
-    alert("post_id = " + postid + " commContent = " + commContent + " token = " + token);
+    //alert("post_id = " + postid + " commContent = " + commContent + " token = " + token);
     // Call API pour poster le commentaire
-    const response = await fetch("/api/commentaire", {
+    const response = await fetch("/api/commentaire/publier", {
         method: "POST",
         body: JSON.stringify({
             content: commContent,
