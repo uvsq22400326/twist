@@ -13,11 +13,12 @@ export async function GET(req: Request) {
         const decodedToken = verifyToken(token);
         const userId = decodedToken.id;
 
+       
         const [following]: any = await pool.query(
             `SELECT u.id, u.username, u.profilePic 
             FROM follows f
-            JOIN users u ON f.followed_id = u.id
-            WHERE f.follower_id = ?`,
+            JOIN users u ON f.user2 = u.id  
+            WHERE f.user1 = ?`,             
             [userId]
         );
 
