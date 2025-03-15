@@ -14,7 +14,7 @@ export default function Profil() {
     const [bio, setBio] = useState("Aucune bio renseignée.");
     const [followers, setFollowers] = useState(0);
     const [following, setFollowing] = useState(0);
-    
+
     const [editMode, setEditMode] = useState(false);
     const [newBio, setNewBio] = useState("");
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -153,10 +153,10 @@ export default function Profil() {
                 }}>{bio}</p>
             )}
 
-            {/* Boutons Followers / Abonnements */}
-            <div className="follow-buttons">
-                <button className="follow-btn">Followers</button>
-                <button className="follow-btn">Abonnements</button>
+            {/* Affichage du compteur de followers / abonnements */}
+            <div className="follow-info">
+                <p><strong>{followers ?? "?"}</strong> abonnés</p>
+                <p><strong>{following ?? "?"}</strong> abonnements</p>
             </div>
 
             {/* Section des posts */}
@@ -182,7 +182,6 @@ export default function Profil() {
                     </div>
                 )}
             </div>
-
-       </div>
-);
+        </div>
+    );
 }

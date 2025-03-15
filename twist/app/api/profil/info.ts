@@ -14,19 +14,44 @@ export async function GET(req: Request) {
         const decodedToken = verifyToken(token);
         const userId = decodedToken.id;
 
-        const [rows]: any = await pool.query("SELECT bio FROM users WHERE id = ?", [userId]);
+        // 🔹 Récupération des infos utilisateur (bio + photo de profil)
+        const [userRows]: any = await pool.query(
+            "SELECT bio, profilePic FROM users WHERE id = ?",
+            [userId]
+        );
 
-        if (!rows || rows.length === 0) {
+        if (!userRows || userRows.length === 0) {
             console.error("Utilisateur non trouvé");
             return NextResponse.json({ error: "Utilisateur non trouvé" }, { status: 404 });
         }
 
-        console.log("📩 Bio récupérée :", rows[0].bio);
+        // 🔹 Récupération du nombre de followers et abonnements en utilisant la bonne table 'follows'
+        const [followersCount]: any = await pool.query(
+            "SELECT COUNT(*) AS count FROM follows WHERE user2 = ?",
+            [userId]
+        );
 
-        return NextResponse.json({ bio: rows[0].bio || "Aucune bio renseignée." }, { status: 200 });
+        const [followingCount]: any = await pool.query(
+            "SELECT COUNT(*) AS count FROM follows WHERE user1 = ?",
+            [userId]
+        );
+
+        console.log("📩 Infos récupérées :", {
+            bio: userRows[0].bio,
+            profilePic: userRows[0].profilePic,
+            followers: followersCount[0].count,
+            following: followingCount[0].count
+        });
+
+        return NextResponse.json({
+            bio: userRows[0].bio || "Aucune bio renseignée.",
+            profilePic: userRows[0].profilePic || "/icons/default-profile.png",
+            followers: followersCount[0].count || 0,
+            following: followingCount[0].count || 0
+        }, { status: 200 });
 
     } catch (error) {
         console.error("❌ Erreur serveur :", error);
-        return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
-    }
+        return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
+    }
 }
