@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useSWR from "swr";
 import "./home.css";
 import { verifyToken } from "../../lib/auth";
@@ -8,11 +8,11 @@ import React from "react";
 import CommentaireInput from "../commentaire/comment";
 
 interface Commentaire {
-    id: number;
-    content: string;
-    username: string;
-    postid: number;
-  }
+  id: number;
+  content: string;
+  username: string;
+  postid: number;
+}
 
 const follow = async (user2: string, token: string, isFollowing: boolean) => {
   await fetch(`/api/auth/follow`, {
@@ -27,21 +27,63 @@ const follow = async (user2: string, token: string, isFollowing: boolean) => {
 };
 
 export default function PostArea(token: string) {
-    console.log('postArea:  token = ' + token);
-    const [likedPosts, setLikedPosts] = useState<{ [key: string]: boolean }>({});
-    const [likeCounts, setLikeCounts] = useState<{ [key: string]: number }>({});
-    const [following, setFollowing] = useState<{ [key: string]: boolean }>({});
-    //const [comms, setComms] = useState<Commentaire[]>([]);
-    const [commForId, setCommForId] = useState<number>(1);
-    const [shouldPrintComm, setShouldPrintComm] = useState<boolean>(false);
-    const userId = 1;
+  console.log("postArea:  token = " + token);
+  const [likedPosts, setLikedPosts] = useState<{ [key: string]: boolean }>({});
+  const [likeCounts, setLikeCounts] = useState<{ [key: string]: number }>({});
+  const [following, setFollowing] = useState<{ [key: string]: boolean }>({});
+  //const [comms, setComms] = useState<Commentaire[]>([]);
+  const [commForId, setCommForId] = useState<number>(1);
+  const [shouldPrintComm, setShouldPrintComm] = useState<boolean>(false);
+  const userId = 1;
 
-    // Fonction pour extraire l'ID utilisateur depuis le token
-    const getUserIdFromToken = (token: string): string | null => {
+  // Fonction pour extraire l'ID utilisateur depuis le token
+  const getUserIdFromToken = (token: string): string | null => {
     const decodedToken = verifyToken(token);
     const userId = decodedToken.id;
     return "" + userId;
+  };
+
+  useEffect(() => {
+    const fetchInitialStates = async () => {
+      try {
+        // Fetch following state
+        const followRes = await fetch("/api/auth/following", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const followData = await followRes.json();
+        if (followRes.ok) {
+          const followingState = followData.reduce(
+            (acc: { [key: string]: boolean }, user: { id: string }) => {
+              acc[user.id] = true;
+              return acc;
+            },
+            {}
+          );
+          setFollowing(followingState);
+        }
+
+        // Fetch liked posts state
+        const likeRes = await fetch("/api/like/likedPosts", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const likeData = await likeRes.json();
+        if (likeRes.ok) {
+          const likedState = likeData.reduce(
+            (acc: { [key: string]: boolean }, post: { id: string }) => {
+              acc[post.id] = true;
+              return acc;
+            },
+            {}
+          );
+          setLikedPosts(likedState);
+        }
+      } catch (error) {
+        console.error("Error fetching initial states:", error);
+      }
     };
+
+    fetchInitialStates();
+  }, [token]);
 
   const handleLike = async (
     postId: string,
@@ -63,63 +105,71 @@ export default function PostArea(token: string) {
     }));
 
     try {
-        const res = await fetch("/api/like", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ postId }),
-        });
-        if (!res.ok) {
-          throw new Error(`HTTP error! status: ${res.status}`);
-        }
-      } catch (error) {
-        console.error("Error liking post:", error);
+      const res = await fetch("/api/like", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ postId }),
+      });
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
       }
-    };
-
-    const handleFollow = async (user2: string) => {
-        const isFollowing = following[user2] || false;
-        await follow(user2, token, isFollowing);
-        setFollowing((prev) => ({
-          ...prev,
-          [user2]: !isFollowing,
-        }));
-    };
-
-    const fetcher = (url: string) => fetch(url).then(res => res.json().then(data => data.content));
-    const { data, error, isLoading } = useSWR("/api/home/posts", fetcher);
-    const commfetcher = (url: string, postid: string) => fetch(url, {
-        method: "GET",
-        headers: {postid: postid}
-    }).then(res => res.json().then(data => data.content));
-    // Call API pour selectionner tous les commentaires relatifs au post
-    const { data : commdata, error: commerror, isLoading: commloading } = 
-        useSWR(data && shouldPrintComm ? 
-                "/api/commentaire/afficher/" + commForId : null, commfetcher);
-
-    if (isLoading)
-        return (<div>
-            <p>Chargement des messages...</p>
-        </div>
-    );
-
-    if (error) {
-        return (
-            <div>
-            <p>Erreur lors du chargement</p>
-            </div>
-        );
+    } catch (error) {
+      console.error("Error liking post:", error);
     }
-    
-    if (!data || !data.length) {
+  };
+
+  const handleFollow = async (user2: string) => {
+    const isFollowing = following[user2] || false;
+    await follow(user2, token, isFollowing);
+    setFollowing((prev) => ({
+      ...prev,
+      [user2]: !isFollowing,
+    }));
+  };
+
+  const fetcher = (url: string) =>
+    fetch(url).then((res) => res.json().then((data) => data.content));
+  const { data, error, isLoading } = useSWR("/api/home/posts", fetcher);
+  const commfetcher = (url: string, postid: string) =>
+    fetch(url, {
+      method: "GET",
+      headers: { postid: postid },
+    }).then((res) => res.json().then((data) => data.content));
+  // Call API pour selectionner tous les commentaires relatifs au post
+  const {
+    data: commdata,
+    error: commerror,
+    isLoading: commloading,
+  } = useSWR(
+    data && shouldPrintComm ? "/api/commentaire/afficher/" + commForId : null,
+    commfetcher
+  );
+
+  if (isLoading)
     return (
-        <div>
-        <p>Aucun message trouvé.</p>
-        </div>
+      <div>
+        <p>Chargement des messages...</p>
+      </div>
     );
-    }
+
+  if (error) {
+    return (
+      <div>
+        <p>Erreur lors du chargement</p>
+      </div>
+    );
+  }
+
+  if (!data || !data.length) {
+    return (
+      <div>
+        <p>Aucun message trouvé.</p>
+      </div>
+    );
+  }
 
   return (
     <div id="twist-area">
@@ -164,24 +214,32 @@ export default function PostArea(token: string) {
           </button>
           {/* Champ pour commenter */}
           {CommentaireInput(token, data[i].id)}
-            <button onClick={() => {
-                setCommForId(data[i].id);
-                setShouldPrintComm(true);
-            }}>Afficher commentaires</button>
-            <h3>Commentaires</h3>
-            {
-                !shouldPrintComm || commForId != data[i].id ? <></> : 
-                    commloading || !commdata ? <p>Chargement</p> : 
-                <div>
-                    {[...Array(commdata.length)].map((_, i) => (
-                        <div key={i}>
-                        <h4>{commdata[i].username} : {commdata[i].content}</h4>
-                        </div>
-                    ))}
+          <button
+            onClick={() => {
+              setCommForId(data[i].id);
+              setShouldPrintComm(true);
+            }}
+          >
+            Afficher commentaires
+          </button>
+          <h3>Commentaires</h3>
+          {!shouldPrintComm || commForId != data[i].id ? (
+            <></>
+          ) : commloading || !commdata ? (
+            <p>Chargement</p>
+          ) : (
+            <div>
+              {[...Array(commdata.length)].map((_, i) => (
+                <div key={i}>
+                  <h4>
+                    {commdata[i].username} : {commdata[i].content}
+                  </h4>
                 </div>
-            }
+              ))}
             </div>
-        ))}
+          )}
+        </div>
+      ))}
     </div>
   );
 }

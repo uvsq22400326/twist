@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import pool from "../../../../../lib/db";
-import { verifyToken } from "../../../../../lib/auth";
+import pool from "../../../../lib/db";
+import { verifyToken } from "../../../../lib/auth";
 
 export async function GET(req: Request) {
     try {
@@ -13,16 +13,16 @@ export async function GET(req: Request) {
         const decodedToken = verifyToken(token);
         const userId = decodedToken.id;
 
-        // Correction de la requête pour récupérer les abonnements
-        const [following]: any = await pool.query(
+        // 🔹 Récupération des abonnés (followers)
+        const [followers]: any = await pool.query(
             `SELECT u.id, u.username, u.profilePic 
             FROM follows f
-            JOIN users u ON f.user2 = u.id 
-            WHERE f.user1 = ?`,             
+            JOIN users u ON f.user1 = u.id
+            WHERE f.user2 = ?`,
             [userId]
         );
 
-        return NextResponse.json({ following });
+        return NextResponse.json({ followers });
 
     } catch (error) {
         console.error("❌ Erreur serveur :", error);
