@@ -27,6 +27,50 @@ export default function SearchPage() {
     }
   }, [query]);
 
+  useEffect(() => {
+    const fetchInitialStates = async () => {
+      try {
+        const token = sessionStorage.getItem("token");
+
+        // Fetch following state
+        const followRes = await fetch("/api/auth/following", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const followData = await followRes.json();
+        if (followRes.ok) {
+          const followingState = followData.reduce(
+            (acc: { [key: string]: boolean }, user: { id: string }) => {
+              acc[user.id] = true;
+              return acc;
+            },
+            {}
+          );
+          setFollowing(followingState);
+        }
+
+        // Fetch liked posts state
+        const likeRes = await fetch("/api/like/likedPosts", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const likeData = await likeRes.json();
+        if (likeRes.ok) {
+          const likedState = likeData.reduce(
+            (acc: { [key: string]: boolean }, post: { id: string }) => {
+              acc[post.id] = true;
+              return acc;
+            },
+            {}
+          );
+          setLikedPosts(likedState);
+        }
+      } catch (error) {
+        console.error("Error fetching initial states:", error);
+      }
+    };
+
+    fetchInitialStates();
+  }, []);
+
   const fetchResults = async (query: string) => {
     try {
       const res = await fetch(`/api/search?q=${query}`);
@@ -128,7 +172,7 @@ export default function SearchPage() {
           <a href="/messages" className="sidebar-item">
             Messages
           </a>
-          <a href="/notification" className="sidebar-item">
+          <a href="/notifications" className="sidebar-item">
             Notifications
           </a>
           <a href="/profil" className="sidebar-item">
