@@ -26,7 +26,7 @@ const follow = async (user2: string, token: string, isFollowing: boolean) => {
   });
 };
 
-export default function PostArea(token: string) {
+export default function PostArea({ token }: { token: string }) {
   console.log("postArea:  token = " + token);
   const [likedPosts, setLikedPosts] = useState<{ [key: string]: boolean }>({});
   const [likeCounts, setLikeCounts] = useState<{ [key: string]: number }>({});
