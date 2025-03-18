@@ -1,4 +1,7 @@
+import { encodeBase64 } from "bcryptjs";
 import { NextResponse } from "next/server";
+import { encode, decode } from "node-base64-image";
+import { moderationImage } from "./moderationImage";
 
 export async function moderation(content: string, file: File) {
 
@@ -23,10 +26,20 @@ export async function moderation(content: string, file: File) {
             }).then((_resp) => {
                 console.log("Modèle chargé.");
                 return _resp;
-            }).then((_resp) => {
-            const prompt = "Le message " + "\"" + content + "\"" + " est-il insultant, " 
-                + "vulgaire ou choquant ? Répondre par oui ou non" ;
+            }).then(async (_resp) => {
+                //file.
+                const image = await file.arrayBuffer().then((b) => {
+                    return Buffer.from(b).toString('base64');
+                })
+             /**   var base64 = await file.text().then((t) => {
+                    return Buffer.from(t).toString('base64');
+                }) */
+            const prompt = "Le message " + "\"" + content + "\"" 
+                 + " est-il insultant ou vulgaire ? Répondre uniquement soit 'oui' soit 'non'" ;
+            //const prompt = "Répondre 'Oui' si le message " + "\"" + content + "\"" + " ou l'image peuvent paraître insultant, gore, vulgaire ou choquant. Répondre 'Non' sinon";
             console.log("prompt = " + prompt);
+            
+            //console.log("base64 = " + base64);
             const reponseFinale = fetch(
                 "https://jealous-minne-twist-ollama-0544ea7b.koyeb.app/api/generate", {
                     method: "POST",
@@ -58,6 +71,10 @@ export async function moderation(content: string, file: File) {
                         if (words.includes("non") || words.includes("Non") ||
                              words.includes("Non.") || words.includes("non,") || 
                              words.includes("Non,")) {
+                                const modImage = await moderationImage(image);
+                                if (modImage.status != 200) {
+                                    return modImage;
+                                }
                                 return NextResponse.json(
                                     { message: "Post accepté avec succès" },
                                     { status: 200 }
