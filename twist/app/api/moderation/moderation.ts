@@ -26,15 +26,8 @@ export async function moderation(content: string, file: File) {
                 console.log("Modèle chargé.");
                 return _resp;
             }).then(async (_resp) => {
-                //file.
-                const image = await file.arrayBuffer().then((b) => {
-                    return Buffer.from(b).toString('base64');
-                })
-             /**   var base64 = await file.text().then((t) => {
-                    return Buffer.from(t).toString('base64');
-                }) */
             const prompt = "Le message " + "\"" + content + "\"" 
-                 + " est-il insultant ou vulgaire ? Répondre uniquement soit 'oui' soit 'non'" ;
+                 + " est-il insultant, vulgaire ou grossier ? Répondre 'oui' soit 'non'" ;
             //const prompt = "Répondre 'Oui' si le message " + "\"" + content + "\"" + " ou l'image peuvent paraître insultant, gore, vulgaire ou choquant. Répondre 'Non' sinon";
             console.log("prompt = " + prompt);
             
@@ -70,10 +63,15 @@ export async function moderation(content: string, file: File) {
                         if (words.includes("non") || words.includes("Non") ||
                              words.includes("Non.") || words.includes("non,") || 
                              words.includes("Non,")) {
-                                const modImage = await moderationImage(image);
-                                if (modImage.status != 200) {
-                                    return modImage;
-                                }
+                                if (file) {
+                                    const image = await file.arrayBuffer().then((b) => {
+                                        return Buffer.from(b).toString('base64');
+                                    })
+                                    const modImage = await moderationImage(image);
+                                    if (modImage.status != 200) {
+                                        return modImage;
+                                    }
+                                }                               
                                 return NextResponse.json(
                                     { message: "Post accepté avec succès" },
                                     { status: 200 }
