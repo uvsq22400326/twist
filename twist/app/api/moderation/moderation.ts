@@ -1,6 +1,5 @@
 import { encodeBase64 } from "bcryptjs";
 import { NextResponse } from "next/server";
-import { encode, decode } from "node-base64-image";
 import { moderationImage } from "./moderationImage";
 
 export async function moderation(content: string, file: File) {
