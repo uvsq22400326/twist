@@ -16,6 +16,7 @@ export default function HomePage() {
   const [errorPublier, setError] = useState("");
   const [_token, set_Token] = useState("");
   const [showMenu, setShowMenu] = useState(false);
+  const [unseenCount, setUnseenCount] = useState(0);
 
   useEffect(() => {
     const token = sessionStorage.getItem("token");
@@ -28,6 +29,30 @@ export default function HomePage() {
       set_Token(token);
     }
   }, [router]);
+
+  useEffect(() => {
+    const fetchUnseenCount = async () => {
+      const token = sessionStorage.getItem("token");
+      if (!token) return;
+
+      try {
+        const response = await fetch("/api/notifications/unseenCount", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await response.json();
+        if (response.ok) {
+          setUnseenCount(data.count);
+        }
+      } catch (error) {
+        console.error(
+          "Erreur lors de la récupération des notifications non lues :",
+          error
+        );
+      }
+    };
+
+    fetchUnseenCount();
+  }, []);
 
   const handleLogout = () => {
     sessionStorage.removeItem("token");
@@ -113,6 +138,9 @@ export default function HomePage() {
           </a>
           <a href="/notifications" className="sidebar-item">
             Notifications
+            {unseenCount > 0 && (
+              <span className="notification-dot">{unseenCount}</span>
+            )}
           </a>
           <a href="/profil" className="sidebar-item">
             Profil
@@ -191,7 +219,7 @@ export default function HomePage() {
         </div>
 
         {errorPublier && <p className="error-text">{errorPublier}</p>}
-        {PostArea(_token)}
+        {_token ? <PostArea token={_token} /> : <p>Chargement...</p>}
       </main>
     </div>
   );
