@@ -14,7 +14,6 @@ export async function GET(req: Request) {
         const decodedToken = verifyToken(token);
         const userId = decodedToken.id;
 
-        // 🔹 Récupération des infos utilisateur (bio + photo de profil + username)
         const [userRows]: any = await pool.query(
             "SELECT username, bio, profilePic FROM users WHERE id = ?",
             [userId]
@@ -25,7 +24,6 @@ export async function GET(req: Request) {
             return NextResponse.json({ error: "Utilisateur non trouvé" }, { status: 404 });
         }
 
-        // 🔹 Récupération du nombre de followers et abonnements en utilisant la table 'follows'
         const [followersCount]: any = await pool.query(
             "SELECT COUNT(*) AS count FROM follows WHERE user2 = ?",
             [userId]
@@ -46,8 +44,8 @@ export async function GET(req: Request) {
 
         return NextResponse.json({
             username: userRows[0].username || "Utilisateur",
-            bio: userRows[0].bio || "Aucune bio renseignée.",
-            profilePic: userRows[0].profilePic || "/icons/default-profile.png",
+            bio: userRows[0].bio || "",
+            profilePic: userRows[0].profilePic || "/default-profile.png",
             followers: followersCount[0].count || 0,
             following: followingCount[0].count || 0
         }, { status: 200 });

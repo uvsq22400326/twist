@@ -14,24 +14,26 @@ export async function GET(request: Request) {
         const userId = decodedToken.id;
 
         connection = await pool.getConnection();
-        const [rows, _] = await connection.query(
+
+        const [rows]: any = await connection.query(
             "SELECT firstName, lastName, email FROM users WHERE id = ?",
             [userId]
         );
-        
-        if (!rows) {
+
+        if (rows.length === 0) {
             return NextResponse.json({ error: "Utilisateur non trouvé" }, { status: 404 });
         }
 
         return NextResponse.json({
-            //name: `${rows[0].firstName} ${rows[0].lastName}`,
-            //email: rows[0].email,
             content: rows
-            
         });
 
     } catch (error) {
-        console.error("Erreur API profil :", error);
+        console.error("Erreur SQL :", error);
         return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
+    } finally {
+        if (connection) {
+            connection.release(); 
+        }
     }
 }
