@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 export async function moderationImage(image:string) {
-    const prompt = "L'image est-elle complètement sûre ? Répondre par 'oui' ou 'non' puis détailler"
+    const prompt = "Does this image contains firearms or weapons or blood ? Answer 'yes' or 'no'"
     const response = await fetch(
         "https://jealous-minne-twist-ollama-0544ea7b.koyeb.app/api/generate", {
             method: "POST",
@@ -23,9 +23,9 @@ export async function moderationImage(image:string) {
                 } else {
                     const rstring = rjson.response as string;
                     const words = rstring.split(" ");
-                        if (words.includes("non") || words.includes("Non") ||
-                             words.includes("Non.") || words.includes("non,") || 
-                             words.includes("Non,")) {
+                        if (words.includes("yes") || words.includes("Yes") ||
+                             words.includes("Yes.") || words.includes("yes,") || 
+                             words.includes("Yes,")) {
                                 return NextResponse.json(
                                     { error: "L'image a été considérée comme inappropriée" },
                                     { status: 201 }
