@@ -29,6 +29,14 @@ export async function GET(req: Request) {
             [userId, conversationId, conversationId, userId]
           );
           
+          const [userInfo]: any[] = await pool.query("SELECT username, profilePic FROM users WHERE id = ?",
+            [conversationId]
+        );
+        
+        const profilePic = userInfo[0].profilePic || "/default-profile.png";
+        
+        return NextResponse.json({ messages, profilePic, username: userInfo[0].username }, { status: 200 });
+        
 
         console.log("Messages récupérés :", messages); 
 
@@ -37,6 +45,8 @@ export async function GET(req: Request) {
         console.error("Erreur serveur :", error);
         return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
     }
+
+    
 }
 
 

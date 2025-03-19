@@ -18,6 +18,37 @@ export default function HomePage() {
   const [showMenu, setShowMenu] = useState(false);
   const [unseenCount, setUnseenCount] = useState(0);
 
+  const [username, setUsername] = useState("Utilisateur");
+  const [profileImage, setProfileImage] = useState("/default-profile.png");
+  
+  const fetchUserProfile = async () => {
+      const token = sessionStorage.getItem("token");
+  
+      if (!token) return;
+  
+      try {
+          const res = await fetch("/api/profil/info", {
+              headers: { Authorization: `Bearer ${token}` },
+          });
+  
+          if (!res.ok) {
+              throw new Error("Impossible de récupérer les infos du profil");
+          }
+  
+          const data = await res.json();
+          console.log("✅ Profil récupéré :", data);
+  
+          setUsername(data.username || "Utilisateur");
+          setProfileImage(data.profileImage || "/default-profile.png");
+      } catch (error) {
+          console.error("❌ Erreur lors du chargement du profil :", error);
+      }
+  };
+  
+  useEffect(() => {
+      fetchUserProfile();
+  }, []);
+  
   useEffect(() => {
     const token = sessionStorage.getItem("token");
     console.log("Token récupéré depuis sessionStorage :", token);
@@ -147,24 +178,37 @@ export default function HomePage() {
           </a>
         </nav>
       </aside>
-
       <header>
-        <input
-          type="text"
-          placeholder="Rechercher..."
-          onKeyDown={handleSearch}
+    <input
+      type="text"
+      placeholder="Rechercher..."
+      onKeyDown={handleSearch}
+    />
+    <div className="user-menu">
+      
+      {/* 🔥 Avatar + Nom */}
+      <div className="user-info" onClick={() => router.push("/profil")}>
+        <img 
+          src={profileImage || "/default-profile.png"} 
+          alt="Profil" 
+          className="header-profile-pic" 
         />
-        <div className="user-menu">
-          <span className="menu-icon" onClick={() => setShowMenu(!showMenu)}>
-            ⋮
-          </span>
-          {showMenu && (
-            <div className="dropdown-menu">
-              <button onClick={handleLogout}>Se déconnecter</button>
-            </div>
-          )}
+        <span className="header-username">{username || "Utilisateur"}</span>
+      </div>
+
+      {/* 🔥 3 points bien à droite */}
+      <span className="menu-icon" onClick={() => setShowMenu(!showMenu)}>
+        ⋮
+      </span>
+
+      {showMenu && (
+        <div className="dropdown-menu">
+          <button onClick={handleLogout}>Se déconnecter</button>
         </div>
-      </header>
+      )}
+    </div>
+</header>
+
 
       <main id="twist-area">
         <div className="tweet-box">

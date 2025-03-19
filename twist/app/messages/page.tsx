@@ -15,7 +15,9 @@ interface Message {
 
 interface Conversation {
   id: number;
-  participantEmail: string;
+  participantUsername: string;
+  username?: string;
+  profilePic?: string;
 }
 
 export default function MessagesPage() {
@@ -24,13 +26,17 @@ export default function MessagesPage() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [selectedConversation, setSelectedConversation] = useState<number | null>(null);
-  const [selectedUserEmail, setSelectedUserEmail] = useState<string | null>(null);
+  const [selectedUserUsername, setSelectedUserUsername] = useState<string | null>(null);
   const [newMessage, setNewMessage] = useState("");
-  const [newChatEmail, setNewChatEmail] = useState("");
+  const [newChatUsername, setNewChatUsername] = useState("");
   const [showNewChatPopup, setShowNewChatPopup] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null); 
+  const [searchResults, setSearchResults] = useState<Conversation[]>([]);
+  const [selectedUserProfilePic, setSelectedUserProfilePic] = useState<string>("/default-profile.png");
+
+
 
   useEffect(() => {
     const token = sessionStorage.getItem("token");
@@ -64,36 +70,40 @@ export default function MessagesPage() {
   }, [userId]);
 
 
-  const selectConversation = async (conversationId: number, participantEmail: string) => {
+  const selectConversation = async (conversationId: number, participantUsername: string) => {
     if (!conversationId) return;
     setSelectedConversation(conversationId);
-    setSelectedUserEmail(participantEmail);
-    setShowNewChatPopup(false); 
+    setSelectedUserUsername(participantUsername);
+    
+  setSearchResults([]); 
+  setShowNewChatPopup(false); 
 
     try {
-      const res = await fetch(`/api/messages/${conversationId}`, {
-        headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` },
-      });
+        const res = await fetch(`/api/messages/${conversationId}`, {
+            headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` },
+        });
 
-      const data = await res.json();
-      if (res.ok && data.messages) {
-        setMessages(data.messages.length > 0 ? data.messages : []);
-
-
-        setTimeout(() => {
-          messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-        }, 100);
-      }
+        const data = await res.json();
+        if (res.ok && data.messages) {
+            setMessages(data.messages.length > 0 ? data.messages : []);
+            setSelectedUserProfilePic(data.profilePic || "/default-profile.png"); 
+        }
     } catch (error) {
-      console.error("Erreur lors de la récupération des messages :", error);
+        console.error("Erreur lors de la récupération des messages :", error);
     }
-  };
+};
 
 
   const openNewChatPopup = () => {
     setShowNewChatPopup(true);
   };
 
+
+  const closeNewChatPopup = () => {
+    setSearchResults([]); 
+
+    setShowNewChatPopup(false);
+  };
 
   const sendMessage = async () => {
     if (!newMessage.trim() && !selectedFile) return;
@@ -103,78 +113,77 @@ export default function MessagesPage() {
     if (selectedFile) formData.append("file", selectedFile);
 
     try {
-      const res = await fetch(`/api/messages/${selectedConversation}`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` },
-        body: formData,
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        setMessages([
-          ...messages,
-          {
-            id: Date.now(),
-            sender_id: userId!,
-            content: newMessage || "",
-            media_url: data.mediaUrl || null,
-            created_at: "" + Date.now(),
-          },
-        ]);
-        setNewMessage("");
-        setSelectedFile(null);
-        setPreviewUrl(null);
-
-
-        setTimeout(() => {
-          messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-        }, 100);
-      } else {
-        console.error("Erreur serveur :", data.error);
-      }
-    } catch (error) {
-      console.error("Erreur d'envoi :", error);
-    }
-  };
-  const startConversation = async () => {
-    if (!newChatEmail.trim()) return;
-  
-    try {
-      const token = sessionStorage.getItem("token");
-  
-
-      const existingConv = conversations.find(conv => conv.participantEmail === newChatEmail);
-  
-      if (existingConv) {
-        selectConversation(existingConv.id, newChatEmail);
-      } else {
-        const res = await fetch("/api/messages/conversations", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ email: newChatEmail }),
+        const res = await fetch(`/api/messages/${selectedConversation}`, {
+            method: "POST",
+            headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` },
+            body: formData,
         });
-  
+
         const data = await res.json();
-        console.log("Réponse API :", data);
-  
-        if (res.ok && data.conversationId) {
-          selectConversation(data.conversationId, newChatEmail);
+
+        if (res.ok) {
+            setMessages((prevMessages) => [
+                ...prevMessages,
+                {
+                    id: Date.now(),
+                    sender_id: userId!,
+                    content: newMessage || "",
+                    media_url: data.mediaUrl || null,
+                    created_at: "" + Date.now(),
+                },
+            ]);
+
+            const conversationExists = conversations.some(
+                (conv) => conv.id === selectedConversation
+            );
+
+            if (!conversationExists) {
+                setConversations((prevConversations) => [
+                    ...prevConversations,
+                    {
+                        id: selectedConversation!,
+                        participantUsername: selectedUserUsername!,
+                        profilePic: selectedUserProfilePic, 
+                    },
+                ]);
+            }
+
+            setNewMessage("");
+            setSelectedFile(null);
+            setPreviewUrl(null);
         } else {
-          console.error("Erreur lors de la création de la conversation :", data);
+            console.error("Erreur serveur :", data.error);
         }
-      }
-  
-      setShowNewChatPopup(false);
-      setNewChatEmail("");
-  
     } catch (error) {
-      console.error("Erreur lors de la requête API :", error);
+        console.error("Erreur d'envoi :", error);
     }
-  };
+};
+
+
+  const startConversation = async () => {
+    if (!newChatUsername.trim()) return;
+
+    try {
+        const token = sessionStorage.getItem("token");
+
+        const res = await fetch(`/api/messages/search?username=${newChatUsername}`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.users.length > 0) {
+            setSearchResults(data.users);
+        } else {
+            setSearchResults([]);
+            console.error("Aucun utilisateur trouvé");
+        }
+
+    } catch (error) {
+        console.error("Erreur lors de la recherche :", error);
+    }
+};
+
   
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -186,10 +195,15 @@ export default function MessagesPage() {
   
   
   return (
-    <div className="messages-container">
+    <div className={`messages-container ${selectedConversation ? "conversation-open" : ""}`}>
       <div className="conversations-panel">
         <div className="header">
-          <h2>Messages</h2>
+        <h2>
+  <a href="/messages" className="messages-link">
+    Messages
+  </a>
+</h2>
+
           <img
             src="/icons/messages.png"
             alt="Nouveau message"
@@ -202,8 +216,13 @@ export default function MessagesPage() {
           <p className="empty-state">Aucune conversation disponible.</p>
         ) : (
           conversations.map((conv) => (
-            <div key={conv.id} className="conversation-item" onClick={() => selectConversation(conv.id, conv.participantEmail)}>
-              <p className="conv-name">{conv.participantEmail || "Utilisateur inconnu"}</p>
+            <div key={conv.id} className="conversation-item" onClick={() => selectConversation(conv.id, conv.participantUsername)}>
+              <img 
+      src={conv.profilePic} 
+      alt="Photo de profil" 
+      className="conversation-profile-pic" 
+    />
+              <p className="conv-name">{conv.participantUsername || "Utilisateur inconnu"}</p>
             </div>
           ))
         )}
@@ -212,8 +231,16 @@ export default function MessagesPage() {
       <div className="chat-panel">
         {selectedConversation ? (
           <>
+          <div className="chat-header">
+    <button className="back-arrow" onClick={() => setSelectedConversation(null)}>
+        ←
+    </button>
+          <img src={selectedUserProfilePic} alt="Photo de profil" className="profile-pic" />
+
+    <span className="chat-username">{selectedUserUsername}</span>
+</div>
             <div className="chat-messages">
-              {messages.map((msg) => (
+              {[...messages].reverse().map((msg) => (
                 <div key={msg.id} className={`message ${msg.sender_id === userId ? "sent" : "received"}`}>
                   {msg.media_url ? (
                     <>
@@ -254,13 +281,15 @@ export default function MessagesPage() {
             </div>
           </>
         ) : (
-          conversations.length === 0 && (
+          
             <div className="welcome-message">
-              <h2>Bienvenue dans ta messagerie !</h2>
-              <p>Ici, c'est que du privé : envoie ton premier message et commence la discussion en toute simplicité.</p>
+              <h2>Aucun message sélectionné</h2>
+              <p>Tu veux parler à quelqu'un? Raconter ta vie même tout le monde s'en fou? </p>
+              <p>Tu es au bon endroit mon ami.
+              </p>
               <button className="new-message-btn" onClick={openNewChatPopup}>Nouveau message</button>
             </div>
-          )
+          
         )}
       </div>
       {/*machin popup nouv conv*/}
@@ -268,10 +297,24 @@ export default function MessagesPage() {
         <div className="new-chat-popup">
           <div className="popup-content">
             <div className="popup-header">
-              <button className="close-popup" onClick={() => setShowNewChatPopup(false)}>✕</button>
-              <h2 className="popup-title">Nouveau message</h2>
+            <button className="close-popup" onClick={closeNewChatPopup}>✕</button>
+            <h2 className="popup-title">Nouveau message</h2>
             </div>
-            <input type="text" placeholder="Rechercher un email..." value={newChatEmail} onChange={(e) => setNewChatEmail(e.target.value)} />
+            <input type="text" placeholder="Tu parles trop..." value={newChatUsername} onChange={(e) => setNewChatUsername(e.target.value)} />
+            
+{searchResults.length > 0 && (
+  <div className="search-results">
+    {searchResults.map((user) => (
+      <div 
+        key={user.id} 
+        className="search-user" 
+        onClick={() => user.username && selectConversation(user.id, user.username)}
+      >
+        {user.username}
+      </div>
+    ))}
+  </div>
+)}
             <button onClick={startConversation}>Envoyer un message</button>
             </div>
         </div>

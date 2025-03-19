@@ -3,6 +3,7 @@
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import "../grid.css";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import "./register.css";
 import React from "react";
 
@@ -19,7 +20,26 @@ export default function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [message, setMessage] = useState("");
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
+  const [showTermsModal, setShowTermsModal] = useState(false);
+
+
+  function checkPasswordStrength(password: string) {
+    const errors: string[] = [];
+    if (password.length < 8) errors.push("Au moins 8 caractères.");
+    if (!/[A-Z]/.test(password)) errors.push("Une majuscule requise.");
+    if (!/[a-z]/.test(password)) errors.push("Une minuscule requise.");
+    if (!/[0-9]/.test(password)) errors.push("Un chiffre requis.");
+    if (!/[!@#$%^&*(),.?":{}|<>_-]/.test(password)) errors.push("Un caractère spécial requis.");
+    
+    setPasswordErrors(errors);
+  }
+
   const [error, setError] = useState("");
+
 
   async function handleRegister(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -30,6 +50,10 @@ export default function RegisterPage() {
     }
     if (password !== confirmPassword) {
       setError("Les mots de passe ne correspondent pas.");
+      return;
+    }
+    if (passwordErrors.length > 0) {
+      setMessage("Le mot de passe n'est pas assez sécurisé.");
       return;
     }
     if (parseInt(birthYear) > 2011) {
@@ -65,7 +89,6 @@ export default function RegisterPage() {
         return;
       }
 
-      setMessage("Compte créé avec succès ! Redirection...");
       setTimeout(() => router.push("/login"), 2000);
     } catch (error: any) {
       console.error("Registration error:", error);
@@ -156,51 +179,85 @@ export default function RegisterPage() {
             </select>
           </div>
 
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+          <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
 
+          <div className="password-container">
           <input
-            type="password"
-            placeholder="Mot de passe"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+  type={showPassword ? "text" : "password"}
+  placeholder="Mot de passe"
+  value={password}
+  onChange={(e) => { setPassword(e.target.value); checkPasswordStrength(e.target.value); }}
+  required
+  autoComplete="new-password" 
+  style={{ WebkitTextSecurity: "disc" } as any} 
+/>
+
+            <span className="password-toggle" onClick={() => setShowPassword(!showPassword)}>
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </span>
+          </div>
+          
+          {passwordErrors.length > 0 && (
+            <ul className="password-errors">
+              {passwordErrors.map((error, i) => <li key={i}>{error}</li>)}
+            </ul>
+          )}
+
+          {/* Champ confirmation mot de passe */}
+          <div className="password-container">
           <input
-            type="password"
-            placeholder="Confirmer le mot de passe"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-          />
+  type={showConfirmPassword ? "text" : "password"}
+  placeholder="Confirmer le mot de passe"
+  value={confirmPassword}
+  onChange={(e) => setConfirmPassword(e.target.value)}
+  required
+  autoComplete="new-password"
+  style={{ WebkitTextSecurity: "disc" } as any}
+/>
+
+            <span className="password-toggle" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+              {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+            </span>
+          </div>
 
           <div className="terms-container">
-            <input
-              id="terms-checkbox"
-              type="checkbox"
-              checked={termsAccepted}
-              onChange={(e) => setTermsAccepted(e.target.checked)} 
-            />
-            <label>
-              J’accepte les{" "}
-              <a href="#" className="register-link">
-                termes & conditions
-              </a>
-            </label>
-          </div>
+  <input type="checkbox" id="terms" checked={termsAccepted} onChange={(e) => setTermsAccepted(e.target.checked)} />
+  <label htmlFor="terms">
+    J’accepte les{" "}
+    <a className="terms-link" onClick={() => setShowTermsModal(true)}>termes & conditions</a>
+  </label>
+</div>
+
+{showTermsModal && (
+  <div className="modal-overlay">
+    <div className="modal-content">
+      <h2>Conditions d'utilisation</h2>
+      <p>Bienvenue sur Twist ! Avant de créer un compte, veuillez lire et accepter nos conditions :</p>
+      <ul>
+        <li>Vous devez avoir au moins 13 ans pour utiliser Twist.</li>
+        <li>Le contenu inapproprié, haineux ou illégal est interdit.</li>
+        <li>Protégez vos informations personnelles et celles des autres.</li>
+        <li>Twist se réserve le droit de suspendre ou supprimer tout compte en cas de violation.</li>
+      </ul>
+      <button className="close-modal" onClick={() => setShowTermsModal(false)}>Fermer</button>
+    </div>
+  </div>
+)}
+
 
           <button type="submit" className="register-button">
             Créer un compte
           </button>
         </form>
 
-        {message && <p className="message success">{message}</p>}
+
+        {/* Lien vers le login */}
+        <p className="already-account">Déjà un compte ? <a href="/login">Connecte-toi</a></p>
+
+        {message && <p className="message">{message}</p>}
+
         {error && <p className="message error">{error}</p>}
+
       </div>
     </div>
   );

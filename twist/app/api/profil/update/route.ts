@@ -15,25 +15,23 @@ export async function POST(req: Request) {
 
         let bio = null;
         let profilePicUrl = null;
+        let removeProfilePic = false;
 
-        // 🔹 Si c'est une requête JSON, on met à jour la bio
-        if (contentType?.includes("application/json")) {
-            const { bio: newBio } = await req.json();
-            if (newBio) {
-                bio = newBio;
-            }
-        } 
-        
-        // 🔹 Si c'est une requête FormData, on met à jour l'image de profil
-        else if (contentType?.includes("multipart/form-data")) {
+        if (contentType?.includes("multipart/form-data")) {
             const data = await req.formData();
             const file = data.get("file") as File | null;
+            const newBio = data.get("bio") as string | null;
+            removeProfilePic = data.get("removeProfilePic") === "true";
+
+            if (newBio !== null) {
+                bio = newBio;
+            }
 
             if (file) {
                 const bytes = await file.arrayBuffer();
                 const buffer = Buffer.from(bytes);
 
-                console.log("🔄 Upload sur Cloudinary en cours...");
+                console.log("📸 Upload image Cloudinary...");
 
                 const result = await new Promise((resolve, reject) => {
                     const stream = cloudinary.uploader.upload_stream(
@@ -56,12 +54,25 @@ export async function POST(req: Request) {
                 });
 
                 profilePicUrl = (result as any).secure_url;
+
+                // 🔥 Supprime l'ancienne photo de Cloudinary
+                const [userRows]: any = await pool.query("SELECT profilePic FROM users WHERE id = ?", [userId]);
+                const oldProfilePic = userRows?.[0]?.profilePic;
+
+                if (oldProfilePic && oldProfilePic.includes("cloudinary.com")) {
+                    const publicId = oldProfilePic.split("/").pop()?.split(".")[0]; 
+                    await cloudinary.uploader.destroy(`profile_pictures/${publicId}`);
+                    console.log("🗑️ Ancienne photo supprimée de Cloudinary");
+                }
             }
-        } else {
-            return NextResponse.json({ error: "Type de contenu invalide" }, { status: 400 });
         }
 
-        // ✅ Mise à jour de la base de données
+        // 🔥 Supprime la photo de profil si demandé
+        if (removeProfilePic) {
+            await pool.query("UPDATE users SET profilePic = NULL WHERE id = ?", [userId]);
+        }
+
+        // ✅ Met à jour la bio et la photo de profil
         if (bio !== null) {
             await pool.query("UPDATE users SET bio = ? WHERE id = ?", [bio, userId]);
         }
@@ -74,11 +85,47 @@ export async function POST(req: Request) {
         return NextResponse.json({ 
             message: "Mise à jour réussie", 
             bio, 
-            profilePic: profilePicUrl 
+            profilePic: removeProfilePic ? null : profilePicUrl 
         }, { status: 200 });
 
     } catch (error) {
         console.error("❌ Erreur serveur :", error);
-        return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
-    }
+        return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
+    }
+}
+
+export async function DELETE(req: Request) {
+    try {
+        const token = req.headers.get("Authorization")?.split(" ")[1];
+        if (!token) return NextResponse.json({ error: "Token manquant" }, { status: 401 });
+
+        const decodedToken = verifyToken(token);
+        const userId = decodedToken.id;
+
+        // 🟢 Vérifie si l'utilisateur a une photo actuelle
+        const [rows]: any = await pool.query("SELECT profilePic FROM users WHERE id = ?", [userId]);
+        const currentProfilePic = rows[0]?.profilePic;
+
+        if (!currentProfilePic || currentProfilePic === "/default-profile.png") {
+            return NextResponse.json({ error: "Aucune photo à supprimer" }, { status: 400 });
+        }
+
+        // 🟢 Supprime l'image de Cloudinary si ce n'est pas la par défaut
+        if (currentProfilePic.includes("cloudinary.com")) {
+            const publicId = currentProfilePic.split("/").pop()?.split(".")[0]; // Récupère l'ID Cloudinary
+            await cloudinary.uploader.destroy(`profile_pictures/${publicId}`);
+        }
+
+        // 🟢 Met à jour la BD pour mettre la photo par défaut
+        await pool.query("UPDATE users SET profilePic = ? WHERE id = ?", ["/default-profile.png", userId]);
+
+        return NextResponse.json({ 
+            message: "Photo de profil supprimée avec succès", 
+            profilePic: "/default-profile.png" 
+        }, { status: 200 });
+
+    } catch (error) {
+        console.error("❌ Erreur serveur :", error);
+        return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
+    }
 }

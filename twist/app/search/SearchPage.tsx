@@ -72,6 +72,7 @@ export default function SearchPage() {
     fetchInitialStates();
   }, []);
 
+
   useEffect(() => {
     const fetchUnseenCount = async () => {
       const token = sessionStorage.getItem("token");
@@ -95,6 +96,7 @@ export default function SearchPage() {
 
     fetchUnseenCount();
   }, []);
+
 
   const fetchResults = async (query: string) => {
     try {

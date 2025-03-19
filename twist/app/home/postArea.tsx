@@ -34,16 +34,18 @@ export default function PostArea({ token }: { token: string }) {
   //const [comms, setComms] = useState<Commentaire[]>([]);
   const [commForId, setCommForId] = useState<number>(1);
   const [shouldPrintComm, setShouldPrintComm] = useState<boolean>(false);
+
   const [userId, setUserId] = useState<string | null>(null);
+
 
   // Fonction pour extraire l'ID utilisateur depuis le token
   const getUserIdFromToken = (token: string): string | null => {
-    const decodedToken = verifyToken(token);
+    const decodedToken = verifyToken(token
     const userId = decodedToken.id;
     return "" + userId;
   };
 
-  useEffect(() => {
+  useEffect(() => 
     if (!token) return;
 
     try {
@@ -60,7 +62,7 @@ export default function PostArea({ token }: { token: string }) {
     }
   }, [token]);
 
-  useEffect(() => {
+  useEffect(() => 
     const fetchInitialStates = async () => {
       try {
         // Fetch following state
@@ -146,6 +148,7 @@ export default function PostArea({ token }: { token: string }) {
       [user2]: !isFollowing,
     }));
   };
+
 
   const fetcher = (url: string) =>
     fetch(url).then((res) => res.json().then((data) => data.content));

@@ -201,6 +201,99 @@ header input::placeholder {
   margin: auto;
 }
 
+.post-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 20px; /* Espacement entre les icônes */
+  margin-top: 10px;
+}
+
+.like-button, .comment-button {
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: #71767b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: color 0.3s ease;
+}
+
+.like-button:hover{
+  color: #ff0000;
+}
+.like-button:hover .heart-icon {
+  fill: #e0245e;
+}
+
+/* Quand c'est liké, il reste rouge */
+.like-button.liked {
+  color: #e0245e;
+
+}
+.like-button.liked .heart-icon {
+  fill: #e0245e;
+  transform: scale(1.2);
+  animation: pop 0.3s ease;
+}
+.comment-button:hover {
+  color: #1da1f2;
+}
+
+.comment-button .comment-icon {
+  width: 22px;
+  height: 22px;
+  fill: #71767b;
+  transition: fill 0.3s ease;
+}
+
+/* 🔵 Passe en bleu au survol */
+.comment-button:hover {
+  color: #1da1f2;
+}
+
+.comment-button:hover .comment-icon {
+  fill: #1da1f2;
+}
+
+
+.icon {
+  width: 20px;
+  height: 20px;
+  fill: #71767b;
+  transition: fill 0.3s ease;
+}
+
+
+
+.comments-section {
+  margin-top: 10px;
+  padding: 10px;
+  background: #111;
+  border-radius: 8px;
+}
+
+.comment {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 0;
+  border-bottom: 1px solid #2f3336;
+}
+
+.comment p {
+  margin: 2px 0;
+  font-size: 14px;
+  color: #e7e9ea;
+}
+
+.comment strong {
+  font-size: 14px;
+  color: white;
+}
+
+
 .post-box {
   background-color: #000;
   padding: 15px;
@@ -238,6 +331,67 @@ header input::placeholder {
 .follow-button:hover {
   background: #1da1f2;
   color: white;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  gap: 8px;
+}
+
+.header-profile-pic {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.header-username {
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+}
+
+.user-menu {
+  justify-content: flex-end; 
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.menu-icon {
+
+  font-size: 20px;
+  cursor: pointer;
+  color: #e7e9ea;
+  padding: 5px;
+  transition: 0.3s;
+  margin-left: auto; 
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 50px;
+  right: 10px;
+  background: #000;
+  border: 1px solid #222;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.dropdown-menu button {
+  background: transparent;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  cursor: pointer;
+  font-size: 14px;
+  text-align: left;
+}
+
+.dropdown-menu button:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 @media only screen and (max-width: 768px) {
@@ -306,10 +460,6 @@ header input::placeholder {
   overflow: hidden;
 }
 
-.user-menu {
-  position: relative;
-  display: inline-block;
-}
 
 .menu-icon {
   font-size: 20px;
@@ -421,10 +571,10 @@ header input::placeholder {
 .user-item {
   display: flex;
   align-items: center;
-  justify-content: space-between; /* Ensure the follow button is on the right */
-  gap: 10px;
-  padding: 10px 0;
-  border-bottom: 1px solid #2f3336; /* Add a bottom border for better visibility */
+  justify-content: space-between;
+  gap: 1px;
+  padding: 100px 0;
+  border-bottom: 1px solid #2f3336; 
 }
 
 .user-avatar {
@@ -434,7 +584,7 @@ header input::placeholder {
 }
 
 .user-item span {
-  flex-grow: 1; /* Ensure the username takes up available space */
+  flex-grow: 1;
 }
 
 .follow-button {
