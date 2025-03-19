@@ -26,6 +26,13 @@ export async function POST(req: Request) {
 
     const user = (userResult as any[])[0];
 
+    if (!user.email_verified) {
+      return NextResponse.json(
+        { error: "Veuillez vérifier votre email avant de vous connecter." },
+        { status: 401 }
+      );
+    }
+
     const isPasswordValid = await bcrypt.compare(password, user.password);
     console.log("bcrypt");
 
