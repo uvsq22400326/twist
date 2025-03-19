@@ -4,6 +4,7 @@ import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import "../grid.css";
 import "./register.css";
+import React from "react";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -180,9 +181,10 @@ export default function RegisterPage() {
 
           <div className="terms-container">
             <input
+              id="terms-checkbox"
               type="checkbox"
               checked={termsAccepted}
-              onChange={(e) => setTermsAccepted(e.target.checked)}
+              onChange={(e) => setTermsAccepted(e.target.checked)} 
             />
             <label>
               J’accepte les{" "}
