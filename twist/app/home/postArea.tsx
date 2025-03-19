@@ -40,12 +40,12 @@ export default function PostArea({ token }: { token: string }) {
 
   // Fonction pour extraire l'ID utilisateur depuis le token
   const getUserIdFromToken = (token: string): string | null => {
-    const decodedToken = verifyToken(token
+    const decodedToken = verifyToken(token);
     const userId = decodedToken.id;
     return "" + userId;
   };
 
-  useEffect(() => 
+  useEffect(() => {
     if (!token) return;
 
     try {
@@ -62,7 +62,7 @@ export default function PostArea({ token }: { token: string }) {
     }
   }, [token]);
 
-  useEffect(() => 
+  useEffect(() => {
     const fetchInitialStates = async () => {
       try {
         // Fetch following state

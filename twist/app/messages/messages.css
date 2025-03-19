@@ -336,7 +336,7 @@
   }
 
   .back-arrow {
-    display: none; /* ❌ Par défaut, caché sur PC */
+    display: none; 
     background: none;
     border: none;
     color: white;
@@ -349,7 +349,7 @@
 @media (max-width: 768px) {
     .messages-container {
         flex-direction: column;
-        margin-top: -70px;
+        margin-top: 0; 
 
     }
 
