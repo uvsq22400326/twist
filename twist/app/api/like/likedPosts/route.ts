@@ -14,6 +14,7 @@ export async function GET(req: Request) {
     const userId = decodedToken.id;
 
     const [rows] = await pool.query(
+
         `SELECT posts.id, users.username, posts.content, posts.media_url, posts.created_at
          FROM likes
          INNER JOIN posts ON likes.post_id = posts.id
@@ -24,9 +25,12 @@ export async function GET(req: Request) {
     );
     
     
+
     return NextResponse.json(rows, { status: 200 });
   } catch (error) {
     console.error("Erreur serveur :", error);
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
   }
+
 }
+

@@ -26,7 +26,7 @@ const follow = async (user2: string, token: string, isFollowing: boolean) => {
   });
 };
 
-export default function PostArea(token: string) {
+export default function PostArea({ token }: { token: string }) {
   console.log("postArea:  token = " + token);
   const [likedPosts, setLikedPosts] = useState<{ [key: string]: boolean }>({});
   const [likeCounts, setLikeCounts] = useState<{ [key: string]: number }>({});
@@ -34,16 +34,35 @@ export default function PostArea(token: string) {
   //const [comms, setComms] = useState<Commentaire[]>([]);
   const [commForId, setCommForId] = useState<number>(1);
   const [shouldPrintComm, setShouldPrintComm] = useState<boolean>(false);
-  const userId = 1;
+
+  const [userId, setUserId] = useState<string | null>(null);
+
 
   // Fonction pour extraire l'ID utilisateur depuis le token
   const getUserIdFromToken = (token: string): string | null => {
-    const decodedToken = verifyToken(token);
+    const decodedToken = verifyToken(token
     const userId = decodedToken.id;
     return "" + userId;
   };
 
-  useEffect(() => {
+  useEffect(() => 
+    if (!token) return;
+
+    try {
+      // Safe parsing of JWT token without calling verifyToken
+      const tokenParts = token.split(".");
+      if (tokenParts.length === 3) {
+        const payload = JSON.parse(atob(tokenParts[1]));
+        if (payload && payload.id) {
+          setUserId(String(payload.id));
+        }
+      }
+    } catch (error) {
+      console.error("Error extracting user ID from token:", error);
+    }
+  }, [token]);
+
+  useEffect(() => 
     const fetchInitialStates = async () => {
       try {
         // Fetch following state
@@ -130,6 +149,7 @@ export default function PostArea(token: string) {
     }));
   };
 
+
   const fetcher = (url: string) =>
     fetch(url).then((res) => res.json().then((data) => data.content));
   const { data, error, isLoading } = useSWR("/api/home/posts", fetcher);
@@ -178,7 +198,7 @@ export default function PostArea(token: string) {
           <button
             className="follow-button"
             onClick={() => handleFollow(data[i].user_id)}
-            disabled={data[i].user_id === userId} // Empêche l'auto-follow
+            disabled={Number(data[i].user_id) === Number(userId)} // Compare as numbers
           >
             {following[data[i].user_id] ? "Unfollow" : "Follow"}
           </button>

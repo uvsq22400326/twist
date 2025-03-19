@@ -1,72 +1,76 @@
 body {
-    background-color: black;
-    color: white;
-    font-family: Arial, sans-serif;
+  background-color: black;
+  color: white;
+  font-family: Arial, sans-serif;
 }
 
 .register-container {
+
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start; 
     min-height: 100vh; 
     padding-bottom: 50px; 
+
 }
 
 .logo-container {
-    text-align: center;
-    margin-bottom: -25px;
+  text-align: center;
+  margin-bottom: -25px;
 }
 
 .logo {
-    width: 150px;
+  width: 150px;
 }
 
 .logo-h1 {
-    font-size: 30px;
-    font-weight: bold;
+  font-size: 30px;
+  font-weight: bold;
 }
 
 .logo-p {
-    font-size: 14px;
+  font-size: 14px;
 }
 
 .register-box {
-    background: none;
-    padding: 40px;
-    text-align: center;
-    width: 350px;
+  background: none;
+  padding: 40px;
+  text-align: center;
+  width: 350px;
 }
 
-input, select {
-    width: 100%;
-    padding: 14px;
-    margin: 8px 0;
-    border-radius: 8px;
-    border: none;
-    background: #fff;
-    color: black;
-    font-size: 16px;
+input,
+select {
+  width: 100%;
+  padding: 14px;
+  margin: 8px 0;
+  border-radius: 8px;
+  border: none;
+  background: #fff;
+  color: black;
+  font-size: 16px;
 }
 
 .name-container {
-    display: flex;
-    gap: 10px;
+  display: flex;
+  gap: 10px;
 }
 
 .birth-container {
-    display: flex;
-    gap: 10px;
-    justify-content: flex-start; 
-    width: 100%;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-start;
+  width: 100%;
 }
 label {
-    display: block;
-    text-align: left; 
-    width: 100%;
-    font-weight: bold;
-    margin-bottom: 5px;
+  display: block;
+  text-align: left;
+  width: 100%;
+  font-weight: bold;
+  margin-bottom: 5px;
 }
+
 
 .terms-link {
     color: #0790d5; 
@@ -97,40 +101,39 @@ label {
 }
 
 .terms-container a:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 .register-button {
-    width: 100%;
-    padding: 14px;
-    font-size: 18px;
-    background-color: #0790d5;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: 0.3s;
+  width: 100%;
+  padding: 14px;
+  font-size: 18px;
+  background-color: #0790d5;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
 }
 
 .register-button:hover {
-    background-color: #056a9b;
+  background-color: #056a9b;
 }
 
 .already-account {
-    margin-top: 15px;
-    font-size: 14px;
+  margin-top: 15px;
+  font-size: 14px;
 }
 
 .already-account a {
-    color: #0790d5;
-    font-weight: bold;
-    text-decoration: none;
-    text-decoration: underline;
-
+  color: #0790d5;
+  font-weight: bold;
+  text-decoration: none;
+  text-decoration: underline;
 }
 
 .already-account a:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 .password-container {
@@ -242,64 +245,84 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
 
 
 @media only screen and (max-width: 768px) {
-    .register-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center; 
-        height: 100vh;
-        padding: 20px;
-    }
+  .register-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    padding: 20px;
+  }
 
-    .logo-container {
-        text-align: center;
-        margin-bottom: 10px;
-    }
+  .logo-container {
+    text-align: center;
+    margin-bottom: 10px;
+  }
 
-    .logo {
-        width: 100px; 
-    }
+  .logo {
+    width: 100px;
+  }
 
-    .logo-h1 {
-        font-size: 18px;
-        text-align: center;
-    }
+  .logo-h1 {
+    font-size: 18px;
+    text-align: center;
+  }
 
-    .logo-p {
-        font-size: 12px;
-        text-align: center;
-    }
+  .logo-p {
+    font-size: 12px;
+    text-align: center;
+  }
 
-    .register-box {
-        width: 100%;
-        max-width: 400px; 
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-        align-items: center; 
-    }
+  .register-box {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 
-    .birth-container {
-        flex-direction: row;
-        justify-content: space-between;
-        width: 100%; 
-    }
+  .birth-container {
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+  }
 
-    .terms-container {
-        display: flex;
-        align-items: center;
-        justify-content: center; 
-        width: 100%;
-        gap: 5px;
-    }
+  .terms-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    gap: 5px;
+  }
 
-    .terms-container label {
-        font-size: 14px;
-        white-space: nowrap; 
-    }
+  .terms-container label {
+    font-size: 14px;
+    white-space: nowrap;
+  }
 
-    .register-button {
-        width: 100%;
-        max-width: 400px; 
-    }
+  .register-button {
+    width: 100%;
+    max-width: 400px;
+  }
+}
+.message {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.message.success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.message.error {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+#terms-checkbox {
+    width: 50px;
 }

@@ -19,6 +19,7 @@ export default function SearchPage() {
   const [likeCounts, setLikeCounts] = useState<{ [key: string]: number }>({});
   const [following, setFollowing] = useState<{ [key: string]: boolean }>({});
   const [showMenu, setShowMenu] = useState(false);
+  const [unseenCount, setUnseenCount] = useState(0);
   const userId = "currentUserId"; // Replace with the actual user ID logic
 
   useEffect(() => {
@@ -70,6 +71,32 @@ export default function SearchPage() {
 
     fetchInitialStates();
   }, []);
+
+
+  useEffect(() => {
+    const fetchUnseenCount = async () => {
+      const token = sessionStorage.getItem("token");
+      if (!token) return;
+
+      try {
+        const response = await fetch("/api/notifications/unseenCount", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await response.json();
+        if (response.ok) {
+          setUnseenCount(data.count);
+        }
+      } catch (error) {
+        console.error(
+          "Erreur lors de la récupération des notifications non lues :",
+          error
+        );
+      }
+    };
+
+    fetchUnseenCount();
+  }, []);
+
 
   const fetchResults = async (query: string) => {
     try {
@@ -174,6 +201,9 @@ export default function SearchPage() {
           </a>
           <a href="/notifications" className="sidebar-item">
             Notifications
+            {unseenCount > 0 && (
+              <span className="notification-dot">{unseenCount}</span>
+            )}
           </a>
           <a href="/profil" className="sidebar-item">
             Profil
