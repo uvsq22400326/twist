@@ -188,13 +188,14 @@ export default function RegisterPage() {
   value={password}
   onChange={(e) => { setPassword(e.target.value); checkPasswordStrength(e.target.value); }}
   required
-  autoComplete="new-password" 
-  style={{ WebkitTextSecurity: "disc" } as any} 
+  autoComplete="new-password"
 />
 
-            <span className="password-toggle" onClick={() => setShowPassword(!showPassword)}>
-              {showPassword ? <FaEyeSlash /> : <FaEye />}
-            </span>
+<span className="password-toggle" onClick={() => setShowPassword(!showPassword)}>
+  {showPassword ? <FaEyeSlash /> : <FaEye />}
+</span>
+
+           
           </div>
           
           {passwordErrors.length > 0 && (
@@ -212,12 +213,13 @@ export default function RegisterPage() {
   onChange={(e) => setConfirmPassword(e.target.value)}
   required
   autoComplete="new-password"
-  style={{ WebkitTextSecurity: "disc" } as any}
 />
 
-            <span className="password-toggle" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
-              {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-            </span>
+<span className="password-toggle" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+  {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+</span>
+
+
           </div>
 
           <div className="terms-container">
