@@ -107,11 +107,11 @@ export default function NotificationsPage() {
             >
               <div className="post-box">
                 {notification.type === "follow" && (
-                  <p>@{notification.sourceUsername} followed you</p>
+                  <p>@{notification.sourceUsername} a commencé a vous suivre.</p>
                 )}
 
                 {notification.type === "like" && (
-                  <p>@{notification.sourceUsername} liked one of your posts</p>
+                  <p>@{notification.sourceUsername} a aimé votre publication.</p>
                 )}
               </div>
             </li>

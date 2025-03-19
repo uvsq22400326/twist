@@ -4,6 +4,8 @@ import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import "./messages.css";
 import React from "react";
+import { io } from "socket.io-client";
+const socket = io("http://localhost:3001"); 
 
 interface Message {
   id: number;
@@ -18,6 +20,8 @@ interface Conversation {
   participantUsername: string;
   username?: string;
   profilePic?: string;
+  unread_count?: number;
+  hasUnread?: boolean;
 }
 
 export default function MessagesPage() {
@@ -35,7 +39,33 @@ export default function MessagesPage() {
   const messagesEndRef = useRef<HTMLDivElement | null>(null); 
   const [searchResults, setSearchResults] = useState<Conversation[]>([]);
   const [selectedUserProfilePic, setSelectedUserProfilePic] = useState<string>("/default-profile.png");
+  const [unreadMessages, setUnreadMessages] = useState(0);
 
+  useEffect(() => {
+    socket.on("newMessage", (message) => {
+      console.log("📩 Nouveau message reçu :", message);
+  
+      if (message.receiver_id === userId || message.sender_id === userId) {
+        if (message.sender_id === selectedConversation || message.receiver_id === selectedConversation) {
+          setMessages((prevMessages) => [...prevMessages, message]);
+        } else {
+          setConversations((prevConversations) =>
+            prevConversations.map((conv) =>
+              conv.id === message.sender_id
+                ? { ...conv, hasUnread: true }
+                : conv
+            )
+          );
+        }
+      }
+    });
+  
+    return () => {
+      socket.off("newMessage");
+    };
+  }, [selectedConversation, userId]);
+  
+  
 
 
   useEffect(() => {
@@ -58,40 +88,67 @@ export default function MessagesPage() {
 
   useEffect(() => {
     if (!userId) return;
-
+  
     const token = sessionStorage.getItem("token");
-
+  
     fetch("/api/messages/conversations", {
       headers: { Authorization: `Bearer ${token}` },
     })
-      .then((res) => res.json())
-      .then((data) => setConversations(data.conversations))
-      .catch((err) => console.error("Erreur de fetch :", err));
+    .then((res) => res.json())
+    .then((data) => {
+      const updatedConversations = data.conversations.map((conv: Conversation) => ({
+        ...conv,
+        hasUnread: (conv.unread_count ?? 0) > 0, 
+      }));
+  
+      setConversations(updatedConversations);
+    })
+    .catch((err) => console.error("Erreur de fetch :", err));
   }, [userId]);
+  
 
 
-  const selectConversation = async (conversationId: number, participantUsername: string) => {
-    if (!conversationId) return;
-    setSelectedConversation(conversationId);
-    setSelectedUserUsername(participantUsername);
-    
+
+const selectConversation = async (conversationId: number, participantUsername: string) => {
+  if (!conversationId) return;
+  setSelectedConversation(conversationId);
+  setSelectedUserUsername(participantUsername);
+
   setSearchResults([]); 
   setShowNewChatPopup(false); 
 
-    try {
-        const res = await fetch(`/api/messages/${conversationId}`, {
-            headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` },
-        });
+  try {
+      const res = await fetch(`/api/messages/${conversationId}`, {
+          headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` },
+      });
 
-        const data = await res.json();
-        if (res.ok && data.messages) {
-            setMessages(data.messages.length > 0 ? data.messages : []);
-            setSelectedUserProfilePic(data.profilePic || "/default-profile.png"); 
-        }
-    } catch (error) {
-        console.error("Erreur lors de la récupération des messages :", error);
-    }
+      const data = await res.json();
+      if (res.ok && data.messages) {
+          setMessages(data.messages.length > 0 ? data.messages : []);
+          setSelectedUserProfilePic(data.profilePic || "/default-profile.png"); 
+      }
+  } catch (error) {
+      console.error("Erreur lors de la récupération des messages :", error);
+  }
+
+  try {
+    await fetch("/api/messages/markAsRead", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` },
+      body: JSON.stringify({ conversationId }),
+    });
+
+    setConversations((prev) =>
+      prev.map((conv) =>
+        conv.id === conversationId ? { ...conv, hasUnread: false } : conv
+      )
+      .sort((a, b) => Number(b.hasUnread) - Number(a.hasUnread))
+    );
+  } catch (error) {
+    console.error("Erreur lors du marquage des messages comme lus :", error);
+  }
 };
+
 
 
   const openNewChatPopup = () => {
@@ -107,57 +164,56 @@ export default function MessagesPage() {
 
   const sendMessage = async () => {
     if (!newMessage.trim() && !selectedFile) return;
-
-    const formData = new FormData();
-    if (newMessage.trim()) formData.append("content", newMessage);
-    if (selectedFile) formData.append("file", selectedFile);
-
-    try {
-        const res = await fetch(`/api/messages/${selectedConversation}`, {
-            method: "POST",
-            headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` },
-            body: formData,
-        });
-
-        const data = await res.json();
-
-        if (res.ok) {
-            setMessages((prevMessages) => [
-                ...prevMessages,
-                {
-                    id: Date.now(),
-                    sender_id: userId!,
-                    content: newMessage || "",
-                    media_url: data.mediaUrl || null,
-                    created_at: "" + Date.now(),
-                },
-            ]);
-
-            const conversationExists = conversations.some(
-                (conv) => conv.id === selectedConversation
-            );
-
-            if (!conversationExists) {
-                setConversations((prevConversations) => [
-                    ...prevConversations,
-                    {
-                        id: selectedConversation!,
-                        participantUsername: selectedUserUsername!,
-                        profilePic: selectedUserProfilePic, 
-                    },
-                ]);
-            }
-
-            setNewMessage("");
-            setSelectedFile(null);
-            setPreviewUrl(null);
-        } else {
-            console.error("Erreur serveur :", data.error);
-        }
-    } catch (error) {
-        console.error("Erreur d'envoi :", error);
+  
+    const token = sessionStorage.getItem("token");
+  
+    let body;
+    let headers: HeadersInit = { Authorization: `Bearer ${token}` };
+  
+    if (selectedFile) {
+      const formData = new FormData();
+      formData.append("content", newMessage);
+      formData.append("file", selectedFile);
+      body = formData;
+    } else {
+      headers["Content-Type"] = "application/json";
+      body = JSON.stringify({
+        content: newMessage,
+        receiver_id: selectedConversation,
+      });
     }
-};
+  
+    try {
+      const res = await fetch(`/api/messages/${selectedConversation}`, {
+        method: "POST",
+        headers,
+        body,
+      });
+  
+      if (res.ok) {
+        const data = await res.json();
+        const newMessageData = {
+          id: data.id,
+          sender_id: userId!,
+          receiver_id: selectedConversation!,
+          content: newMessage,
+          media_url: data.mediaUrl || null,
+          created_at: new Date().toISOString(),
+        };
+  
+        setMessages((prevMessages) => [...prevMessages, newMessageData]);
+        socket.emit("sendMessage", newMessageData);
+        setNewMessage("");
+        setSelectedFile(null);
+        setPreviewUrl(null);
+      } else {
+        console.error("Erreur serveur :", await res.json());
+      }
+    } catch (error) {
+      console.error("Erreur d'envoi :", error);
+    }
+  };
+  
 
 
   const startConversation = async () => {
@@ -194,6 +250,7 @@ export default function MessagesPage() {
   };
   
   
+  
   return (
     <div className={`messages-container ${selectedConversation ? "conversation-open" : ""}`}>
       <div className="conversations-panel">
@@ -222,11 +279,20 @@ export default function MessagesPage() {
       alt="Photo de profil" 
       className="conversation-profile-pic" 
     />
-              <p className="conv-name">{conv.participantUsername || "Utilisateur inconnu"}</p>
-            </div>
+    
+    <div className="conv-name-container">
+      <p className="conv-name" style={{ fontWeight: conv.hasUnread ? "bold" : "normal" }}>
+        {conv.participantUsername || "Utilisateur inconnu"}
+      </p>
+      {conv.hasUnread && <span className="blue-dot"></span>}  
+    </div>
+  </div>
           ))
         )}
       </div>
+
+
+      
 
       <div className="chat-panel">
         {selectedConversation ? (
@@ -241,8 +307,8 @@ export default function MessagesPage() {
 </div>
             <div className="chat-messages">
               {[...messages].reverse().map((msg) => (
-                <div key={msg.id} className={`message ${msg.sender_id === userId ? "sent" : "received"}`}>
-                  {msg.media_url ? (
+                <div key={msg.id ?? `temp-${Date.now()}-${Math.random()}`} className={`message ${msg.sender_id === userId ? "sent" : "received"}`}>
+                {msg.media_url ? (
                     <>
                       {msg.media_url.includes("video") ? (
                         <video src={msg.media_url} controls className="chat-media"></video>
@@ -292,7 +358,6 @@ export default function MessagesPage() {
           
         )}
       </div>
-      {/*machin popup nouv conv*/}
       {showNewChatPopup && (
         <div className="new-chat-popup">
           <div className="popup-content">

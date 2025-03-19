@@ -346,6 +346,23 @@
 }
 
 
+.conv-name-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    position: relative;
+}
+
+.blue-dot {
+    width: 8px;
+    height: 8px;
+    background-color: #1da1f2; /* 🔵 Bleu Twitter */
+    border-radius: 50%;
+    display: inline-block;
+}
+
+
+
 @media (max-width: 768px) {
     .messages-container {
         flex-direction: column;

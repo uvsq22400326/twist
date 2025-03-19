@@ -20,7 +20,36 @@ export default function HomePage() {
 
   const [username, setUsername] = useState("Utilisateur");
   const [profileImage, setProfileImage] = useState("/default-profile.png");
+  const [unreadMessages, setUnreadMessages] = useState(0);
+
+  useEffect(() => {
+    const fetchUnreadMessages = async () => {
+      const token = sessionStorage.getItem("token");
+      if (!token) return;
   
+      try {
+        const response = await fetch("/api/messages/unreadCount", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await response.json();
+        if (response.ok) {
+          console.log("🔵 Nombre de messages non lus :", data.count);
+          setUnreadMessages(data.count);
+        }
+      } catch (error) {
+        console.error("❌ Erreur récupération messages non lus :", error);
+      }
+    };
+  
+    fetchUnreadMessages();
+  
+    // 🔄 Rafraîchir les messages non lus toutes les 10 secondes (optionnel)
+    const interval = setInterval(fetchUnreadMessages, 10000);
+    return () => clearInterval(interval);
+  }, []);
+  
+
+
   const fetchUserProfile = async () => {
       const token = sessionStorage.getItem("token");
   
@@ -165,8 +194,12 @@ export default function HomePage() {
             Recherche
           </a>
           <a href="/messages" className="sidebar-item">
-            Messages
-          </a>
+  Messages
+  {unreadMessages > 0 && (
+    <span className="notification-dot">{unreadMessages}</span>
+  )}
+</a>
+
           <a href="/notifications" className="sidebar-item">
             Notifications
             {unseenCount > 0 && (

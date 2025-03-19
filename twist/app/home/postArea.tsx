@@ -200,7 +200,7 @@ export default function PostArea({ token }: { token: string }) {
             onClick={() => handleFollow(data[i].user_id)}
             disabled={Number(data[i].user_id) === Number(userId)} // Compare as numbers
           >
-            {following[data[i].user_id] ? "Unfollow" : "Follow"}
+            {following[data[i].user_id] ? "Ne plus suivre" : "Suivre"}
           </button>
 
           {/* Affichage du username au lieu de l'email */}

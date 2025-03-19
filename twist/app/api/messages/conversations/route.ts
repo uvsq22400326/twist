@@ -12,17 +12,21 @@ export async function GET(req: Request) {
         const userId = decodedToken.id;
   
         const [rows] = await pool.query(
-           `SELECT DISTINCT 
-                CASE 
-                    WHEN sender_id = ? THEN receiver_id 
-                    ELSE sender_id 
-                END AS id,  
-                u.username AS participantUsername,
-                COALESCE(u.profilePic, '/default-profile.png') AS profilePic
-            FROM messages 
-            JOIN users u ON u.id = (CASE WHEN sender_id = ? THEN receiver_id ELSE sender_id END)
-            WHERE sender_id = ? OR receiver_id = ?`,
-            [userId, userId, userId, userId]
+            `SELECT DISTINCT 
+            CASE 
+                WHEN sender_id = ? THEN receiver_id 
+                ELSE sender_id 
+            END AS id,  
+            u.username AS participantUsername,
+            COALESCE(u.profilePic, '/default-profile.png') AS profilePic,
+            (SELECT COUNT(*) FROM messages 
+                WHERE messages.sender_id = u.id 
+                AND messages.receiver_id = ?  
+                AND messages.seen = FALSE) AS unread_count
+        FROM messages 
+        JOIN users u ON u.id = (CASE WHEN sender_id = ? THEN receiver_id ELSE sender_id END)
+        WHERE sender_id = ? OR receiver_id = ?`,
+        [userId, userId, userId, userId, userId] 
         );
   
         console.log("Conversations récupérées :", rows); 
