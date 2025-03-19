@@ -18,6 +18,11 @@ export async function GET(request: Request) {
       [userId]
     );
 
+    // Mark notifications as seen
+    await pool.query("UPDATE notifications SET seen = TRUE WHERE user_id = ?", [
+      userId,
+    ]);
+
     return NextResponse.json(notifications, { status: 200 });
   } catch (error) {
     console.error("Server error: ", error);

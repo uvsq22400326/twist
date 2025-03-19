@@ -16,8 +16,8 @@ interface Message {
 interface Conversation {
   id: number;
   participantUsername: string;
-  username?: string; // Add the username property
-  profilePic?: string; // Add the profilePic property
+  username?: string;
+  profilePic?: string;
 }
 
 export default function MessagesPage() {
@@ -122,7 +122,6 @@ export default function MessagesPage() {
         const data = await res.json();
 
         if (res.ok) {
-            // ✅ Ajouter le message dans la conversation
             setMessages((prevMessages) => [
                 ...prevMessages,
                 {
@@ -134,19 +133,17 @@ export default function MessagesPage() {
                 },
             ]);
 
-            // ✅ Vérifier si la conversation existe déjà dans la liste
             const conversationExists = conversations.some(
                 (conv) => conv.id === selectedConversation
             );
 
             if (!conversationExists) {
-                // ✅ Ajouter la nouvelle conversation à gauche (sans recharger)
                 setConversations((prevConversations) => [
                     ...prevConversations,
                     {
                         id: selectedConversation!,
                         participantUsername: selectedUserUsername!,
-                        profilePic: selectedUserProfilePic, // Ajoute la photo de profil
+                        profilePic: selectedUserProfilePic, 
                     },
                 ]);
             }
@@ -169,7 +166,6 @@ export default function MessagesPage() {
     try {
         const token = sessionStorage.getItem("token");
 
-        // 🔍 Rechercher les utilisateurs qui correspondent à la saisie
         const res = await fetch(`/api/messages/search?username=${newChatUsername}`, {
             headers: { Authorization: `Bearer ${token}` },
         });
@@ -177,7 +173,7 @@ export default function MessagesPage() {
         const data = await res.json();
 
         if (res.ok && data.users.length > 0) {
-            setSearchResults(data.users); // 📌 Affiche les suggestions
+            setSearchResults(data.users);
         } else {
             setSearchResults([]);
             console.error("Aucun utilisateur trouvé");
@@ -199,7 +195,7 @@ export default function MessagesPage() {
   
   
   return (
-    <div className="messages-container">
+    <div className={`messages-container ${selectedConversation ? "conversation-open" : ""}`}>
       <div className="conversations-panel">
         <div className="header">
         <h2>
@@ -236,6 +232,9 @@ export default function MessagesPage() {
         {selectedConversation ? (
           <>
           <div className="chat-header">
+    <button className="back-arrow" onClick={() => setSelectedConversation(null)}>
+        ←
+    </button>
           <img src={selectedUserProfilePic} alt="Photo de profil" className="profile-pic" />
 
     <span className="chat-username">{selectedUserUsername}</span>
@@ -286,7 +285,7 @@ export default function MessagesPage() {
             <div className="welcome-message">
               <h2>Aucun message sélectionné</h2>
               <p>Tu veux parler à quelqu'un? Raconter ta vie même tout le monde s'en fou? </p>
-              <p> Tu es au bon endroit mon ami.
+              <p>Tu es au bon endroit mon ami.
               </p>
               <button className="new-message-btn" onClick={openNewChatPopup}>Nouveau message</button>
             </div>
@@ -303,7 +302,6 @@ export default function MessagesPage() {
             </div>
             <input type="text" placeholder="Tu parles trop..." value={newChatUsername} onChange={(e) => setNewChatUsername(e.target.value)} />
             
-{/* 🔥 Suggestions qui s'affichent sous l'input */}
 {searchResults.length > 0 && (
   <div className="search-results">
     {searchResults.map((user) => (
