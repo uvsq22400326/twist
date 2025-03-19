@@ -31,7 +31,7 @@ export async function POST(req: Request) {
                 const bytes = await file.arrayBuffer();
                 const buffer = Buffer.from(bytes);
 
-                console.log("📸 Upload image Cloudinary...");
+                console.log("Upload image Cloudinary...");
 
                 const result = await new Promise((resolve, reject) => {
                     const stream = cloudinary.uploader.upload_stream(
@@ -42,10 +42,10 @@ export async function POST(req: Request) {
                         },
                         (error, result) => {
                             if (error) {
-                                console.error("❌ Erreur Cloudinary :", error);
+                                console.error(" Erreur Cloudinary :", error);
                                 reject(error);
                             } else {
-                                console.log("✅ Upload réussi :", result?.secure_url);
+                                console.log("Upload réussi :", result?.secure_url);
                                 resolve(result);
                             }
                         }
@@ -61,7 +61,7 @@ export async function POST(req: Request) {
                 if (oldProfilePic && oldProfilePic.includes("cloudinary.com")) {
                     const publicId = oldProfilePic.split("/").pop()?.split(".")[0]; 
                     await cloudinary.uploader.destroy(`profile_pictures/${publicId}`);
-                    console.log("🗑️ Ancienne photo supprimée de Cloudinary");
+                    console.log("Ancienne photo supprimée de Cloudinary");
                 }
             }
         }
@@ -70,7 +70,6 @@ export async function POST(req: Request) {
             await pool.query("UPDATE users SET profilePic = NULL WHERE id = ?", [userId]);
         }
 
-        // ✅ Met à jour la bio et la photo de profil
         if (bio !== null) {
             await pool.query("UPDATE users SET bio = ? WHERE id = ?", [bio, userId]);
         }
@@ -78,7 +77,7 @@ export async function POST(req: Request) {
             await pool.query("UPDATE users SET profilePic = ? WHERE id = ?", [profilePicUrl, userId]);
         }
 
-        console.log("✅ Mise à jour réussie :", { bio, profilePicUrl });
+        console.log("Mise à jour réussie :", { bio, profilePicUrl });
 
         return NextResponse.json({ 
             message: "Mise à jour réussie", 
@@ -87,7 +86,7 @@ export async function POST(req: Request) {
         }, { status: 200 });
 
     } catch (error) {
-        console.error("❌ Erreur serveur :", error);
+        console.error("Erreur serveur :", error);
         return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
     }
 }
@@ -121,7 +120,7 @@ export async function DELETE(req: Request) {
         }, { status: 200 });
 
     } catch (error) {
-        console.error("❌ Erreur serveur :", error);
+        console.error("Erreur serveur :", error);
         return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
     }
 }
