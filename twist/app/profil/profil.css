@@ -13,7 +13,7 @@
     gap: 3px;
     padding-left: 84px;
 
-    border-right: none !important; /* Enlève toute bordure à droite */
+    border-right: none !important; 
 
   }
   
@@ -23,7 +23,6 @@
     margin-left: -12px;
   }
   
-  /* Style des liens du menu */
   .sidebar-item {
     display: flex;
     align-items: center;
@@ -124,8 +123,9 @@
     align-items: center;
     width: 100%;
     position: relative;
-    max-width: 600px; /* Ajuste la largeur max */
-    margin-bottom: 20px; /* Ajoute de l'espace sous le header */
+    max-width: 600px;
+    margin-bottom: 20px; 
+
 }
 
 #twist-area {
@@ -174,18 +174,17 @@
     padding-bottom: 50px;
 }
 
-/* Design du post */
 .post-box {
-    background-color: #000000; /* Fond gris foncé */
-    margin: 0 !important; /* Supprime les marges inutiles */
-    padding: 10px 0 !important; /* Ajuste l’espacement interne */
+    background-color: #000000; 
+    margin: 0 !important; 
+    padding: 10px 0 !important; 
     width: 90%;
     max-width: 500px;
     text-align: left;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    border-bottom: 1px solid #2f3336; /* Ligne grise entre les posts */
+    border-bottom: 1px solid #2f3336; 
 
 }
 
@@ -193,23 +192,20 @@
     border-bottom: none;
 }
 
-/* Style du username */
 .post-box strong {
-    color: #ffffff; /* Bleu clair */
+    color: #ffffff; 
     font-size: 18px;
     font-weight: bold;
     display: block;
 }
 
-/* Style du contenu du post */
 .post-box p {
-    color: #E0E0E0; /* Gris clair pour le texte */
+    color: #E0E0E0; 
     font-size: 16px;
     margin-top: 5px;
     word-wrap: break-word;
 }
 
-/* Image dans les posts */
 .post-box img {
     max-width: 100%;
     margin: 0 auto; 
@@ -227,7 +223,6 @@
     margin-bottom: 10px;
 }
 
-/* 📌 Section abonnés / abonnements sous la bio */
 .follow-info {
     display: flex;
     gap: 15px;
@@ -292,7 +287,7 @@
 
 .profile-info-container {
     display: flex;
-    align-items: center; /* Alignement vertical */
+    align-items: center;
     width: 83%;
     max-width: 100%;
     margin-top: 10px;
@@ -353,7 +348,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: -30px; /* Remonte le bouton */
+    margin-top: -30px; 
     position: relative;
 }
 
@@ -389,14 +384,12 @@
     margin: 20px 0;
 }
 
-/* ✅ Image de profil */
 .user-item img.profile-pic {
     width: 50px;
     height: 50px;
     border-radius: 50%;
 }
 
-/* ✅ Infos utilisateur */
 .user-info {
     display: flex;
     flex-direction: column;
@@ -440,7 +433,6 @@
     position: relative;
 }
 
-/* Bouton de fermeture */
 .close-btn {
     position: absolute;
     top: 15px;
@@ -499,14 +491,13 @@
     transition: 0.3s;
 }
 
-/* Icône */
+
 .camera-icon img {
     width: 28px;
     height: 28px;
     opacity: 0.8;
 }
 
-/* Tooltip (Ajouter une photo) */
 .camera-icon:hover::after {
     content: "Ajouter une photo";
     position: absolute;
@@ -522,7 +513,6 @@
     opacity: 1;
 }
 
-/* 🌙 CHAMPS DE MODIFICATION */
 .bio-input {
     width: 100%;
     height: 50px;
@@ -536,14 +526,12 @@
     margin-top: 10px;
 }
 
-/* 🌙 BOUTONS D'ACTION */
 .modal-actions {
     margin-top: 20px;
     display: flex;
     justify-content: space-between;
 }
 
-/* Bouton enregistrer */
 .save-btn {
     background: #1d9bf0;
     color: white;
@@ -561,7 +549,6 @@
     background: #1774cc;
 }
 
-/* Bouton annuler */
 .cancel-btn {
     background: #333;
     color: white;
@@ -579,7 +566,6 @@
     background: #444;
 }
 
-/* 🗑️ Bouton supprimer la photo */
 .delete-pic-btn {
     background: rgb(207, 204, 204);
     color: rgb(0, 0, 0);
@@ -598,11 +584,10 @@
     background: rgb(215, 212, 212);
 }
 
-/* 📌 Bio sous le username */
 .user-bio {
     font-size: 16px;
     color: gray;
-    margin-top: 10px; /* Ajoute un petit espace entre le username et la bio */
+    margin-top: 10px; 
     display: block;
 }
 
@@ -645,7 +630,7 @@
 }
 
 .vertical-line.right {
-    left: calc(50% + 260px); /* Ajuste la ligne de droite */
+    left: calc(50% + 260px);
 }
 
 .post-header {
@@ -672,7 +657,7 @@
     padding-bottom: 1px;
     border-bottom: 2px solid #555; 
     width: 33%;
-    margin-bottom: 0 !important; /* Réduit l’espace sous le titre */
+    margin-bottom: 0 !important; 
 
 }
 
@@ -898,7 +883,6 @@
     transition: background 0.3s;
 }
 
-/* 🌫️ Fond flou du modal */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -913,7 +897,6 @@
     z-index: 200;
 }
 
-/* 📦 Contenu du modal */
 .confirm-box {
     background: black;
     padding: 20px;
@@ -950,23 +933,52 @@
 @media only screen and (max-width: 768px) {
 
 
-    /* 🔹 Supprime la barre de recherche et les suggestions */
     .search-bar,
     .suggestions-container {
         display: none !important;
     }
 
- /* 🔹 Supprime le logo */
- #nav-sidebar img {
-    display: none !important;
-}
-
-/* 🔹 Enlève la bordure verticale */
+    .bottom-navbar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 60px;
+        background: #000; 
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        border-top: 1px solid #222;
+        padding: 10px 0;
+        z-index: 1000;
+      }
+    
+      .bottom-navbar a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-grow: 1;
+      }
+    
+      .bottom-navbar img {
+        width: 26px;
+        height: auto;
+        opacity: 0.7;
+        transition: opacity 0.2s;
+      }
+    
+      .bottom-navbar img:hover {
+        opacity: 1;
+      }
+    
+      #nav-sidebar {
+        display: none;
+      }
+    
 .vertical-line {
     display: none !important;
 }
 
-/* 🔹 Réduit la ligne sous "Mes posts" et "Mes likes" */
 .toggle-container {
     margin-top: 10px;
     display: flex;
@@ -990,7 +1002,6 @@
     border-bottom: 3px solid white;
     padding-bottom: 5px;
 }
-   /* 🔹 Fixe les icônes en bas, alignées HORIZONTALEMENT */
    #nav-sidebar {
     display: none !important;
 }
@@ -1016,15 +1027,21 @@
         margin-left: -145px;
     }
 
-    /* 🔹 Supprime la bordure verticale */
     .vertical-line {
         display: none !important;
     }
 
-    /* 🔹 Ajuste le conteneur des posts pour s'adapter */
     .profile-container {
         margin-left: 0;
         padding-bottom: 70px;
     }
 
 }
+
+
+@media only screen and (min-width: 769px) {
+    .bottom-navbar {
+      display: none !important;
+    }
+    
+  }

@@ -302,6 +302,7 @@ const [isSearching, setIsSearching] = useState(false);
 
 <div className="suggestions-container">
     {_token ? <Suggestions userId={1} updateFollowingCount={updateFollowingCount} /> : <p>Chargement...</p>}
+
 </div>
 
 
@@ -475,6 +476,24 @@ const [isSearching, setIsSearching] = useState(false);
         </div>
     </div>
 )}
+<div className="bottom-navbar">
+  <a href="/home">
+    <img src="/icons/home.png" alt="Accueil" />
+  </a>
+  <a href="/search">
+    <img src="/icons/search.png" alt="Recherche" />
+  </a>
+  <a href="/messages">
+    <img src="/icons/messages.png" alt="Messages" />
+  </a>
+  <a href="/notifications">
+    <img src="/icons/notifications.png" alt="Notifications" />
+  </a>
+  <a href="/profil">
+    <img src="/icons/profile.png" alt="Profil" />
+  </a>
+</div>
+
 
         </div>
     );

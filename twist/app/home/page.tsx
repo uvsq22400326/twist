@@ -182,6 +182,8 @@ export default function HomePage() {
   };
 
   return (
+
+    
     <div>
       <aside className="col-3" id="nav-sidebar">
       <div className="vertical-line"></div>
@@ -299,6 +301,26 @@ export default function HomePage() {
         {errorPublier && <p className="error-text">{errorPublier}</p>}
         {_token ? <PostArea token={_token} /> : <p>Chargement...</p>}
       </main>
+
+<div className="bottom-navbar">
+  <a href="/home">
+    <img src="/icons/home.png" alt="Accueil" />
+  </a>
+  <a href="/search">
+    <img src="/icons/search.png" alt="Recherche" />
+  </a>
+  <a href="/messages">
+    <img src="/icons/messages.png" alt="Messages" />
+  </a>
+  <a href="/notifications">
+    <img src="/icons/notifications.png" alt="Notifications" />
+  </a>
+  <a href="/profil">
+    <img src="/icons/profile.png" alt="Profil" />
+  </a>
+</div>
+
+
     </div>
   );
 }
