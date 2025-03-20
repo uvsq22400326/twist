@@ -185,6 +185,8 @@ export default function HomePage() {
   return (
     <div>
       <aside className="col-3" id="nav-sidebar">
+      <div className="vertical-line"></div>
+
         <img src="/twist-logo.png" alt="Twist Logo" id="logo" />
         <nav>
           <a href="/home" className="sidebar-item">
@@ -244,9 +246,11 @@ export default function HomePage() {
 
 
       <main id="twist-area">
+      <div className="vertical-line right"></div>
+
         <div className="tweet-box">
           <textarea
-            placeholder="Quoi de neuf ?"
+            placeholder="Ca dit quoi frérot?"
             value={content}
             onChange={(e) => setContent(e.target.value)}
           />
