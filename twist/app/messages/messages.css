@@ -356,7 +356,7 @@
 .blue-dot {
     width: 8px;
     height: 8px;
-    background-color: #1da1f2; /* 🔵 Bleu Twitter */
+    background-color: #1da1f2; 
     border-radius: 50%;
     display: inline-block;
 }

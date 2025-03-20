@@ -43,7 +43,7 @@ export default function MessagesPage() {
 
   useEffect(() => {
     socket.on("newMessage", (message) => {
-      console.log("📩 Nouveau message reçu :", message);
+      console.log("Nouveau message reçu :", message);
   
       if (message.receiver_id === userId || message.sender_id === userId) {
         if (message.sender_id === selectedConversation || message.receiver_id === selectedConversation) {
