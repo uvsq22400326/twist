@@ -34,8 +34,8 @@ export default function PostArea({ token }: { token: string }) {
   //const [comms, setComms] = useState<Commentaire[]>([]);
   const [commForId, setCommForId] = useState<number>(1);
   const [shouldPrintComm, setShouldPrintComm] = useState<boolean>(false);
-
   const [userId, setUserId] = useState<string | null>(null);
+  const [visibleComments, setVisibleComments] = useState<{ [key: number]: boolean }>({});
 
 
   // Fonction pour extraire l'ID utilisateur depuis le token
@@ -232,32 +232,39 @@ export default function PostArea({ token }: { token: string }) {
             </svg>
             <span>{likeCounts[data[i].id] ?? data[i].like_count}</span>
           </button>
-          {/* Champ pour commenter */}
-          {CommentaireInput(token, data[i].id)}
+          
           <button
-            onClick={() => {
-              setCommForId(data[i].id);
-              setShouldPrintComm(true);
-            }}
+            onClick={() => setVisibleComments((prev) => ({ ...prev, [data[i].id]: !prev[data[i].id] }))}
+            className="comment-button"
           >
-            Afficher commentaires
+            Commentaires
           </button>
-          <h3>Commentaires</h3>
-          {!shouldPrintComm || commForId != data[i].id ? (
-            <></>
-          ) : commloading || !commdata ? (
-            <p>Chargement</p>
-          ) : (
-            <div>
-              {[...Array(commdata.length)].map((_, i) => (
-                <div key={i}>
-                  <h4>
-                    {commdata[i].username} : {commdata[i].content}
-                  </h4>
-                </div>
-              ))}
+
+          {visibleComments[data[i].id] && (
+            <div className="comment-section">
+              <Commentaires postid={data[i].id} token={token} />
+              <CommentaireInput token={token} postid={data[i].id} />
             </div>
           )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function Commentaires({ postid, token }: { postid: number; token: string }) {
+  const fetcher = (url: string) => fetch(url).then((res) => res.json().then((data) => data.content));
+  const { data, error, isLoading } = useSWR(`/api/commentaire/afficher/${postid}`, fetcher);
+
+  if (isLoading) return <p>Chargement...</p>;
+  if (error) return <p>Erreur lors du chargement des commentaires.</p>;
+  if (!data || data.length === 0) return <p>Aucun commentaire.</p>;
+
+  return (
+    <div className="comment-list">
+      {data.map((comment: any, index: number) => ( 
+        <div key={comment.id || `comment-${index}`} className="comment">
+          <strong>{comment.username} :</strong> {comment.content}
         </div>
       ))}
     </div>

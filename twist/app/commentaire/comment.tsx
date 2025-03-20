@@ -1,35 +1,38 @@
 "use client";
 import React, { useState } from "react";
 
-export default function CommentaireInput(token : string, postid: number) {
-    var commContent = "";
+export default function CommentaireInput({ token, postid }: { token: string; postid: number }) {
+    const [commContent, setCommContent] = useState("");
 
-    // Fait apparaître un input field sous le message
-    // Ainsi qu'un boutton envoyer qui exécute sendComment
     return (
         <div>
-            <input type="text" id={"commentButton" + postid}
-            onChange={(e) => commContent = e.target.value}
-            required>
-            </input>
-            <button onClick={() => sendComment(postid, commContent, token)}>
+            <input 
+                type="text"
+                className="comment-input" 
+                placeholder="Ne sois pas méchant stp..."
+                value={commContent}
+                onChange={(e) => setCommContent(e.target.value)}
+                required
+            />
+            <button 
+                className="comment-submit" 
+                onClick={() => sendComment(postid, commContent, token)}
+            >
                 Commenter
             </button>
         </div>
-    )
+    );
 }
 
+
 export async function sendComment(postid: number, commContent: string, token: string) {
-    //alert("post_id = " + postid + " commContent = " + commContent + " token = " + token);
-    // Call API pour poster le commentaire
+    if (!commContent.trim()) return; 
     const response = await fetch("/api/commentaire/publier", {
         method: "POST",
-        body: JSON.stringify({
-            content: commContent,
-            postid: postid
-        }),
-        headers: { Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ content: commContent, postid }),
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
     });
+
     const respJson = await response.json();
     if (response.status == 200) {
         alert("Commentaire publié");

@@ -146,6 +146,8 @@ header input::placeholder {
 }
 
 .tweet-box {
+  position: fixed;
+
   background: #000;
   margin-left: 5px;
   padding: 10px;
@@ -232,7 +234,7 @@ header input::placeholder {
   margin-top: 10px;
 }
 
-.like-button, .comment-button {
+.like-button {
   background: none;
   border: none;
   font-size: 16px;
@@ -260,23 +262,51 @@ header input::placeholder {
   transform: scale(1.2);
   animation: pop 0.3s ease;
 }
-.comment-button:hover {
-  color: #1da1f2;
-}
 
-.comment-button .comment-icon {
-  width: 22px;
-  height: 22px;
-  fill: #71767b;
-  transition: fill 0.3s ease;
+.comment-button {
+  color: gray; 
+  background: none; 
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
 }
 
 .comment-button:hover {
-  color: #1da1f2;
+  text-decoration: underline; 
 }
 
-.comment-button:hover .comment-icon {
-  fill: #1da1f2;
+.comment-list {
+  background-color: black; 
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.comment-input {
+  background-color: #222; 
+  color: white;
+  border: 1px solid #444; 
+  padding: 5px;
+  border-radius: 3px;
+  width: 50%;
+}
+
+.comment-input::placeholder {
+  color: lightgray;
+}
+
+.comment-submit {
+  background-color: #282829; 
+  color: white;
+  border: none;
+  padding: 5px 2px;
+  cursor: pointer;
+  white-space: nowrap;
+  border-radius: 3px;
+  margin-left: 10px;
+}
+
+.comment-submit:hover {
+  background-color: #6f7373; 
 }
 
 
@@ -285,33 +315,6 @@ header input::placeholder {
   height: 20px;
   fill: #71767b;
   transition: fill 0.3s ease;
-}
-
-
-
-.comments-section {
-  margin-top: 10px;
-  padding: 10px;
-  background: #111;
-  border-radius: 8px;
-}
-
-.comment {
-  display: flex;
-  flex-direction: column;
-  padding: 8px 0;
-  border-bottom: 1px solid #2f3336;
-}
-
-.comment p {
-  margin: 2px 0;
-  font-size: 14px;
-  color: #e7e9ea;
-}
-
-.comment strong {
-  font-size: 14px;
-  color: white;
 }
 
 

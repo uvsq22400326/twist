@@ -33,17 +33,16 @@ export default function HomePage() {
         });
         const data = await response.json();
         if (response.ok) {
-          console.log("🔵 Nombre de messages non lus :", data.count);
+          console.log("Nombre de messages non lus :", data.count);
           setUnreadMessages(data.count);
         }
       } catch (error) {
-        console.error("❌ Erreur récupération messages non lus :", error);
+        console.error("Erreur récupération messages non lus :", error);
       }
     };
   
     fetchUnreadMessages();
   
-    // 🔄 Rafraîchir les messages non lus toutes les 10 secondes (optionnel)
     const interval = setInterval(fetchUnreadMessages, 10000);
     return () => clearInterval(interval);
   }, []);
@@ -65,12 +64,12 @@ export default function HomePage() {
           }
   
           const data = await res.json();
-          console.log("✅ Profil récupéré :", data);
+          console.log("Profil récupéré :", data);
   
           setUsername(data.username || "Utilisateur");
           setProfileImage(data.profileImage || "/default-profile.png");
       } catch (error) {
-          console.error("❌ Erreur lors du chargement du profil :", error);
+          console.error("Erreur lors du chargement du profil :", error);
       }
   };
   
@@ -221,7 +220,6 @@ export default function HomePage() {
     />
     <div className="user-menu">
       
-      {/* 🔥 Avatar + Nom */}
       <div className="user-info" onClick={() => router.push("/profil")}>
         <img 
           src={profileImage || "/default-profile.png"} 
@@ -231,7 +229,6 @@ export default function HomePage() {
         <span className="header-username">{username || "Utilisateur"}</span>
       </div>
 
-      {/* 🔥 3 points bien à droite */}
       <span className="menu-icon" onClick={() => setShowMenu(!showMenu)}>
         ⋮
       </span>
