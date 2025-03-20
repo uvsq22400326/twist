@@ -306,6 +306,23 @@ export default function SearchPage() {
           </section>
         </main>
       </div>
+      <div className="bottom-navbar">
+  <a href="/home">
+    <img src="/icons/home.png" alt="Accueil" />
+  </a>
+  <a href="/search">
+    <img src="/icons/search.png" alt="Recherche" />
+  </a>
+  <a href="/messages">
+    <img src="/icons/messages.png" alt="Messages" />
+  </a>
+  <a href="/notifications">
+    <img src="/icons/notifications.png" alt="Notifications" />
+  </a>
+  <a href="/profil">
+    <img src="/icons/profile.png" alt="Profil" />
+  </a>
+</div>
     </div>
   );
 }
