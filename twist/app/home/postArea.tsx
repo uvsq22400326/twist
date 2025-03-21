@@ -204,9 +204,17 @@ export default function PostArea({ token }: { token: string }) {
           </button>
 
           {/* Affichage du username au lieu de l'email */}
-          <p>
-            <strong>@{data[i].username || "Utilisateur"}</strong>
-          </p>
+          <div className="post-header">
+              <img 
+                  src={data[i].profilePic || "/default-profile.png"} 
+                  alt="Profil" 
+                  className="post-profile-pic" 
+              />
+              <p>
+                  <strong>@{data[i].username || "Utilisateur"}</strong>
+              </p>
+          </div>
+
 
           <p>{data[i].content}</p>
 
