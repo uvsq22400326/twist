@@ -700,3 +700,19 @@ display: none !important;
 .unseen {
   background-color: #f0f0f0;
 }
+
+.post-header {
+  display: flex;
+  align-items: center;
+  gap: 5px; 
+}
+
+.post-profile-pic {
+  width: 10%; 
+  max-width: 40px; 
+  height: auto; 
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+
