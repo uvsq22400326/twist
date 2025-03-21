@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import useSWR from "swr";
 import "./home.css";
@@ -13,6 +14,8 @@ interface Commentaire {
   username: string;
   postid: number;
 }
+
+
 
 const follow = async (user2: string, token: string, isFollowing: boolean) => {
   await fetch(`/api/auth/follow`, {
@@ -36,6 +39,8 @@ export default function PostArea({ token }: { token: string }) {
   const [shouldPrintComm, setShouldPrintComm] = useState<boolean>(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [visibleComments, setVisibleComments] = useState<{ [key: number]: boolean }>({});
+  const router = useRouter();
+
 
 
   // Fonction pour extraire l'ID utilisateur depuis le token
@@ -209,9 +214,16 @@ export default function PostArea({ token }: { token: string }) {
                   src={data[i].profilePic || "/default-profile.png"} 
                   alt="Profil" 
                   className="post-profile-pic" 
+                  onClick={() => router.push(`/user/${data[i].user_id}`)}
+                  style={{ cursor: "pointer" }}
               />
               <p>
-                  <strong>@{data[i].username || "Utilisateur"}</strong>
+                <strong
+                  onClick={() => router.push(`/user/${data[i].user_id}`)}
+                  style={{ cursor: "pointer" }}
+                >
+                  @{data[i].username}
+                </strong>
               </p>
           </div>
 

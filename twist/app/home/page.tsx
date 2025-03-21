@@ -19,7 +19,7 @@ export default function HomePage() {
   const [unseenCount, setUnseenCount] = useState(0);
 
   const [username, setUsername] = useState("Utilisateur");
-  const [profileImage, setProfileImage] = useState("/default-profile.png");
+  const [profilePic, setprofilePic] = useState("/default-profile.png");
   const [unreadMessages, setUnreadMessages] = useState(0);
 
   useEffect(() => {
@@ -67,7 +67,7 @@ export default function HomePage() {
           console.log("Profil récupéré :", data);
   
           setUsername(data.username || "Utilisateur");
-          setProfileImage(data.profileImage || "/default-profile.png");
+          setprofilePic(data.profilePic || "/default-profile.png");
       } catch (error) {
           console.error("Erreur lors du chargement du profil :", error);
       }
@@ -224,7 +224,7 @@ export default function HomePage() {
       
       <div className="user-info" onClick={() => router.push("/profil")}>
         <img 
-          src={profileImage || "/default-profile.png"} 
+          src={profilePic || "/default-profile.png"} 
           alt="Profil" 
           className="header-profile-pic" 
         />
