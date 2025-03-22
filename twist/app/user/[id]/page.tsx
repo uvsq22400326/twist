@@ -41,8 +41,18 @@ export default function ProfilePage() {
        const [userPosts, setUserPosts] = useState<any[]>([]);
 const [userLikes, setUserLikes] = useState<any[]>([]);
 
-
-
+useEffect(() => {
+    const hasReloaded = sessionStorage.getItem("hasReloaded-profile");
+  
+    if (!hasReloaded) {
+      sessionStorage.setItem("hasReloaded-profile", "true");
+      window.location.reload();
+    } else {
+      sessionStorage.removeItem("hasReloaded-profile"); 
+    }
+  }, []);
+  
+        
        useEffect(() => {
         const token = window.sessionStorage.getItem("token");
         if (!token) {

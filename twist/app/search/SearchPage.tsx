@@ -25,6 +25,17 @@ export default function SearchPage() {
   const userId = "currentUserId"; 
   const [activeTab, setActiveTab] = useState(""); 
 
+      useEffect(() => {
+          const hasReloaded = sessionStorage.getItem("hasReloaded-profile");
+        
+          if (!hasReloaded) {
+            sessionStorage.setItem("hasReloaded-profile", "true");
+            window.location.reload();
+          } else {
+            sessionStorage.removeItem("hasReloaded-profile"); 
+          }
+        }, []);
+        
   useEffect(() => {
     if (query) {
       fetchResults(query);
