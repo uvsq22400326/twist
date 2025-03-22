@@ -13,7 +13,6 @@ export async function GET(req: Request) {
         const decodedToken = verifyToken(token);
         const userId = decodedToken.id;
 
-        // 🔹 Récupération des abonnés (followers)
         const [followers]: any = await pool.query(
             `SELECT u.id, u.username, u.profilePic 
             FROM follows f
@@ -25,7 +24,7 @@ export async function GET(req: Request) {
         return NextResponse.json({ followers });
 
     } catch (error) {
-        console.error("❌ Erreur serveur :", error);
+        console.error(" Erreur serveur :", error);
         return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
     }
 }

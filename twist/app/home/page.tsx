@@ -6,12 +6,15 @@ import "../grid.css";
 import "./home.css";
 import PostArea from "./postArea";
 import React from "react";
+import Suggestions from "../profil/suggestions";
+
 
 export default function HomePage() {
   const router = useRouter();
   const [content, setContent] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null); // ajout du state pour l'aperçu de img ou vd avant de publier
+    const [following, setFollowing] = useState(0);
 
   const [errorPublier, setError] = useState("");
   const [_token, set_Token] = useState("");
@@ -19,7 +22,7 @@ export default function HomePage() {
   const [unseenCount, setUnseenCount] = useState(0);
 
   const [username, setUsername] = useState("Utilisateur");
-  const [profileImage, setProfileImage] = useState("/default-profile.png");
+  const [profilePic, setprofilePic] = useState("/default-profile.png");
   const [unreadMessages, setUnreadMessages] = useState(0);
 
   useEffect(() => {
@@ -67,7 +70,7 @@ export default function HomePage() {
           console.log("Profil récupéré :", data);
   
           setUsername(data.username || "Utilisateur");
-          setProfileImage(data.profileImage || "/default-profile.png");
+          setprofilePic(data.profilePic || "/default-profile.png");
       } catch (error) {
           console.error("Erreur lors du chargement du profil :", error);
       }
@@ -117,6 +120,10 @@ export default function HomePage() {
     sessionStorage.removeItem("token");
     router.push("/login");
   };
+
+  const updateFollowingCount = (change: number) => {
+    setFollowing(prevCount => prevCount + change);
+};
 
   const handlePostTweet = async () => {
     const token = sessionStorage.getItem("token");
@@ -214,6 +221,7 @@ export default function HomePage() {
           </a>
         </nav>
       </aside>
+      
       <header>
     <input
       type="text"
@@ -224,7 +232,7 @@ export default function HomePage() {
       
       <div className="user-info" onClick={() => router.push("/profil")}>
         <img 
-          src={profileImage || "/default-profile.png"} 
+          src={profilePic || "/default-profile.png"} 
           alt="Profil" 
           className="header-profile-pic" 
         />
@@ -241,6 +249,8 @@ export default function HomePage() {
         </div>
       )}
     </div>
+
+
 </header>
 
 
@@ -301,6 +311,8 @@ export default function HomePage() {
         {errorPublier && <p className="error-text">{errorPublier}</p>}
         {_token ? <PostArea token={_token} /> : <p>Chargement...</p>}
       </main>
+
+
 
 <div className="bottom-navbar">
   <a href="/home">

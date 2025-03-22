@@ -36,30 +36,23 @@ export default function PostArea({ token }: { token: string | null }) {
     if (error) return <p>Erreur lors du chargement des posts.</p>;
     if (!data || !data.posts || data.posts.length === 0) return <p>Aucun post trouvé.</p>;
 
-    const formatDate = (dateString: string) => {
-        const postDate = new Date(dateString);
+    const formatTimeAgo = (timestamp?: string) => {
+        if (!timestamp) return "il y a ?"; 
+      
         const now = new Date();
-        const diffMs = now.getTime() - postDate.getTime(); // Différence en millisecondes
-    
-        const diffSeconds = Math.floor(diffMs / 1000);
-        const diffMinutes = Math.floor(diffSeconds / 60);
-        const diffHours = Math.floor(diffMinutes / 60);
-    
-        console.log(`⏳ diffSeconds: ${diffSeconds}, diffMinutes: ${diffMinutes}, diffHours: ${diffHours}`);
-    
-        if (diffSeconds < 60) {
-            return `${diffSeconds}s`; // 🔥 Moins d'une minute → secondes
-        } else if (diffMinutes < 60) {
-            return `${diffMinutes}min`; // 🔥 Moins d'une heure → minutes
-        } else if (diffHours < 24) {
-            return `${diffHours}h`; // 🔥 Moins d'un jour → heures
-        } else {
-            return postDate.toLocaleDateString("fr-FR", {
-                day: "numeric",
-                month: "short",
-            }); // 🔥 Plus d'un jour → format date
-        }
-    };
+        const past = new Date(timestamp);
+      
+        if (isNaN(past.getTime())) return "il y a ?"; 
+      
+        const diff = Math.floor((now.getTime() - past.getTime()) / 1000);
+      
+        if (diff < 60) return `il y a ${diff}s`;
+        if (diff < 3600) return `il y a ${Math.floor(diff / 60)}min`;
+        if (diff < 86400) return `il y a ${Math.floor(diff / 3600)}h`;
+        if (diff < 604800) return `il y a ${Math.floor(diff / 86400)}j`;
+        return `il y a ${Math.floor(diff / 604800)}sem`;
+      };
+      
     
 
    const handleDeletePost = async (postId: number) => {
@@ -82,10 +75,9 @@ export default function PostArea({ token }: { token: string | null }) {
             },
         });
 
-        const data = response.status !== 204 ? await response.json() : null; // ✅ Évite `Unexpected end of JSON`
-
+        const data = response.status !== 204 ? await response.json() : null; 
         if (response.ok) {
-            mutate(); // ✅ Met à jour la liste des posts après suppression
+            mutate(); 
         } else {
             alert("Erreur : " + (data?.error || "Impossible de supprimer le post."));
         }
@@ -101,9 +93,8 @@ export default function PostArea({ token }: { token: string | null }) {
                 <div key={post.id} className="post-box">
                     <div className="post-header">
                         <strong>@{post.username}</strong>
-                        <span className="post-date">{formatDate(post.created_at)}</span>
+                        <span className="post-date">{formatTimeAgo(post.created_at)}</span>
 
-                        {/* 🔥 Trois points pour ouvrir le menu */}
                         <span
                             className="menu-icon"
                             onClick={() => setShowMenu(showMenu === post.id ? null : post.id)}
@@ -111,7 +102,6 @@ export default function PostArea({ token }: { token: string | null }) {
                             ⋮
                         </span>
 
-                        {/* 🔥 Menu déroulant bien placé */}
                         {showMenu === post.id && (
                             <div className="dropdown-menu">
                                 <button onClick={() => setConfirmDelete(post.id)}>Supprimer le post</button>
@@ -132,7 +122,6 @@ export default function PostArea({ token }: { token: string | null }) {
                         ))
                     }
 
-                    {/* 🔥 Modal de confirmation avec fond flou */}
                     {confirmDelete === post.id && (
                         <div className="modal-overlay">
                             <div className="confirm-box">
