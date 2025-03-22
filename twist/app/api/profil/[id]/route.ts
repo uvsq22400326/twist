@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import pool from "../../../../lib/db";
 
-export async function GET(req: Request, context: { params: { id: string } }) {
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
-        const { id: userId } = await context.params;
+        const { id: userId } = await params;
 
         if (!userId) {
             return NextResponse.json({ error: "ID utilisateur manquant" }, { status: 400 });
