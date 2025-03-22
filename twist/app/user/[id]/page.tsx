@@ -18,8 +18,9 @@ interface User {
 }
 
 export default function ProfilePage() {
-    const { id } = useParams();
-    const isOwnProfile = !id;
+    const params = useParams();
+    const id = typeof params?.id === "string" ? params.id : Array.isArray(params?.id) ? params.id[0] : undefined;
+    const isOwnProfile = !id;    
     const router = useRouter();
     const [searchQuery, setSearchQuery] = useState("");
     const [searchResults, setSearchResults] = useState<{ users: any[]; posts: any[] } | null>(null);
@@ -37,6 +38,9 @@ export default function ProfilePage() {
        const [isFollowing, setIsFollowing] = useState(false); 
        const [suggestions, setSuggestions] = useState<any[]>([]);
        const [suggestionKey, setSuggestionKey] = useState(Date.now()); 
+       const [userPosts, setUserPosts] = useState<any[]>([]);
+const [userLikes, setUserLikes] = useState<any[]>([]);
+
 
 
        useEffect(() => {
@@ -52,31 +56,17 @@ export default function ProfilePage() {
                 const endpoint = isOwnProfile ? "/api/profil/info" : `/api/profil/${id}`;
                 const res = await fetch(endpoint, { headers: { Authorization: `Bearer ${token}` } });
                 if (!res.ok) throw new Error("Utilisateur non trouvé");
-        
                 const data = await res.json();
                 setUser(data);
-        
-                const followersRes = await fetch("/api/profil/followers", {
-                    method: "GET",
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-        
-                const followingRes = await fetch("/api/profil/abonnements", {
-                    method: "GET",
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-        
-                const followersData = await followersRes.json();
-                const followingData = await followingRes.json();
-        
-                if (followersRes.ok) setFollowers(followersData.followers.length);
-                if (followingRes.ok) {
-                    setFollowing(followingData.following.length);
-                    setFollowingList(followingData.following);
-                }
-        
-                setIsFollowing(followingData.following.some((u: { id: number }) => u.id === Number(id)));
-        
+                setFollowers(data.followers.length);
+                setFollowing(data.following.length);
+                setFollowingList(data.following); 
+                setFollowersList(data.followers);
+                setUserPosts(data.posts || []);
+                setUserLikes(data.likes || []);
+                const connectedUserId = JSON.parse(atob(token.split('.')[1])).id; 
+                setIsFollowing(data.followers.some((f: any) => f.id === connectedUserId));
+                        
             } catch (error) {
                 console.error("Erreur lors du chargement du profil :", error);
                 setUser(null);
@@ -96,46 +86,60 @@ export default function ProfilePage() {
 
     const refreshSuggestions = async () => {
         try {
-            const response = await fetch("/api/suggestions", {
-                headers: { Authorization: `Bearer ${_token}` },
-            });
-    
-            const data = await response.json();
-            if (response.ok) {
-                setSuggestions(data.suggestions);
-                 setSuggestionKey(Date.now()); 
-            }
+          const connectedUserId = JSON.parse(atob(_token!.split('.')[1])).id;
+      
+          const response = await fetch(`/api/suggestions?userId=${connectedUserId}`, {
+            headers: { Authorization: `Bearer ${_token}` },
+          });
+      
+          const data = await response.json();
+          if (response.ok) {
+            setSuggestions(data);
+            setSuggestionKey(Date.now());
+          }
         } catch (error) {
-            console.error("Erreur lors de la mise à jour des suggestions :", error);
+          console.error("Erreur lors de la mise à jour des suggestions :", error);
         }
-    };
+      };
+      
     
 
     const handleFollow = async () => {
         if (!_token || !id) return;
-    
+      
         try {
-            await fetch(`/api/auth/follow`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${_token}`,
-                    ToFollow: id.toString(), 
-                },
+          const res = await fetch(`/api/auth/follow`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${_token}`,
+              ToFollow: id.toString(),
+            },
+          });
+          if (!res.ok) throw new Error("Erreur lors du suivi");
+          const connectedUserId = JSON.parse(atob(_token.split('.')[1])).id;
+          setIsFollowing((prev) => !prev);
+          setFollowers((prev) => (isFollowing ? prev - 1 : prev + 1));
+                if (isFollowing) {
+            setFollowersList((prevList) =>
+              prevList.filter((u) => u.id !== connectedUserId)
+            );
+          } else {
+            const userRes = await fetch(`/api/profil/${connectedUserId}`, {
+              headers: { Authorization: `Bearer ${_token}` },
             });
-    
-            setIsFollowing((prev) => !prev);
-            setFollowers((prev) => (isFollowing ? prev - 1 : prev + 1));
-
-            refreshSuggestions(); 
+            if (userRes.ok) {
+              const userData = await userRes.json();
+              setFollowersList((prevList) => [...prevList, userData]);
+            }
+          }
+        refreshSuggestions();
         } catch (error) {
-            console.error("Erreur lors du suivi :", error);
+          console.error("Erreur lors du suivi :", error);
         }
-    };
-    
+      };
 
-
-     const handleSearch = async (event: React.KeyboardEvent<HTMLInputElement>) => {
+        const handleSearch = async (event: React.KeyboardEvent<HTMLInputElement>) => {
             if (event.key === "Enter" && searchQuery.trim() !== "") {
                 setIsSearching(true); 
         
@@ -170,49 +174,8 @@ export default function ProfilePage() {
                 }
             }
         };
-
         const updateFollowingCount = (change: number) => {
             setFollowing(prevCount => prevCount + change);
-        };
-
-
-    
-        const fetchFollowers = async () => {
-            if (!_token) return;
-    
-            try {
-                const response = await fetch("/api/profil/followers", {
-                    method: "GET",
-                    headers: { Authorization: `Bearer ${_token}` },
-                });
-    
-                const data = await response.json();
-                if (response.ok) {
-                    setFollowersList(data.followers || []);
-                    setShowFollowers(true);
-                }
-            } catch (error) {
-                console.error("Erreur récupération followers :", error);
-            }
-        };
-    
-        const fetchFollowing = async () => {
-            if (!_token) return;
-    
-            try {
-                const response = await fetch("/api/profil/abonnements", {
-                    method: "GET",
-                    headers: { Authorization: `Bearer ${_token}` },
-                });
-    
-                const data = await response.json();
-                if (response.ok) {
-                    setFollowingList(data.following || []);
-                    setShowFollowing(true);
-                }
-            } catch (error) {
-                console.error("Erreur récupération abonnements :", error);
-            }
         };
         
     return (
@@ -307,12 +270,12 @@ export default function ProfilePage() {
                 
                 
     <div className="follow-info">
-        <p onClick={fetchFollowers} className="clickable">
-            <strong>{followers}</strong> abonnés
-        </p>
-        <p onClick={fetchFollowing} className="clickable">
-            <strong>{following}</strong> abonnements
-        </p>
+    <p onClick={() => setShowFollowers(true)} className="clickable">
+    <strong>{followers}</strong> abonnés
+  </p>
+  <p onClick={() => setShowFollowing(true)} className="clickable">
+    <strong>{following}</strong> abonnements
+  </p>
     </div>
 
 
@@ -336,20 +299,23 @@ export default function ProfilePage() {
         <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <h3>Abonnés</h3>
             <ul className="user-list">
-                {followersList.length > 0 ? (
-                    followersList.map((user) => (
-                        <li key={user.id} className="user-item">
-                            <img src={user.profilePic || "/default-profile.png"} alt="Profil" className="profile-pic" />
-                            <div className="user-info">
-                                <p>@{user.username}</p>
-                                <small>{user.bio || "Aucune bio"}</small>
-                            </div>
-                        </li>
-                    ))
-                ) : (
-                    <p>Aucun abonné.</p>
-                )}
-            </ul>
+                    {followersList?.length > 0 ? (
+followersList.map((user) => {
+    console.log("User dans followersList:", user);
+    return (
+      <li key={user.id ?? `${Math.random()}`} className="user-item">
+        <img src={user.profilePic || "/default-profile.png"} alt="Profil" className="profile-pic" />
+        <div className="user-info">
+          <p>@{user.username}</p>
+          <small>{user.bio || "Aucune bio"}</small>
+        </div>
+      </li>
+    );
+  })
+        ) : (
+            <p>Aucun abonné.</p>
+        )}
+        </ul>
         <button className="close-modal-btn" onClick={() => { setShowFollowers(false); }}>✕</button>
         </div>
     </div>
@@ -362,7 +328,7 @@ export default function ProfilePage() {
             <ul className="user-list">
                 {followingList.length > 0 ? (
                     followingList.map((user) => (
-                        <li key={user.id} className="user-item">
+<li key={user.id ?? `${user.username}-${Math.random()}`} className="user-item">
 <img src={user.profilePic || "/default-profile.png"} alt="Profil" className="profile-pic" />
 <div className="user-info">
                                 <p>@{user.username}</p>
@@ -397,7 +363,13 @@ export default function ProfilePage() {
 
 
                 <div id="mes_posts_container">
-                {!showLikes ? <PostArea token={_token} userId={id ? Number(id) : undefined} /> : <LikeArea token={_token} />}                </div>
+                <PostArea
+  posts={userPosts}
+  likes={userLikes}
+  showLikes={showLikes}
+/>
+
+                 </div>
 
             </div>
 

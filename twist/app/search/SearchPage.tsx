@@ -138,7 +138,6 @@ export default function SearchPage() {
     }
   };
   
-
   const handleFollow = async (userId: string) => {
     try {
       const token = sessionStorage.getItem("token");
@@ -162,10 +161,8 @@ export default function SearchPage() {
       console.error("Error following user:", error);
     }
   };
-
   const handleLike = async (postId: string, initialLikes: number) => {
     const alreadyLiked = likedPosts[postId] || false;
-
     setLikedPosts((prev) => ({
       ...prev,
       [postId]: !alreadyLiked,
@@ -195,13 +192,10 @@ export default function SearchPage() {
       console.error("Error liking post:", error);
     }
   };
-
   const handleLogout = () => {
     sessionStorage.removeItem("token");
     router.push("/login");
   };
-
-  
 
   return (
     <div className="container">
@@ -284,7 +278,7 @@ export default function SearchPage() {
           </div>
         )}
 
-        <div className="search-results">
+        <div className="search-resultss">
           {activeTab === "users" && (
             <div>
               <h3>Utilisateurs trouvés</h3>
@@ -298,12 +292,19 @@ export default function SearchPage() {
                     onClick={() => handleFollow(user.user_id)}
                     disabled={user.user_id === userId} 
                   >
-                    {following[user.user_id] ? "Ne plus suivre" : "Suivre"}
+                    {following[user.id] ? "Ne plus suivre" : "Suivre"}
                   </button>
 
                   <p>
-                    <strong>@{user.username || "Utilisateur"}</strong>
-                  </p>
+                  <strong
+  onClick={() => router.push(`/user/${user.id}`)}
+  className="clickable-username"
+>
+  @{user.username}
+</strong>
+
+
+                </p>
                   </div>
                 ))}
                 </ul>
@@ -328,11 +329,16 @@ export default function SearchPage() {
                     </button>
 
                     <p>
-                      <strong>@{post.username || "Utilisateur"}</strong>
-                    </p>
+                    <strong
+  onClick={() => router.push(`/user/${post.user_id}`)}
+  className="clickable-username"
+  style={{ cursor: "pointer" }}
+>
+  @{post.username}
+</strong>
 
+              </p>
                     <p>{post.content}</p>
-
                     {post.imageUrl && (
                       <img
                         src={post.imageUrl}

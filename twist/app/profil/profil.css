@@ -827,7 +827,7 @@
     margin: 0;
 }
 
-.follow-btn , .unfollow-btn {
+.suggestion-follow-btn , .suggestion-unfollow-btn {
     margin-left: auto;
     background: white;
     color: black;
@@ -839,7 +839,7 @@
     font-weight: bold;
 }
 
-.follow-btn:hover , .unfollow-btn:hover {
+.suggestion-follow-btn:hover , .suggestion-unfollow-btn:hover {
     background: gray;
 }
 
@@ -930,6 +930,18 @@
 
 
 @media only screen and (max-width: 768px) {
+
+    .edit-profile-btn {
+        white-space: nowrap; 
+        background: none;
+        border: 1px solid white;
+        color: white;
+        padding: 5px 15px;
+        cursor: pointer;
+        font-weight: bold;
+        border-radius: 8px;
+        transition: 0.3s;
+    }
 
     .menu-icon {
     

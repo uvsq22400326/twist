@@ -241,10 +241,7 @@ export default function PostArea({ token }: { token: string }) {
           <span className="time-posted">{formatTimeAgo(data[i].created_at)}</span>
         </div>
       </div>
-
-
           <p>{data[i].content}</p>
-
           {/* Affichage des médias */}
           {data[i].media_url &&
             (data[i].media_url.includes("video") ? (

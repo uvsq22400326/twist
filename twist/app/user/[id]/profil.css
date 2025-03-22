@@ -100,7 +100,6 @@
 #mes_posts_container {
     width: 100%;
     max-width: 600px; 
-    margin: auto;
    
     padding-top: 0px !important; 
     margin-bottom: 0px !important; 
@@ -118,6 +117,7 @@
 }
 
 
+
 .profile-header {
     display: flex;
     flex-direction: column;
@@ -128,6 +128,7 @@
     margin-bottom: 20px; 
 
 }
+
 
 #twist-area {
     display: flex;
@@ -338,7 +339,16 @@
 }
 
 
-
+.modal-content {
+    background: #000;
+    color: white;
+    padding: 15px 20px; 
+    border: 1px solid #2f3336;
+    border-radius: 12px;
+    width: 400px;
+    max-width: 90%;
+    position: relative;
+}
 
 .modal-content h3 {
 
@@ -529,6 +539,33 @@ z-index: 1000;
     max-width: 100%;
     border-radius: 5px;
     margin-top: 5px;
+}
+
+.close-modal-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 22px;
+    color: white;
+    cursor: pointer;
+}
+
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 22px;
+    color: white;
+    cursor: pointer;
+    transition: opacity 0.3s;
+}
+
+.close-btn:hover {
+    opacity: 0.6;
 }
 
 .close-search {

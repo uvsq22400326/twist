@@ -114,7 +114,7 @@ export default function Suggestions({userId, updateFollowingCount }: Suggestions
                             <strong>@{user.username}</strong>
                         </div>
                         <button 
-    className={followingUsers.includes(user.id) ? "unfollow-btn" : "follow-btn"}
+    className={followingUsers.includes(user.id) ? "suggestion-unfollow-btn" : "suggestion-follow-btn"}
     onClick={() => handleFollow(user.id)}
 >
     {followingUsers.includes(user.id) ? "Ne plus suivre" : "Suivre"}

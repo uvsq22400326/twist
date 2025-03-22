@@ -6,12 +6,15 @@ import "../grid.css";
 import "./home.css";
 import PostArea from "./postArea";
 import React from "react";
+import Suggestions from "../profil/suggestions";
+
 
 export default function HomePage() {
   const router = useRouter();
   const [content, setContent] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null); // ajout du state pour l'aperçu de img ou vd avant de publier
+    const [following, setFollowing] = useState(0);
 
   const [errorPublier, setError] = useState("");
   const [_token, set_Token] = useState("");
@@ -118,6 +121,10 @@ export default function HomePage() {
     router.push("/login");
   };
 
+  const updateFollowingCount = (change: number) => {
+    setFollowing(prevCount => prevCount + change);
+};
+
   const handlePostTweet = async () => {
     const token = sessionStorage.getItem("token");
 
@@ -214,6 +221,7 @@ export default function HomePage() {
           </a>
         </nav>
       </aside>
+      
       <header>
     <input
       type="text"
@@ -241,6 +249,8 @@ export default function HomePage() {
         </div>
       )}
     </div>
+
+
 </header>
 
 
@@ -301,6 +311,8 @@ export default function HomePage() {
         {errorPublier && <p className="error-text">{errorPublier}</p>}
         {_token ? <PostArea token={_token} /> : <p>Chargement...</p>}
       </main>
+
+
 
 <div className="bottom-navbar">
   <a href="/home">
