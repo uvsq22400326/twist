@@ -86,6 +86,7 @@
 
 .profile-container {
     display: flex;
+    flex-grow: 1;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
@@ -223,28 +224,6 @@
     margin-bottom: 10px;
 }
 
-.follow-info {
-    display: flex;
-    gap: 15px;
-    font-size: 13px;
-    color: #a09c9cd2;
-    margin-top: 3px;
-    margin-left: -324px;
-}
-
-.follow-info p {
-    background: none;
-    padding: 0;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.follow-info p:hover {
-    color: #c8bfbf;
-    text-decoration: underline;
-
-}
 .bio-edit {
     display: flex;
     flex-direction: column;
@@ -408,181 +387,6 @@
 }
 
 
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-}
-
-/* Conteneur principal */
-.modal-content {
-    background: #000;
-    color: white;
-    padding: 15px 20px; 
-    border: 1px solid #2f3336;
-    border-radius: 12px;
-    width: 400px;
-    max-width: 90%;
-    position: relative;
-}
-
-.close-btn {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: none;
-    border: none;
-    font-size: 22px;
-    color: white;
-    cursor: pointer;
-    transition: opacity 0.3s;
-}
-
-.close-btn:hover {
-    opacity: 0.6;
-}
-
-.close-modal-btn {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    background: none;
-    border: none;
-    font-size: 22px;
-    color: white;
-    cursor: pointer;
-}
-
-.profile-edit-container {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    margin-top: 2px;
-    margin-bottom: 25px;
-}
-
-.profile-pic-preview {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    object-fit: cover;
-    transition: 0.3s ease-in-out;
-}
-
-.camera-icon {
-    position: absolute;
-    top: 95%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(70, 70, 70, 0.579);
-    padding: 10px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-
-.camera-icon img {
-    width: 28px;
-    height: 28px;
-    opacity: 0.8;
-}
-
-.camera-icon:hover::after {
-    content: "Ajouter une photo";
-    position: absolute;
-    top: 50px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(179, 175, 175, 0.708);
-    color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 12px;
-    white-space: nowrap;
-    opacity: 1;
-}
-
-.bio-input {
-    width: 100%;
-    height: 50px;
-    padding: 10px;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    background: #2a2d34;
-    color: white;
-    resize: none;
-    margin-top: 10px;
-}
-
-.modal-actions {
-    margin-top: 20px;
-    display: flex;
-    justify-content: space-between;
-}
-
-.save-btn {
-    background: #1d9bf0;
-    color: white;
-    padding: 12px 20px;
-    border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    cursor: pointer;
-    font-weight: bold;
-    width: 48%;
-    transition: 0.3s;
-}
-
-.save-btn:hover {
-    background: #1774cc;
-}
-
-.cancel-btn {
-    background: #333;
-    color: white;
-    padding: 12px 20px;
-    border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    cursor: pointer;
-    font-weight: bold;
-    width: 48%;
-    transition: 0.3s;
-}
-
-.cancel-btn:hover {
-    background: #444;
-}
-
-.delete-pic-btn {
-    background: rgb(207, 204, 204);
-    color: rgb(0, 0, 0);
-    padding: 10px 15px;
-    border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    cursor: pointer;
-    font-weight: bold;
-    margin-top: 10px;
-    width: 100%;
-    transition: 0.3s;
-}
-
-.delete-pic-btn:hover {
-    background: rgb(215, 212, 212);
-}
 
 .user-bio {
     font-size: 16px;
@@ -591,22 +395,6 @@
     display: block;
 }
 
-
-.edit-profile-btn {
-    white-space: nowrap; 
-    background: none;
-    border: 1px solid white;
-    color: white;
-    padding: 5px 37px;
-    cursor: pointer;
-    font-weight: bold;
-    border-radius: 8px;
-    transition: 0.3s;
-}
-
-.edit-profile-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
-}
 
 .profile-wrapper {
     display: flex;
@@ -620,9 +408,10 @@
 .vertical-line {
     width: 1px;
     background-color: #2f3336;
+bottom:0;
     position: absolute;
     top: 0;
-    bottom: 0;
+z-index: 1000;
 }
 
 .vertical-line.left {
@@ -855,7 +644,6 @@
     padding: 5px;
 }
 
-/* 🖱️ Style du menu déroulant */
 .dropdown-menu {
     white-space: nowrap; 
     top: 100%;
@@ -1017,23 +805,8 @@
         padding-bottom: 5px;
     }
 
-
-    .follow-info {
-        display: flex;
-        gap: 15px;
-        font-size: 13px;
-        color: #a09c9cd2;
-        margin-top: 3px;
-        margin-left: -145px;
-    }
-
     .vertical-line {
         display: none !important;
-    }
-
-    .profile-container {
-        margin-left: 0;
-        padding-bottom: 70px;
     }
 
 }
@@ -1045,3 +818,77 @@
     }
     
   }
+
+  .profile-pic {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+
+.profile-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    width: 100vw;
+    min-height: 100vh;
+    background-color: black;
+    position: relative;
+    overflow: hidden; }
+
+
+    .follow-info {
+        display: flex;
+
+        gap: 15px;
+        font-size: 13px;
+        color: #a09c9cd2;
+        margin-top: 3px;
+
+        align-items: center;
+        width: 83%;
+        max-width: 100%;
+        margin-top: 10px;
+    }
+    
+    .follow-info p {
+        background: none;
+        padding: 0;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+    
+    .follow-info p:hover {
+        color: #c8bfbf;
+        text-decoration: underline;
+    
+    }
+
+    .follow-button-container {
+        margin-top: 10px; 
+    }
+    
+    .follow-button {
+        background-color: #1da1f2;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 20px;
+
+        cursor: pointer;
+        font-size: 14px;
+        transition: background 0.3s;
+        display: flex;
+
+        align-items: center;
+        max-width: 100%;
+        margin-top: 10px;
+        
+
+    }
+    
+    .follow-button:hover {
+        background-color: #0d8ae8;
+    }

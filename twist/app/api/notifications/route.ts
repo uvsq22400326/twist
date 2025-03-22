@@ -23,8 +23,16 @@ export async function GET(request: Request) {
       userId,
     ]);
 
-    return NextResponse.json(notifications, { status: 200 });
-  } catch (error) {
+    const formatted = notifications.map((n) => ({
+      id: n.id,
+      type: n.type,
+      sourceUsername: n.sourceUsername,
+      seen: n.seen,
+      timestamp: n.created_at, 
+    }));
+    
+    return NextResponse.json(formatted, { status: 200 });
+      } catch (error) {
     console.error("Server error: ", error);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }

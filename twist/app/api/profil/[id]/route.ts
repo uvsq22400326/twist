@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import pool from "../../../../lib/db";
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request, context: { params: { id: string } }) {
     try {
-        const userId = params.id;
+        const { id: userId } = await context.params;
 
         // Vérifier que l'ID est valide
         if (!userId) {

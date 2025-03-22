@@ -26,7 +26,7 @@ body {
 
 .vertical-line {
   position: fixed;
-  left: 520px; 
+  left: 535px; 
   top: 0;
   height: 100vh;
   width: 1px;
@@ -34,7 +34,7 @@ body {
 }
 
 .vertical-line.right {
-  left: calc(50% + 240px); 
+  left: calc(50% + 225px); 
 }
 
 #nav-sidebar img {
@@ -130,7 +130,7 @@ header {
 }
 header input {
   width: 320px;
-  max-width: 400px;
+  max-width: 250px;
   padding: 10px;
   border-radius: 20px;
   border: none;
@@ -157,7 +157,7 @@ header input::placeholder {
   align-items: flex-start;
   max-width: 530px;
   position: relative;
-  top: 0px;
+margin-top : -40px ;
   width: 30%;
 }
 
@@ -341,7 +341,7 @@ header input::placeholder {
 
 .follow-button {
   position: absolute;
-  top: 10px;
+  top: 30px;
   right: 15px;
   color: #1da1f2;
   font-size: 14px;
@@ -422,7 +422,9 @@ header input::placeholder {
 
 @media only screen and (max-width: 768px) {
 
-
+  header{
+    display: none !important;
+  }
   header {
     left: 0;
     width: 100%;
@@ -488,7 +490,8 @@ display: none !important;
 
   #twist-area {
     margin-left: 0;
-    padding: 60px 10px;
+    padding: 40px 5px;
+    margin-bottom: 0 !important;
   }
 }
 
@@ -557,23 +560,21 @@ display: none !important;
 }
 
 .menu-icon:hover {
-  color: #1da1f2;
+  color: #8e9193;
 }
 
 .dropdown-menu {
   position: absolute;
-  top: 25px;
+  top: 35px;
   right: 0;
   background: #000;
   border: 1px solid #222;
   padding: 10px;
   border-radius: 8px;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
   z-index: 1000;
 }
 
 .dropdown-menu button {
-  background: transparent;
   color: #e7e9ea;
   border: none;
   padding: 8px 15px;
@@ -585,7 +586,7 @@ display: none !important;
 }
 
 .dropdown-menu button:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgb(0, 0, 0);
 }
 
 .like-button {
@@ -632,7 +633,7 @@ display: none !important;
 .tweet-actions {
   display: flex;
   align-items: center;
-  justify-content: flex-end; /* pour que pic de img soit aligné avec publier  */
+  justify-content: flex-end;
   gap: 12px;
   margin-top: 8px;
 }
@@ -703,16 +704,81 @@ display: none !important;
 
 .post-header {
   display: flex;
-  align-items: center;
-  gap: 5px; 
+  align-items: center; 
+  gap: 8px; 
 }
 
 .post-profile-pic {
-  width: 10%; 
-  max-width: 40px; 
-  height: auto; 
-  border-radius: 50%;
-  object-fit: cover;
+  width: 40px !important; 
+  height: 40px !important;
+  border-radius: 50% !important; 
+  object-fit: cover !important; 
+  display: block !important;
 }
 
 
+/* NOOOOOOOOOOOOOOOTIF */
+
+.notifications-list {
+  display: flex;
+  flex-direction: column;
+  width: 30%;
+}
+
+h2 {
+ margin-top: -20px;
+  margin-left: -250px;
+  font-size: 30px;
+margin-bottom:50px ;}
+
+.notification-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #111;
+  padding: 12px 15px;
+  border-bottom: 1px solid #222; 
+  border-radius: 8px;
+  margin-bottom: 8px;
+  transition: background 0.3s ease;
+}
+
+.notification-item.unseen {
+  background-color: #1a1a1a; 
+}
+
+.notification-content {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.notification-text {
+  font-size: 15px;
+  color: white;
+}
+
+.notification-text strong {
+  font-weight: bold; 
+  color: white;
+}
+
+.notification-time {
+  font-size: 12px;
+  color: gray; 
+  margin-left: 15px;
+  white-space: nowrap;
+}
+
+
+.username-time {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.username-time .time-posted {
+  font-size: 14px;
+  color: #aaa;
+}

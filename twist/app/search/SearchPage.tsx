@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import "../grid.css";
 import "../home/home.css"; // Use the same CSS as the home page
 import React from "react";
+import "./search.css";
+
 
 export default function SearchPage() {
   const router = useRouter();
@@ -20,11 +22,13 @@ export default function SearchPage() {
   const [following, setFollowing] = useState<{ [key: string]: boolean }>({});
   const [showMenu, setShowMenu] = useState(false);
   const [unseenCount, setUnseenCount] = useState(0);
-  const userId = "currentUserId"; // Replace with the actual user ID logic
+  const userId = "currentUserId"; 
+  const [activeTab, setActiveTab] = useState(""); 
 
   useEffect(() => {
     if (query) {
       fetchResults(query);
+      setActiveTab("users"); 
     }
   }, [query]);
 
@@ -107,8 +111,12 @@ export default function SearchPage() {
       const contentType = res.headers.get("content-type");
       if (contentType && contentType.indexOf("application/json") !== -1) {
         const data = await res.json();
-        console.log("Search results:", data); // Log the search results
-        setResults(data);
+        console.log("Search results:", data); 
+        const filteredUsers = data.users.filter((user: { user_id: string }) => user.user_id !== userId);
+        setResults({
+          users: filteredUsers,
+          posts: data.posts,
+        });
       } else {
         throw new Error("Received non-JSON response");
       }
@@ -116,12 +124,20 @@ export default function SearchPage() {
       console.error("Error fetching search results:", error);
     }
   };
+  
 
   const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       router.push(`/search?q=${searchQuery}`);
     }
   };
+
+  const handleSearchIconClick = () => {
+    if (searchQuery.trim() !== "") {
+      router.push(`/search?q=${searchQuery}`);
+    }
+  };
+  
 
   const handleFollow = async (userId: string) => {
     try {
@@ -185,6 +201,8 @@ export default function SearchPage() {
     router.push("/login");
   };
 
+  
+
   return (
     <div className="container">
       <aside className="col-3" id="nav-sidebar">
@@ -212,14 +230,26 @@ export default function SearchPage() {
       </aside>
 
       <div className="main-content">
+      <div className="vertical-line"></div>
+
         <header>
-          <input
-            type="text"
-            placeholder="Rechercher..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={handleSearch}
-          />
+        <div className="search-input-wrapper">
+  <img 
+    src="/icons/searchpp.png" 
+    alt="🔍" 
+    className="search-icon-inside" 
+    onClick={handleSearchIconClick}
+  />
+  <input
+    type="text"
+    className="search-input"
+    placeholder="Rechercher..."
+    value={searchQuery}
+    onChange={(e) => setSearchQuery(e.target.value)}
+    onKeyDown={handleSearch}
+  />
+</div>
+
           <div className="user-menu">
             <span className="menu-icon" onClick={() => setShowMenu(!showMenu)}>
               ⋮
@@ -232,47 +262,69 @@ export default function SearchPage() {
           </div>
         </header>
 
-        <main id="twist-area">
-          <h2>Résultats de recherche pour "{query}"</h2>
+        <main id="search-res">
+        <h2>Recherches</h2>
 
-          <section>
-            <h3>Utilisateurs : </h3>
-            <ul>
-              {results.users &&
+        {!query && <p className="search-placeholder">Arrête de stalk les gens stp</p>}
+
+        {query && (
+          <div className="search-tabs">
+            <button 
+              className={activeTab === "users" ? "active" : ""}
+              onClick={() => setActiveTab("users")}
+            >
+              Utilisateurs
+            </button>
+            <button 
+              className={activeTab === "posts" ? "active" : ""}
+              onClick={() => setActiveTab("posts")}
+            >
+              Posts
+            </button>
+          </div>
+        )}
+
+        <div className="search-results">
+          {activeTab === "users" && (
+            <div>
+              <h3>Utilisateurs trouvés</h3>
+              {results.users.length === 0 ? <p>Aucun utilisateur trouvé.</p> : (
+                <ul>
+                  {results.users &&
                 results.users.map((user) => (
-                  <li key={user.id} className="post-box">
-                    {user.profilePicture && (
-                      <img
-                        src={user.profilePicture}
-                        alt={user.username}
-                        className="user-avatar"
-                      />
-                    )}
-                    <strong>@{user.username}</strong>
-                    <button
-                      className="follow-button"
-                      onClick={() => handleFollow(user.id)}
-                      disabled={user.id === userId} // Empêche l'auto-follow
-                    >
-                      {following[user.id] ? "Unfollow" : "Follow"}
-                    </button>
-                  </li>
-                ))}
-            </ul>
-          </section>
+                  <div key={user.id} className="post-box">
+                  <button
+                    className="follow-button"
+                    onClick={() => handleFollow(user.user_id)}
+                    disabled={user.user_id === userId} 
+                  >
+                    {following[user.user_id] ? "Ne plus suivre" : "Suivre"}
+                  </button>
 
-          <section>
-            <h3>Posts : </h3>
-            <ul>
-              {results.posts &&
+                  <p>
+                    <strong>@{user.username || "Utilisateur"}</strong>
+                  </p>
+                  </div>
+                ))}
+                </ul>
+              )}
+            </div>
+          )}
+
+          {activeTab === "posts" && (
+            <div>
+              <h3>Posts trouvés</h3>
+              {results.posts.length === 0 ? <p>Aucun post trouvé.</p> : (
+                <ul>
+                 {results.posts &&
                 results.posts.map((post) => (
                   <div key={post.id} className="post-box">
                     <button
                       className="follow-button"
                       onClick={() => handleFollow(post.user_id)}
-                      disabled={post.user_id === userId} // Empêche l'auto-follow
+                      disabled={post.user_id === userId} 
                     >
-                      {following[post.user_id] ? "Unfollow" : "Follow"}
+                      {following[post.user_id] ? "Ne plus suivre" : "Suivre"}
                     </button>
 
                     <p>
@@ -302,8 +354,16 @@ export default function SearchPage() {
                     </button>
                   </div>
                 ))}
-            </ul>
-          </section>
+
+                </ul>
+              )}
+            </div>
+            
+          )}
+          
+        </div>
+        <div className="vertical-line right"></div>
+
         </main>
       </div>
       <div className="bottom-navbar">

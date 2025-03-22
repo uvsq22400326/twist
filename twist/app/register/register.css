@@ -47,8 +47,8 @@ select {
   margin: 8px 0;
   border-radius: 8px;
   border: none;
-  background: #fff;
-  color: black;
+  background: #222;
+  color: rgb(127, 125, 125);
   font-size: 16px;
 }
 
@@ -140,7 +140,7 @@ label {
     position: relative;
     display: flex;
     align-items: center;
-    background: #ffffff;
+    background: #222;
     border-radius: 8px;
     padding: 10px;
     width: 100%;
@@ -149,7 +149,7 @@ label {
 }
 
 .password-container input {
-    background: #ffffff;
+  background: #222;
 
     flex: 1;
     border: none;
@@ -228,7 +228,6 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
     margin-bottom: 5px;
 }
 
-/* ✅ Bouton de fermeture */
 .close-modal {
     background-color: #0790d5;
     color: white;
@@ -260,6 +259,7 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
   }
 
   .logo {
+    margin-top: 100px;
     width: 100px;
   }
 

@@ -12,10 +12,11 @@ interface User {
 interface SuggestionsProps {
     userId: number;
     updateFollowingCount: (change: number) => void;
+    refreshSuggestions: () => void; 
 
 }
 
-export default function Suggestions({userId, updateFollowingCount }: SuggestionsProps) {
+export default function Suggestions({userId, updateFollowingCount , refreshSuggestions}: SuggestionsProps) {
     const [suggestedUsers, setSuggestedUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [followingUsers, setFollowingUsers] = useState<number[]>([]); 
@@ -92,6 +93,7 @@ export default function Suggestions({userId, updateFollowingCount }: Suggestions
                 updateFollowingCount(followingUsers.includes(userIdToFollow) ? -1 : +1);
     
                 fetchSuggestions();
+                refreshSuggestions();
             } else {
                 alert("Erreur : " + data.error);
             }

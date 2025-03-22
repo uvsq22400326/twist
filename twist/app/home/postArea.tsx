@@ -195,7 +195,22 @@ export default function PostArea({ token }: { token: string }) {
       </div>
     );
   }
-
+  const formatTimeAgo = (timestamp?: string) => {
+    if (!timestamp) return "il y a ?"; 
+  
+    const now = new Date();
+    const past = new Date(timestamp);
+  
+    if (isNaN(past.getTime())) return "il y a ?"; 
+  
+    const diff = Math.floor((now.getTime() - past.getTime()) / 1000);
+  
+    if (diff < 60) return `il y a ${diff}s`;
+    if (diff < 3600) return `il y a ${Math.floor(diff / 60)}min`;
+    if (diff < 86400) return `il y a ${Math.floor(diff / 3600)}h`;
+    if (diff < 604800) return `il y a ${Math.floor(diff / 86400)}j`;
+    return `il y a ${Math.floor(diff / 604800)}sem`;
+  };
   return (
     <div id="twist-area">
       {[...Array(data.length)].map((_, i) => (
@@ -208,24 +223,24 @@ export default function PostArea({ token }: { token: string }) {
             {following[data[i].user_id] ? "Ne plus suivre" : "Suivre"}
           </button>
 
-          {/* Affichage du username au lieu de l'email */}
           <div className="post-header">
-              <img 
-                  src={data[i].profilePic || "/default-profile.png"} 
-                  alt="Profil" 
-                  className="post-profile-pic" 
-                  onClick={() => router.push(`/user/${data[i].user_id}`)}
-                  style={{ cursor: "pointer" }}
-              />
-              <p>
-                <strong
-                  onClick={() => router.push(`/user/${data[i].user_id}`)}
-                  style={{ cursor: "pointer" }}
-                >
-                  @{data[i].username}
-                </strong>
-              </p>
-          </div>
+          <img 
+          src={data[i].profilePic || "/default-profile.png"} 
+          alt="Profil" 
+          className="post-profile-pic" 
+          onClick={() => router.push(`/user/${data[i].user_id}`)}
+          style={{ cursor: "pointer" }}
+        />
+        <div className="username-time">
+          <strong
+            onClick={() => router.push(`/user/${data[i].user_id}`)}
+            style={{ cursor: "pointer" }}
+          >
+            @{data[i].username}
+          </strong>
+          <span className="time-posted">{formatTimeAgo(data[i].created_at)}</span>
+        </div>
+      </div>
 
 
           <p>{data[i].content}</p>

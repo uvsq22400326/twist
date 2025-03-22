@@ -851,16 +851,15 @@
     
     cursor: pointer;
     font-size: 20px;
-    margin-left: 290px;
+    margin-left: 300px;
     padding: 5px;
 }
 
-/* 🖱️ Style du menu déroulant */
 .dropdown-menu {
     white-space: nowrap; 
     top: 100%;
     padding: 5px ;
-    top: 30px; /* Ajuste la position */
+    top: 30px; 
     background: rgba(137, 133, 133, 0.39);
     border-radius: 5px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
@@ -932,6 +931,24 @@
 
 @media only screen and (max-width: 768px) {
 
+    .menu-icon {
+    
+        cursor: pointer;
+        font-size: 20px;
+        margin-left: 180px;
+        padding: 5px;
+    }
+
+    .dropdown-menu {
+        padding: 5px ;
+        background: rgba(137, 133, 133, 0.214);
+        border-radius: 5px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+margin-left:-150px; 
+margin-top: 50px;       
+z-index: 100;
+
+    }
 
     .search-bar,
     .suggestions-container {
