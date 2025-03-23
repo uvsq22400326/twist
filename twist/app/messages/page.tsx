@@ -26,6 +26,7 @@ interface Conversation {
 
 export default function MessagesPage() {
   const router = useRouter();
+
   const [userId, setUserId] = useState<number | null>(null);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -40,6 +41,7 @@ export default function MessagesPage() {
   const [searchResults, setSearchResults] = useState<Conversation[]>([]);
   const [selectedUserProfilePic, setSelectedUserProfilePic] = useState<string>("/default-profile.png");
   const [unreadMessages, setUnreadMessages] = useState(0);
+  const [unseenCount, setUnseenCount] = useState(0);
 
   useEffect(() => {
     socket.on("newMessage", (message) => {
@@ -214,6 +216,32 @@ const selectConversation = async (conversationId: number, participantUsername: s
     }
   };
   
+  const [preselectedUserId, setPreselectedUserId] = useState<string | null>(null);
+
+useEffect(() => {
+  const params = new URLSearchParams(window.location.search);
+  const userIdFromURL = params.get("userId");
+  setPreselectedUserId(userIdFromURL);
+}, []);
+
+  const preselectDone = useRef(false);
+
+  useEffect(() => {
+    if (
+      !userId ||
+      conversations.length === 0 ||
+      !preselectedUserId ||
+      preselectDone.current
+    ) return;
+  
+    const conv = conversations.find((c) => String(c.id) === preselectedUserId);
+    if (conv) {
+      selectConversation(conv.id, conv.participantUsername);
+      preselectDone.current = true;
+    }
+  }, [userId, conversations, preselectedUserId]);
+  
+  
 
 
   const startConversation = async () => {
@@ -252,6 +280,8 @@ const selectConversation = async (conversationId: number, participantUsername: s
   
   
   return (
+
+    
     <div className={`messages-container ${selectedConversation ? "conversation-open" : ""}`}>
       <div className="conversations-panel">
         <div className="header">
@@ -260,6 +290,36 @@ const selectConversation = async (conversationId: number, participantUsername: s
     Messages
   </a>
 </h2>
+
+<aside className="col-3" id="nav-sidebar">
+      <div className="vertical-line"></div>
+
+        <img src="/twist-logo.png" alt="Twist Logo" id="logo" />
+        <nav>
+          <a href="/home" className="sidebar-item">
+            Accueil
+          </a>
+          <a href="/search" className="sidebar-item">
+            Recherche
+          </a>
+          <a href="/messages" className="sidebar-item">
+  Messages
+  {unreadMessages > 0 && (
+    <span className="notification-dot">{unreadMessages}</span>
+  )}
+</a>
+
+          <a href="/notifications" className="sidebar-item">
+            Notifications
+            {unseenCount > 0 && (
+              <span className="notification-dot">{unseenCount}</span>
+            )}
+          </a>
+          <a href="/profil" className="sidebar-item">
+            Profil
+          </a>
+        </nav>
+      </aside>
 
           <img
             src="/icons/messages.png"

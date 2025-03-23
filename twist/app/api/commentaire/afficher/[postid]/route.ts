@@ -8,9 +8,12 @@ export async function GET(req: Request,
     const postId = _params.postid;
 
     const [rows, fields] = await pool.query(
-        "SELECT c.id as commid, c.userid, c.content, u.username"
-        + " FROM commentaire c, users u where u.id = c.userid AND c.post_id = " + postId
+        "SELECT c.id as commid, c.userid, c.content, c.created_at, u.username " +
+        "FROM commentaire c, users u " +
+        "WHERE u.id = c.userid AND c.post_id = ?",
+        [postId]
     );
+
     return NextResponse.json(
         { message: "Commentaires retrouvés avec succès",
             content: rows,

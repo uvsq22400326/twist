@@ -26,6 +26,18 @@ export default function HomePage() {
   const [unreadMessages, setUnreadMessages] = useState(0);
 
   useEffect(() => {
+      const hasReloaded = sessionStorage.getItem("hasReloaded-profile");
+    
+      if (!hasReloaded) {
+        sessionStorage.setItem("hasReloaded-profile", "true");
+        window.location.reload();
+      } else {
+        sessionStorage.removeItem("hasReloaded-profile"); 
+      }
+    }, []);
+    
+    
+  useEffect(() => {
     const fetchUnreadMessages = async () => {
       const token = sessionStorage.getItem("token");
       if (!token) return;

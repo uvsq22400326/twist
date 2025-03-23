@@ -6,7 +6,7 @@ import "../grid.css";
 import "../home/home.css"; // Use the same CSS as the home page
 import React from "react";
 import "./search.css";
-
+import { verifyToken } from "../../lib/auth"; // Import verifyToken
 
 export default function SearchPage() {
   const router = useRouter();
@@ -22,13 +22,24 @@ export default function SearchPage() {
   const [following, setFollowing] = useState<{ [key: string]: boolean }>({});
   const [showMenu, setShowMenu] = useState(false);
   const [unseenCount, setUnseenCount] = useState(0);
-  const userId = "currentUserId"; 
-  const [activeTab, setActiveTab] = useState(""); 
+  const [userId, setUserId] = useState<string | null>(null); // Update userId state
+  const [activeTab, setActiveTab] = useState("");
+
+  useEffect(() => {
+    const hasReloaded = sessionStorage.getItem("hasReloaded-profile");
+
+    if (!hasReloaded) {
+      sessionStorage.setItem("hasReloaded-profile", "true");
+      window.location.reload();
+    } else {
+      sessionStorage.removeItem("hasReloaded-profile");
+    }
+  }, []);
 
   useEffect(() => {
     if (query) {
       fetchResults(query);
-      setActiveTab("users"); 
+      setActiveTab("users");
     }
   }, [query]);
 
@@ -76,7 +87,6 @@ export default function SearchPage() {
     fetchInitialStates();
   }, []);
 
-
   useEffect(() => {
     const fetchUnseenCount = async () => {
       const token = sessionStorage.getItem("token");
@@ -101,6 +111,23 @@ export default function SearchPage() {
     fetchUnseenCount();
   }, []);
 
+  useEffect(() => {
+    const token = sessionStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      // Safe parsing of JWT token without calling verifyToken
+      const tokenParts = token.split(".");
+      if (tokenParts.length === 3) {
+        const payload = JSON.parse(atob(tokenParts[1]));
+        if (payload && payload.id) {
+          setUserId(String(payload.id));
+        }
+      }
+    } catch (error) {
+      console.error("Error extracting user ID from token:", error);
+    }
+  }, []);
 
   const fetchResults = async (query: string) => {
     try {
@@ -111,8 +138,10 @@ export default function SearchPage() {
       const contentType = res.headers.get("content-type");
       if (contentType && contentType.indexOf("application/json") !== -1) {
         const data = await res.json();
-        console.log("Search results:", data); 
-        const filteredUsers = data.users.filter((user: { user_id: string }) => user.user_id !== userId);
+        console.log("Search results:", data);
+        const filteredUsers = data.users.filter(
+          (user: { user_id: string }) => user.user_id !== userId
+        );
         setResults({
           users: filteredUsers,
           posts: data.posts,
@@ -124,7 +153,6 @@ export default function SearchPage() {
       console.error("Error fetching search results:", error);
     }
   };
-  
 
   const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -137,7 +165,7 @@ export default function SearchPage() {
       router.push(`/search?q=${searchQuery}`);
     }
   };
-  
+
   const handleFollow = async (userId: string) => {
     try {
       const token = sessionStorage.getItem("token");
@@ -224,25 +252,25 @@ export default function SearchPage() {
       </aside>
 
       <div className="main-content">
-      <div className="vertical-line"></div>
+        <div className="vertical-line"></div>
 
         <header>
-        <div className="search-input-wrapper">
-  <img 
-    src="/icons/searchpp.png" 
-    alt="🔍" 
-    className="search-icon-inside" 
-    onClick={handleSearchIconClick}
-  />
-  <input
-    type="text"
-    className="search-input"
-    placeholder="Rechercher..."
-    value={searchQuery}
-    onChange={(e) => setSearchQuery(e.target.value)}
-    onKeyDown={handleSearch}
-  />
-</div>
+          <div className="search-input-wrapper">
+            <img
+              src="/icons/searchpp.png"
+              alt="🔍"
+              className="search-icon-inside"
+              onClick={handleSearchIconClick}
+            />
+            <input
+              type="text"
+              className="search-input"
+              placeholder="Rechercher..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={handleSearch}
+            />
+          </div>
 
           <div className="user-menu">
             <span className="menu-icon" onClick={() => setShowMenu(!showMenu)}>
@@ -257,138 +285,143 @@ export default function SearchPage() {
         </header>
 
         <main id="search-res">
-        <h2>Recherches</h2>
+          <h2>Recherches</h2>
 
-        {!query && <p className="search-placeholder">Arrête de stalk les gens stp</p>}
+          {!query && (
+            <p className="search-placeholder">Arrête de stalk les gens stp</p>
+          )}
 
-        {query && (
-          <div className="search-tabs">
-            <button 
-              className={activeTab === "users" ? "active" : ""}
-              onClick={() => setActiveTab("users")}
-            >
-              Utilisateurs
-            </button>
-            <button 
-              className={activeTab === "posts" ? "active" : ""}
-              onClick={() => setActiveTab("posts")}
-            >
-              Posts
-            </button>
+          {query && (
+            <div className="search-tabs">
+              <button
+                className={activeTab === "users" ? "active" : ""}
+                onClick={() => setActiveTab("users")}
+              >
+                Utilisateurs
+              </button>
+              <button
+                className={activeTab === "posts" ? "active" : ""}
+                onClick={() => setActiveTab("posts")}
+              >
+                Posts
+              </button>
+            </div>
+          )}
+
+          <div className="search-resultss">
+            {activeTab === "users" && (
+              <div>
+                <h3>Utilisateurs trouvés</h3>
+                {results.users.length === 0 ? (
+                  <p>Aucun utilisateur trouvé.</p>
+                ) : (
+                  <ul>
+                    {results.users &&
+                      results.users.map((user) => (
+                        <div key={user.id} className="post-box">
+                          {Number(user.id) !== Number(userId) && (
+                            <button
+                              className="follow-button"
+                              onClick={() => handleFollow(user.user_id)}
+                            >
+                              {following[user.id] ? "Ne plus suivre" : "Suivre"}
+                            </button>
+                          )}
+                          <p>
+                            <strong
+                              onClick={() => router.push(`/user/${user.id}`)}
+                              className="clickable-username"
+                            >
+                              @{user.username}
+                            </strong>
+                          </p>
+                        </div>
+                      ))}
+                  </ul>
+                )}
+              </div>
+            )}
+
+            {activeTab === "posts" && (
+              <div>
+                <h3>Posts trouvés</h3>
+                {results.posts.length === 0 ? (
+                  <p>Aucun post trouvé.</p>
+                ) : (
+                  <ul>
+                    {results.posts &&
+                      results.posts.map((post) => (
+                        <div key={post.id} className="post-box">
+                          {Number(post.user_id) !== Number(userId) && (
+                            <button
+                              className="follow-button"
+                              onClick={() => handleFollow(post.user_id)}
+                            >
+                              {following[post.user_id]
+                                ? "Ne plus suivre"
+                                : "Suivre"}
+                            </button>
+                          )}
+                          <p>
+                            <strong
+                              onClick={() =>
+                                router.push(`/user/${post.user_id}`)
+                              }
+                              className="clickable-username"
+                              style={{ cursor: "pointer" }}
+                            >
+                              @{post.username}
+                            </strong>
+                          </p>
+                          <p>{post.content}</p>
+                          {post.imageUrl && (
+                            <img
+                              src={post.imageUrl}
+                              alt="Post image"
+                              className="post-image"
+                            />
+                          )}
+
+                          <button
+                            className={`like-button ${
+                              likedPosts[post.id] ? "liked" : ""
+                            }`}
+                            onClick={() => handleLike(post.id, post.like_count)}
+                          >
+                            <svg className="heart-icon" viewBox="0 0 24 24">
+                              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
+                            </svg>
+                            <span>
+                              {likeCounts[post.id] ?? post.like_count}
+                            </span>
+                          </button>
+                        </div>
+                      ))}
+                  </ul>
+                )}
+              </div>
+            )}
           </div>
-        )}
-
-        <div className="search-resultss">
-          {activeTab === "users" && (
-            <div>
-              <h3>Utilisateurs trouvés</h3>
-              {results.users.length === 0 ? <p>Aucun utilisateur trouvé.</p> : (
-                <ul>
-                  {results.users &&
-                results.users.map((user) => (
-                  <div key={user.id} className="post-box">
-                  <button
-                    className="follow-button"
-                    onClick={() => handleFollow(user.user_id)}
-                    disabled={user.user_id === userId} 
-                  >
-                    {following[user.id] ? "Ne plus suivre" : "Suivre"}
-                  </button>
-
-                  <p>
-                  <strong
-  onClick={() => router.push(`/user/${user.id}`)}
-  className="clickable-username"
->
-  @{user.username}
-</strong>
-
-
-                </p>
-                  </div>
-                ))}
-                </ul>
-              )}
-            </div>
-          )}
-
-          {activeTab === "posts" && (
-            <div>
-              <h3>Posts trouvés</h3>
-              {results.posts.length === 0 ? <p>Aucun post trouvé.</p> : (
-                <ul>
-                 {results.posts &&
-                results.posts.map((post) => (
-                  <div key={post.id} className="post-box">
-                    <button
-                      className="follow-button"
-                      onClick={() => handleFollow(post.user_id)}
-                      disabled={post.user_id === userId} 
-                    >
-                      {following[post.user_id] ? "Ne plus suivre" : "Suivre"}
-                    </button>
-
-                    <p>
-                    <strong
-  onClick={() => router.push(`/user/${post.user_id}`)}
-  className="clickable-username"
-  style={{ cursor: "pointer" }}
->
-  @{post.username}
-</strong>
-
-              </p>
-                    <p>{post.content}</p>
-                    {post.imageUrl && (
-                      <img
-                        src={post.imageUrl}
-                        alt="Post image"
-                        className="post-image"
-                      />
-                    )}
-
-                    <button
-                      className={`like-button ${
-                        likedPosts[post.id] ? "liked" : ""
-                      }`}
-                      onClick={() => handleLike(post.id, post.like_count)}
-                    >
-                      <svg className="heart-icon" viewBox="0 0 24 24">
-                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
-                      </svg>
-                      <span>{likeCounts[post.id] ?? post.like_count}</span>
-                    </button>
-                  </div>
-                ))}
-
-                </ul>
-              )}
-            </div>
-            
-          )}
-          
-        </div>
-        <div className="vertical-line right"></div>
-
+          <div className="vertical-line right"></div>
         </main>
       </div>
       <div className="bottom-navbar">
-  <a href="/home">
-    <img src="/icons/home.png" alt="Accueil" />
-  </a>
-  <a href="/search">
-    <img src="/icons/search.png" alt="Recherche" />
-  </a>
-  <a href="/messages">
-    <img src="/icons/messages.png" alt="Messages" />
-  </a>
-  <a href="/notifications">
-    <img src="/icons/notifications.png" alt="Notifications" />
-  </a>
-  <a href="/profil">
-    <img src="/icons/profile.png" alt="Profil" />
-  </a>
-</div>
+        <a href="/home">
+          <img src="/icons/home.png" alt="Accueil" />
+        </a>
+        <a href="/search">
+          <img src="/icons/search.png" alt="Recherche" />
+        </a>
+        <a href="/messages">
+          <img src="/icons/messages.png" alt="Messages" />
+        </a>
+        <a href="/notifications">
+          <img src="/icons/notifications.png" alt="Notifications" />
+        </a>
+        <a href="/profil">
+          <img src="/icons/profile.png" alt="Profil" />
+        </a>
+      </div>
     </div>
   );
 }
