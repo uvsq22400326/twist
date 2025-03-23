@@ -1064,6 +1064,12 @@ z-index: 100;
         padding-bottom: 70px;
     }
 
+    #mes_posts_container {
+
+       
+        padding-top: 0px !important; 
+        margin-bottom: 0px !important; 
+    }
 }
 
 
