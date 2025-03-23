@@ -21,6 +21,17 @@ export default function LoginPage() {
     "/images/photo3.jpg"
   ];
 
+    useEffect(() => {
+              const hasReloaded = sessionStorage.getItem("hasReloaded-profile");
+          
+              if (!hasReloaded) {
+              sessionStorage.setItem("hasReloaded-profile", "true");
+              window.location.reload();
+              } else {
+              sessionStorage.removeItem("hasReloaded-profile"); 
+              }
+          }, []);
+          
   useEffect(() => {
     const interval = setInterval(() => {
       setImageIndex((prev) => (prev + 1) % images.length);
