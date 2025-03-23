@@ -14,7 +14,7 @@ export async function GET(req: Request) {
         const userId = decodedToken.id;
 
         const [followers]: any = await pool.query(
-            `SELECT u.id, u.username, u.profilePic 
+            `SELECT u.id, u.username, u.profilePic , u.bio
             FROM follows f
             JOIN users u ON f.user1 = u.id
             WHERE f.user2 = ?`,

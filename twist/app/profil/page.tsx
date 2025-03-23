@@ -442,22 +442,25 @@ const [isSearching, setIsSearching] = useState(false);
             {showFollowers && (
     <div className="modal-overlay" onClick={() => setShowFollowers(false)}>
         <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h3>Abonnés</h3>
+        <h3>Abonnés</h3>
             <ul className="user-list">
-                {followersList.length > 0 ? (
-                    followersList.map((user) => (
-                        <li key={user.id} className="user-item">
-                            <img src={user.profilePic || "/default-profile.png"} alt="Profil" className="profile-pic" />
-                            <div className="user-info">
-                                <p>@{user.username}</p>
-                                <small>{user.bio || "Aucune bio"}</small>
-                            </div>
-                        </li>
-                    ))
-                ) : (
-                    <p>Aucun abonné.</p>
-                )}
-            </ul>
+                    {followersList?.length > 0 ? (
+followersList.map((user) => {
+    console.log("User dans followersList:", user);
+    return (
+      <li key={user.id ?? `${Math.random()}`} className="user-item">
+        <img src={user.profilePic || "/default-profile.png"} alt="Profil" className="profile-pic" />
+        <div className="user-info">
+          <p>@{user.username}</p>
+          <small>{user.bio || "Aucune bio"}</small>
+        </div>
+      </li>
+    );
+  })
+        ) : (
+            <p>Aucun abonné.</p>
+        )}
+        </ul>
         <button className="close-modal-btn" onClick={() => { setShowFollowers(false); }}>✕</button>
         </div>
     </div>
@@ -466,11 +469,11 @@ const [isSearching, setIsSearching] = useState(false);
 {showFollowing && (
     <div className="modal-overlay" onClick={() => setShowFollowing(false)}>
         <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h3>Abonnements</h3>
+        <h3>Abonnements</h3>
             <ul className="user-list">
                 {followingList.length > 0 ? (
                     followingList.map((user) => (
-                        <li key={user.id} className="user-item">
+<li key={user.id ?? `${user.username}-${Math.random()}`} className="user-item">
 <img src={user.profilePic || "/default-profile.png"} alt="Profil" className="profile-pic" />
 <div className="user-info">
                                 <p>@{user.username}</p>

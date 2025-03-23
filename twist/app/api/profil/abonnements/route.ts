@@ -15,7 +15,7 @@ export async function GET(req: Request) {
 
        
         const [following]: any = await pool.query(
-            `SELECT u.id, u.username, u.profilePic 
+            `SELECT u.id, u.username, u.profilePic , u.bio
             FROM follows f
             JOIN users u ON f.user2 = u.id  
             WHERE f.user1 = ?`,             
