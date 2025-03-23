@@ -15,8 +15,6 @@ interface Commentaire {
   postid: number;
 }
 
-
-
 const follow = async (user2: string, token: string, isFollowing: boolean) => {
   await fetch(`/api/auth/follow`, {
     method: "POST",
@@ -38,10 +36,10 @@ export default function PostArea({ token }: { token: string }) {
   const [commForId, setCommForId] = useState<number>(1);
   const [shouldPrintComm, setShouldPrintComm] = useState<boolean>(false);
   const [userId, setUserId] = useState<string | null>(null);
-  const [visibleComments, setVisibleComments] = useState<{ [key: number]: boolean }>({});
+  const [visibleComments, setVisibleComments] = useState<{
+    [key: number]: boolean;
+  }>({});
   const router = useRouter();
-
-
 
   // Fonction pour extraire l'ID utilisateur depuis le token
   const getUserIdFromToken = (token: string): string | null => {
@@ -154,7 +152,6 @@ export default function PostArea({ token }: { token: string }) {
     }));
   };
 
-
   const fetcher = (url: string) =>
     fetch(url).then((res) => res.json().then((data) => data.content));
   const { data, error, isLoading } = useSWR("/api/home/posts", fetcher);
@@ -196,15 +193,15 @@ export default function PostArea({ token }: { token: string }) {
     );
   }
   const formatTimeAgo = (timestamp?: string) => {
-    if (!timestamp) return "il y a ?"; 
-  
+    if (!timestamp) return "il y a ?";
+
     const now = new Date();
     const past = new Date(timestamp);
-  
-    if (isNaN(past.getTime())) return "il y a ?"; 
-  
+
+    if (isNaN(past.getTime())) return "il y a ?";
+
     const diff = Math.floor((now.getTime() - past.getTime()) / 1000);
-  
+
     if (diff < 60) return `il y a ${diff}s`;
     if (diff < 3600) return `il y a ${Math.floor(diff / 60)}min`;
     if (diff < 86400) return `il y a ${Math.floor(diff / 3600)}h`;
@@ -215,32 +212,34 @@ export default function PostArea({ token }: { token: string }) {
     <div id="twist-area">
       {[...Array(data.length)].map((_, i) => (
         <div key={i} className="post-box">
-          <button
-            className="follow-button"
-            onClick={() => handleFollow(data[i].user_id)}
-            disabled={Number(data[i].user_id) === Number(userId)} // Compare as numbers
-          >
-            {following[data[i].user_id] ? "Ne plus suivre" : "Suivre"}
-          </button>
-
+          {Number(data[i].user_id) !== Number(userId) && (
+            <button
+              className="follow-button"
+              onClick={() => handleFollow(data[i].user_id)}
+            >
+              {following[data[i].user_id] ? "Ne plus suivre" : "Suivre"}
+            </button>
+          )}
           <div className="post-header">
-          <img 
-          src={data[i].profilePic || "/default-profile.png"} 
-          alt="Profil" 
-          className="post-profile-pic" 
-          onClick={() => router.push(`/user/${data[i].user_id}`)}
-          style={{ cursor: "pointer" }}
-        />
-        <div className="username-time">
-          <strong
-            onClick={() => router.push(`/user/${data[i].user_id}`)}
-            style={{ cursor: "pointer" }}
-          >
-            @{data[i].username}
-          </strong>
-          <span className="time-posted">{formatTimeAgo(data[i].created_at)}</span>
-        </div>
-      </div>
+            <img
+              src={data[i].profilePic || "/default-profile.png"}
+              alt="Profil"
+              className="post-profile-pic"
+              onClick={() => router.push(`/user/${data[i].user_id}`)}
+              style={{ cursor: "pointer" }}
+            />
+            <div className="username-time">
+              <strong
+                onClick={() => router.push(`/user/${data[i].user_id}`)}
+                style={{ cursor: "pointer" }}
+              >
+                @{data[i].username}
+              </strong>
+              <span className="time-posted">
+                {formatTimeAgo(data[i].created_at)}
+              </span>
+            </div>
+          </div>
           <p>{data[i].content}</p>
           {/* Affichage des médias */}
           {data[i].media_url &&
@@ -264,9 +263,14 @@ export default function PostArea({ token }: { token: string }) {
             </svg>
             <span>{likeCounts[data[i].id] ?? data[i].like_count}</span>
           </button>
-          
+
           <button
-            onClick={() => setVisibleComments((prev) => ({ ...prev, [data[i].id]: !prev[data[i].id] }))}
+            onClick={() =>
+              setVisibleComments((prev) => ({
+                ...prev,
+                [data[i].id]: !prev[data[i].id],
+              }))
+            }
             className="comment-button"
           >
             Commentaires
@@ -284,6 +288,20 @@ export default function PostArea({ token }: { token: string }) {
   );
 }
 
+function formatTimeAgo(dateString?: string) {
+  if (!dateString) return "il y a ?";
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return "il y a ?";
+  const now = new Date();
+  const diff = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+  if (diff < 60) return `il y a ${diff}s`;
+  if (diff < 3600) return `il y a ${Math.floor(diff / 60)}min`;
+  if (diff < 86400) return `il y a ${Math.floor(diff / 3600)}h`;
+  if (diff < 604800) return `il y a ${Math.floor(diff / 86400)}j`;
+  return `il y a ${Math.floor(diff / 604800)}sem`;
+}
+
 function Commentaires({ postid, token }: { postid: number; token: string }) {
   const fetcher = (url: string) => fetch(url).then((res) => res.json().then((data) => data.content));
   const { data, error, isLoading } = useSWR(`/api/commentaire/afficher/${postid}`, fetcher);
@@ -294,11 +312,15 @@ function Commentaires({ postid, token }: { postid: number; token: string }) {
 
   return (
     <div className="comment-list">
-      {data.map((comment: any, index: number) => ( 
-        <div key={comment.id || `comment-${index}`} className="comment">
-          <strong>{comment.username} :</strong> {comment.content}
-        </div>
-      ))}
-    </div>
-  );
+    {data.map((comment: any, index: number) => (
+      <div key={comment.id || `comment-${index}`} className="comment-block">
+        <p>
+          <strong>@{comment.username}</strong> : {comment.content}
+        </p>
+        <small className="comment-time">{formatTimeAgo(comment.created_at)}</small>
+        {index < data.length - 1 && <hr className="comment-divider" />}
+      </div>
+    ))}
+  </div>
+);
 }

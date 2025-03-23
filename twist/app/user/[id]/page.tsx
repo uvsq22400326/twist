@@ -287,23 +287,23 @@ useEffect(() => {
     <strong>{following}</strong> abonnements
   </p>
     </div>
-
-
-
     {!isOwnProfile && (
         <div className="follow-button-container">
             <button onClick={handleFollow} className="follow-button">
                 {isFollowing ? "Ne plus suivre" : "Suivre"}
             </button>
+            <button 
+            className="message-button"
+            onClick={() => router.push(`/messages?userId=${id}`)}
+            >
+            Envoyer un message
+            </button>
         </div>
-    )}
-</div>
-
+        )}
+        </div>
                 {isOwnProfile && (
                     <button onClick={() => router.push("/edit-profile")}>Modifier le profil</button>
                 )}
-
-
                 {showFollowers && (
     <div className="modal-overlay" onClick={() => setShowFollowers(false)}>
         <div className="modal-content" onClick={(e) => e.stopPropagation()}>

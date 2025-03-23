@@ -40,3 +40,4 @@ export async function sendComment(postid: number, commContent: string, token: st
         alert(respJson.error);
     }
 }
+

@@ -11,6 +11,7 @@ export default function NotificationsPage() {
     id: string;
     type: string;
     sourceUsername: string;
+    sourceUserId: string;
     seen: boolean;
     timestamp: string; 
   }
@@ -135,24 +136,44 @@ export default function NotificationsPage() {
         <h2>Notifications</h2>
         <div className="notifications-list">
         {notifications.map((notification) => (
-          <div key={notification.id} className={`notification-item ${notification.seen ? "" : "unseen"}`}>
-            <div className="notification-content">
-            <span className="notification-text">
-            {notification.type === "follow" && (
-              <>
-                <strong>@{notification.sourceUsername}</strong> a commencé à vous suivre
-              </>
-            )}
-            {notification.type === "like" && (
-              <>
-                <strong>@{notification.sourceUsername}</strong> a aimé votre publication
-              </>
-            )}
-          </span>
-              <span className="notification-time">{formatTimeAgo(notification.timestamp)}</span>
-            </div>
-          </div>
-        ))}
+  <div
+    key={notification.id}
+    className={`notification-item ${notification.seen ? "" : "unseen"}`}
+  >
+    <div className="notification-content">
+      <span className="notification-text">
+        {notification.type === "follow" && (
+          <>
+            <strong
+              className="clickable-username"
+              style={{ cursor: "pointer" }}
+              onClick={() => router.push(`/user/${notification.sourceUserId}`)}
+            >
+              @{notification.sourceUsername}
+            </strong>{" "}
+            a commencé à vous suivre
+          </>
+        )}
+        {notification.type === "like" && (
+          <>
+            <strong
+              className="clickable-username"
+              style={{ cursor: "pointer" }}
+              onClick={() => router.push(`/user/${notification.sourceUserId}`)}
+            >
+              @{notification.sourceUsername}
+            </strong>{" "}
+            a aimé votre publication
+          </>
+        )}
+      </span>
+      <span className="notification-time">
+        {formatTimeAgo(notification.timestamp)}
+      </span>
+    </div>
+  </div>
+))}
+
       </div>
       <div className="vertical-line right"></div>
 

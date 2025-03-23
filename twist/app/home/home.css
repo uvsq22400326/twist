@@ -264,7 +264,7 @@ margin-top : -40px ;
 }
 
 .comment-button {
-  color: gray; 
+  color: rgb(128, 128, 128); 
   background: none; 
   border: none;
   cursor: pointer;
@@ -295,18 +295,36 @@ margin-top : -40px ;
 }
 
 .comment-submit {
-  background-color: #282829; 
+  background-color: #1da1f2; 
   color: white;
   border: none;
   padding: 5px 2px;
   cursor: pointer;
   white-space: nowrap;
-  border-radius: 3px;
+  border-radius: 30px;
   margin-left: 10px;
 }
 
 .comment-submit:hover {
   background-color: #6f7373; 
+}
+
+
+.comment-block {
+  padding: 6px 0;
+}
+
+.comment-time {
+  color: #888;
+  font-size: 13px;
+  margin-top: 2px;
+  display: block;
+}
+
+.comment-divider {
+  border: none;
+  border-top: 1px solid #333;
+  margin: 6px 0;
 }
 
 

@@ -12,3 +12,12 @@
     font-size: 30px;
   margin-bottom:50px ;}
 }
+
+.clickable-username {
+  color: #0790d5;
+  font-weight: bold;
+}
+
+.clickable-username:hover {
+  text-decoration: underline;
+}

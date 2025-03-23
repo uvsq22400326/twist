@@ -1,3 +1,101 @@
+
+#nav-sidebar {
+    margin-left:-65px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    width: 250px;
+    background-color: #000000;
+    padding: 10px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+    padding-left: 84px;
+    
+  }
+  
+  .vertical-line {
+    position: fixed;
+    left: 205px; 
+    top: 0;
+    height: 100vh;
+    width: 1px;
+    background-color: #222; 
+  }
+  
+  .vertical-line.right {
+    left: calc(50% + 225px); 
+  }
+  
+  #nav-sidebar img {
+    width: 100px;
+    margin-bottom: 10px;
+    margin-left: -12px;
+  }
+  
+  .sidebar-item {
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+    text-decoration: none;
+    padding: 12px 20px;
+    border-radius: 30px;
+    transition: background 0.3s;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .sidebar-item:hover {
+    background: rgba(102, 139, 162, 0.1);
+    color: #3ea3e7;
+  }
+  
+  .sidebar-item.active {
+    background: rgba(102, 139, 162, 0.1);
+    font-weight: bold;
+    color: #3ea3e7;
+  }
+  
+  .sidebar-item::before {
+    content: "";
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    margin-right: 12px;
+  }
+  .sidebar-item:nth-of-type(1)::before {
+    background-image: url("/icons/home.png");
+  }
+  .sidebar-item:nth-of-type(2)::before {
+    background-image: url("/icons/search.png");
+  }
+  .sidebar-item:nth-of-type(3)::before {
+    background-image: url("/icons/messages.png");
+  }
+  .sidebar-item:nth-of-type(4)::before {
+    background-image: url("/icons/notifications.png");
+  }
+  .sidebar-item:nth-of-type(5)::before {
+    background-image: url("/icons/profile.png");
+  }
+  
+  .sidebar-item.active::after {
+    content: "";
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 8px;
+    background-color: #1da1f2;
+    border-radius: 50%;
+  }
+  
 .messages-container {
     display: flex;
     height: 100vh;

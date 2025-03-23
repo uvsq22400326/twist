@@ -27,6 +27,7 @@ export async function GET(request: Request) {
       id: n.id,
       type: n.type,
       sourceUsername: n.sourceUsername,
+      sourceUserId: n.source_id, 
       seen: n.seen,
       timestamp: n.created_at, 
     }));
