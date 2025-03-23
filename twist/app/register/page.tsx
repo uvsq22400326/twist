@@ -223,7 +223,7 @@ export default function RegisterPage() {
           </div>
 
           <div className="terms-container">
-  <input type="checkbox" id="terms" checked={termsAccepted} onChange={(e) => setTermsAccepted(e.target.checked)} />
+  <input type="checkbox" id="terms-checkbox" checked={termsAccepted} onChange={(e) => setTermsAccepted(e.target.checked)} />
   <label htmlFor="terms">
     J’accepte les{" "}
     <a className="terms-link" onClick={() => setShowTermsModal(true)}>termes & conditions</a>
