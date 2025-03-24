@@ -4,8 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import "./messages.css";
 import React from "react";
-import { io } from "socket.io-client";
-const socket = io("http://localhost:3001"); 
+import useSWR from 'swr';
 
 interface Message {
   id: number;
@@ -43,31 +42,21 @@ export default function MessagesPage() {
   const [unreadMessages, setUnreadMessages] = useState(0);
   const [unseenCount, setUnseenCount] = useState(0);
 
-  useEffect(() => {
-    socket.on("newMessage", (message) => {
-      console.log("Nouveau message reçu :", message);
-  
-      if (message.receiver_id === userId || message.sender_id === userId) {
-        if (message.sender_id === selectedConversation || message.receiver_id === selectedConversation) {
-          setMessages((prevMessages) => [...prevMessages, message]);
-        } else {
-          setConversations((prevConversations) =>
-            prevConversations.map((conv) =>
-              conv.id === message.sender_id
-                ? { ...conv, hasUnread: true }
-                : conv
-            )
-          );
-        }
-      }
+  const fetchMessages = async (conversationId: number) => {
+    const res = await fetch(`/api/messages/${conversationId}`, {
+      headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` },
     });
+    if (!res.ok) throw new Error("Erreur de chargement des messages");
+    return res.json();
+  };
   
-    return () => {
-      socket.off("newMessage");
-    };
-  }, [selectedConversation, userId]);
-  
-  
+  const { data, error } = useSWR(
+    selectedConversation ? [`/api/messages/${selectedConversation}`, selectedConversation] : null,
+    () => fetchMessages(selectedConversation!),
+    {
+      refreshInterval: 3000, // toutes les 3 secondes
+    }
+  );
 
 
   useEffect(() => {
@@ -193,18 +182,7 @@ const selectConversation = async (conversationId: number, participantUsername: s
       });
   
       if (res.ok) {
-        const data = await res.json();
-        const newMessageData = {
-          id: data.id,
-          sender_id: userId!,
-          receiver_id: selectedConversation!,
-          content: newMessage,
-          media_url: data.mediaUrl || null,
-          created_at: new Date().toISOString(),
-        };
-  
-        setMessages((prevMessages) => [...prevMessages, newMessageData]);
-        socket.emit("sendMessage", newMessageData);
+
         setNewMessage("");
         setSelectedFile(null);
         setPreviewUrl(null);
@@ -215,6 +193,7 @@ const selectConversation = async (conversationId: number, participantUsername: s
       console.error("Erreur d'envoi :", error);
     }
   };
+  
   
   const [preselectedUserId, setPreselectedUserId] = useState<string | null>(null);
 
