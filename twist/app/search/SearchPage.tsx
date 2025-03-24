@@ -26,6 +26,15 @@ export default function SearchPage() {
   const [activeTab, setActiveTab] = useState("");
 
   useEffect(() => {
+    const token = sessionStorage.getItem("token");
+    console.log("Token récupéré depuis sessionStorage :", token);
+
+    if (!token || token === "") {
+      console.log("Token manquant, redirection vers login");
+      router.push("/login");
+      return;
+    }
+
     const hasReloaded = sessionStorage.getItem("hasReloaded-profile");
 
     if (!hasReloaded) {
