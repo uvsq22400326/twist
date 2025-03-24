@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import "./messages.css";
 import React from "react";
 import useSWR from 'swr';
+import MessageArea from "./messageArea";
 
 interface Message {
   id: number;
@@ -41,23 +42,7 @@ export default function MessagesPage() {
   const [selectedUserProfilePic, setSelectedUserProfilePic] = useState<string>("/default-profile.png");
   const [unreadMessages, setUnreadMessages] = useState(0);
   const [unseenCount, setUnseenCount] = useState(0);
-
-  const fetchMessages = async (conversationId: number) => {
-    const res = await fetch(`/api/messages/${conversationId}`, {
-      headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` },
-    });
-    if (!res.ok) throw new Error("Erreur de chargement des messages");
-    return res.json();
-  };
-  
-  const { data, error } = useSWR(
-    selectedConversation ? [`/api/messages/${selectedConversation}`, selectedConversation] : null,
-    () => fetchMessages(selectedConversation!),
-    {
-      refreshInterval: 3000, // toutes les 3 secondes
-    }
-  );
-
+  const [_token, setToken] = useState("");
 
   useEffect(() => {
     const token = sessionStorage.getItem("token");
@@ -69,6 +54,7 @@ export default function MessagesPage() {
     try {
       const decodedToken = JSON.parse(atob(token.split(".")[1]));
       setUserId(decodedToken.id);
+      setToken(token);
       sessionStorage.setItem("userId", decodedToken.id);
     } catch (error) {
       console.error("Erreur de décodage du token :", error);
@@ -107,20 +93,6 @@ const selectConversation = async (conversationId: number, participantUsername: s
 
   setSearchResults([]); 
   setShowNewChatPopup(false); 
-
-  try {
-      const res = await fetch(`/api/messages/${conversationId}`, {
-          headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` },
-      });
-
-      const data = await res.json();
-      if (res.ok && data.messages) {
-          setMessages(data.messages.length > 0 ? data.messages : []);
-          setSelectedUserProfilePic(data.profilePic || "/default-profile.png"); 
-      }
-  } catch (error) {
-      console.error("Erreur lors de la récupération des messages :", error);
-  }
 
   try {
     await fetch("/api/messages/markAsRead", {
@@ -175,13 +147,14 @@ const selectConversation = async (conversationId: number, participantUsername: s
     }
   
     try {
-      const res = await fetch(`/api/messages/${selectedConversation}`, {
+      const res = await fetch(`/api/messages/${selectedConversation}/${token}`, {
         method: "POST",
         headers,
         body,
       });
   
       if (res.ok) {
+        //alert("Message publié");
 
         setNewMessage("");
         setSelectedFile(null);
@@ -344,25 +317,9 @@ useEffect(() => {
 
     <span className="chat-username">{selectedUserUsername}</span>
 </div>
-            <div className="chat-messages">
-              {[...messages].reverse().map((msg) => (
-                <div key={msg.id ?? `temp-${Date.now()}-${Math.random()}`} className={`message ${msg.sender_id === userId ? "sent" : "received"}`}>
-                {msg.media_url ? (
-                    <>
-                      {msg.media_url.includes("video") ? (
-                        <video src={msg.media_url} controls className="chat-media"></video>
-                      ) : (
-                        <img src={msg.media_url} alt="media" className="chat-media" />
-                      )}
-                      {msg.content && <p className="media-text">{msg.content}</p>} 
-                    </>
-                  ) : (
-                    <p>{msg.content}</p>
-                  )}
-                </div>
-              ))}
-              <div ref={messagesEndRef}></div>
-            </div>
+            {selectedConversation && userId && _token ? <MessageArea conversationId={selectedConversation}
+             userId={userId} token={_token}/> 
+                : <p>Chargement...</p>}
 
             <div className="chat-input">
             {previewUrl && (

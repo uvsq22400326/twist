@@ -1,25 +1,22 @@
 import { NextResponse } from "next/server";
-import pool from "../../../../lib/db";
-import { verifyToken } from "../../../../lib/auth";
-import cloudinary from "../../../../lib/cloudinary";
+import pool from "../../../../../lib/db";
+import { verifyToken } from "../../../../../lib/auth";
+import cloudinary from "../../../../../lib/cloudinary";
 
 
 
-export async function GET(req: Request) {
-    const token = req.headers.get("Authorization")?.split(" ")[1];
+export async function GET(req: Request, { params }: 
+    { params: Promise<{ conversationId: string, token : string }> }) {
+    const p = await params;
+    const token = p.token;
+    const conversationId = p.conversationId;
+    console.log("api messages / token = " + token)
 
     if (!token) return NextResponse.json({ error: "Token manquant" }, { status: 401 });
 
     try {
         const decodedToken = verifyToken(token);
         const userId = decodedToken.id;
-    
-        const urlParts = req.url.split("/");
-        const conversationId = parseInt(urlParts[urlParts.length - 1]);
-
-        if (isNaN(conversationId)) {
-            return NextResponse.json({ error: "Conversation ID invalide" }, { status: 400 });
-        }
 
         const [messages] = await pool.query(
             `SELECT m.id, m.sender_id, m.receiver_id, m.content, m.media_url, m.created_at 
@@ -34,19 +31,12 @@ export async function GET(req: Request) {
         );
         
         const profilePic = userInfo[0].profilePic || "/default-profile.png";
-        
-        return NextResponse.json({ messages, profilePic, username: userInfo[0].username }, { status: 200 });
-        
-
-        console.log("Messages récupérés :", messages); 
-
-        return NextResponse.json({ messages }, { status: 200 });
+        console.log(messages);
+        return NextResponse.json({ content: messages, pic: profilePic, username: userInfo[0].username }, { status: 200 });
     } catch (error) {
         console.error("Erreur serveur :", error);
-        return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
-    }
-
-    
+        return NextResponse.json({ error: "Erreur serveur" + error }, { status: 500 });
+    }    
 }
 
 
@@ -54,20 +44,16 @@ export async function GET(req: Request) {
  * send un msg ET PICCCSSSSS
  */
 
-export async function POST(req: Request) {
+export async function POST(req: Request, { params }: 
+    { params: Promise<{ conversationId: string, token : string }> }) {
   try {
-    const token = req.headers.get("Authorization")?.split(" ")[1];
+    const p = await params;
+    const token = p.token;
     if (!token) return NextResponse.json({ error: "Token manquant" }, { status: 401 });
 
     const decodedToken = verifyToken(token);
     const userId = decodedToken.id;
-
-    const urlParts = req.url.split("/");
-    const conversationId = parseInt(urlParts[urlParts.length - 1]);
-
-    if (isNaN(conversationId)) {
-      return NextResponse.json({ error: "Conversation ID invalide" }, { status: 400 });
-    }
+    const conversationId = p.conversationId;
 
     let content: string | null = null;
     let file: File | null = null;

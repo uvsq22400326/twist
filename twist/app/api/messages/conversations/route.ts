@@ -52,7 +52,7 @@ export async function GET(req: Request) {
         const { username } = await req.json();
         if (!username) return NextResponse.json({ error: "username manquant" }, { status: 400 });
 
-        // verifie si l'utilisateur avec cet email existe
+        // verifie si l'utilisateur avec cet username existe
         const [userRows]: any = await pool.query(
             "SELECT id, username FROM users WHERE username LIKE ? LIMIT 5",
             [`%${username}%`]
