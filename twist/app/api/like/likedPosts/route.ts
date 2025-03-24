@@ -14,13 +14,23 @@ export async function GET(req: Request) {
     const userId = decodedToken.id;
 
     const [rows] = await pool.query(
-      "SELECT post_id AS id FROM likes WHERE user_id = ?",
-      [userId]
+
+        `SELECT posts.id, users.username, posts.content, posts.media_url, posts.created_at
+         FROM likes
+         INNER JOIN posts ON likes.post_id = posts.id
+         INNER JOIN users ON posts.user_id = users.id
+         WHERE likes.user_id = ?
+         ORDER BY posts.created_at DESC`,
+        [userId]
     );
+    
+    
 
     return NextResponse.json(rows, { status: 200 });
   } catch (error) {
     console.error("Erreur serveur :", error);
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
   }
+
 }
+

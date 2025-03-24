@@ -1,0 +1,23 @@
+@media only screen and (max-width: 768px) {
+
+  .notifications-list {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  h2 {
+   margin-top: -20px;
+    margin-left: -140px;
+    font-size: 30px;
+  margin-bottom:50px ;}
+}
+
+.clickable-username {
+  color: #0790d5;
+  font-weight: bold;
+}
+
+.clickable-username:hover {
+  text-decoration: underline;
+}

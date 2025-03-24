@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import "../grid.css";
 import "./login.css";
 import React from "react";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -20,6 +21,17 @@ export default function LoginPage() {
     "/images/photo3.jpg"
   ];
 
+    useEffect(() => {
+              const hasReloaded = sessionStorage.getItem("hasReloaded-profile");
+          
+              if (!hasReloaded) {
+              sessionStorage.setItem("hasReloaded-profile", "true");
+              window.location.reload();
+              } else {
+              sessionStorage.removeItem("hasReloaded-profile"); 
+              }
+          }, []);
+          
   useEffect(() => {
     const interval = setInterval(() => {
       setImageIndex((prev) => (prev + 1) % images.length);
@@ -42,7 +54,6 @@ export default function LoginPage() {
       if (!res.ok) throw new Error(data.error);
 
       sessionStorage.setItem("token", data.token);
-      setMessage("Connexion réussie !");
       setTimeout(() => router.push("/home"), 2000);
     } catch (error: any) {
       setMessage(error.message);
@@ -80,9 +91,14 @@ export default function LoginPage() {
               placeholder="Mot de passe"
               required
             />
-            <button type="button" onClick={() => setShowPassword(!showPassword)}>
-              {showPassword ? "Masquer" : "Afficher"}
-            </button>
+            <span className="password-toggle" onClick={() => setShowPassword(!showPassword)}>
+  {showPassword ? (
+    <FaEyeSlash style={{ color: "black", cursor: "pointer" }} />
+  ) : (
+    <FaEye style={{ color: "black", cursor: "pointer" }} />
+  )}
+</span>
+
           </div>
           <button type="submit" className="button">
             Se connecter

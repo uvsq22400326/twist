@@ -13,15 +13,20 @@ export async function GET(req: Request) {
   
         const [rows] = await pool.query(
             `SELECT DISTINCT 
-                CASE 
-                    WHEN sender_id = ? THEN receiver_id 
-                    ELSE sender_id 
-                END AS id,  
-                u.email AS participantEmail
-            FROM messages 
-            JOIN users u ON u.id = (CASE WHEN sender_id = ? THEN receiver_id ELSE sender_id END)
-            WHERE sender_id = ? OR receiver_id = ?`,
-            [userId, userId, userId, userId]
+            CASE 
+                WHEN sender_id = ? THEN receiver_id 
+                ELSE sender_id 
+            END AS id,  
+            u.username AS participantUsername,
+            COALESCE(u.profilePic, '/default-profile.png') AS profilePic,
+            (SELECT COUNT(*) FROM messages 
+                WHERE messages.sender_id = u.id 
+                AND messages.receiver_id = ?  
+                AND messages.seen = FALSE) AS unread_count
+        FROM messages 
+        JOIN users u ON u.id = (CASE WHEN sender_id = ? THEN receiver_id ELSE sender_id END)
+        WHERE sender_id = ? OR receiver_id = ?`,
+        [userId, userId, userId, userId, userId] 
         );
   
         console.log("Conversations récupérées :", rows); 
@@ -31,6 +36,7 @@ export async function GET(req: Request) {
         console.error("Erreur serveur :", error);
         return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
     }
+    
   }
   
 
@@ -43,14 +49,16 @@ export async function GET(req: Request) {
         const decodedToken = verifyToken(token);
         const userId = decodedToken.id;
 
-        const { email } = await req.json();
-        if (!email) return NextResponse.json({ error: "Email manquant" }, { status: 400 });
+        const { username } = await req.json();
+        if (!username) return NextResponse.json({ error: "username manquant" }, { status: 400 });
 
-        // verifie si l'utilisateur avec cet email existe
+        // verifie si l'utilisateur avec cet username existe
         const [userRows]: any = await pool.query(
-            "SELECT id FROM users WHERE email = ?",
-            [email]
+            "SELECT id, username FROM users WHERE username LIKE ? LIMIT 5",
+            [`%${username}%`]
         );
+        
+        console.log("Utilisateur trouvé :", userRows);
 
         if (userRows.length === 0) {
             return NextResponse.json({ error: "Utilisateur non trouvé" }, { status: 404 });
@@ -78,3 +86,5 @@ export async function GET(req: Request) {
         return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
     }
 }
+
+

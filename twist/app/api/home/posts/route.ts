@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import pool from "../../../../lib/db";
+import { verifyToken } from "../../../../lib/auth";
 
 export async function GET(req: Request) {
   let connection;
@@ -9,7 +10,7 @@ export async function GET(req: Request) {
 
     // Exécuter la requête (récupère username au lieu de email)
     const [rows] = await connection.query(
-      "SELECT p.id, p.user_id, p.content, p.like_count, p.created_at, p.media_url, u.username " +
+      "SELECT p.id, p.user_id, p.content, p.like_count, p.created_at, p.media_url, u.username, u.profilePic " +
         "FROM posts p JOIN users u ON p.user_id = u.id " +
         "ORDER BY p.id DESC LIMIT 20"
     );
