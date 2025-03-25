@@ -12,7 +12,7 @@ export async function GET(req: Request) {
     const [rows] = await connection.query(
       "SELECT p.id, p.user_id, p.content, p.like_count, p.created_at, p.media_url, u.username, u.profilePic " +
         "FROM posts p JOIN users u ON p.user_id = u.id " +
-        "ORDER BY p.id DESC LIMIT 20"
+        "ORDER BY p.id DESC LIMIT 100"
     );
 
     // Retourner les posts avec le champ username dans content
