@@ -331,7 +331,7 @@ export default function SearchPage() {
                           {Number(user.id) !== Number(userId) && (
                             <button
                               className="follow-button"
-                              onClick={() => handleFollow(user.user_id)}
+                              onClick={() => handleFollow(user.id)}
                             >
                               {following[user.id] ? "Ne plus suivre" : "Suivre"}
                             </button>
