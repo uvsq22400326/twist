@@ -2,8 +2,7 @@ import { encodeBase64 } from "bcryptjs";
 import { NextResponse } from "next/server";
 import { moderationImage } from "./moderationImage";
 
-export async function moderation(content: string, file: File) {
-
+export async function moderation(content: string, file: File) {    
     const moderationPullModel = await fetch(
         "https://jealous-minne-twist-ollama-0544ea7b.koyeb.app/api/pull", {
             method: "POST",
@@ -15,7 +14,7 @@ export async function moderation(content: string, file: File) {
         if (_resp.status != 200) {
             return NextResponse.json({
                 error: "Le modèle de modération est en train d'être téléchargé. Veuillez " +
-                    "réactualiser la page et réessayer de publier"
+                    "attendre une minute ou deux et réessayer de publier"
             }, {status: 500});
         }
         const reponseModel = 
@@ -67,6 +66,12 @@ export async function moderation(content: string, file: File) {
                                     const image = await file.arrayBuffer().then((b) => {
                                         return Buffer.from(b).toString('base64');
                                     })
+                                    if (["video/mp4", "video/webm", "video/ogg"].
+                                            includes(file.type)) {
+                                        return NextResponse.json(
+                                            { message: "Vidéo non modérée" },
+                                            { status: 200 });
+                                    }
                                     const modImage = await moderationImage(image);
                                     if (modImage.status != 200) {
                                         return modImage;
