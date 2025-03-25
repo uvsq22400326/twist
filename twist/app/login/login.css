@@ -79,14 +79,22 @@ input:not(:placeholder-shown){
     outline:none;
 }
 
-input:-webkit-autofill,
-input:-webkit-autofill:focus {
-    background: #222 !important;
-    color: white !important;
-    -webkit-box-shadow: 0 0 0px 1000px #222 inset !important;
-    transition: background-color 5000s ease-in-out 0s;
+
+
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear,
+input[type="password"]::-webkit-credentials-auto-fill-button {
+  display: none;
+  pointer-events: none;
+  appearance: none;
 }
 
+input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px #222 inset !important;
+    -webkit-text-fill-color: white !important;
+    caret-color: white !important;
+  }
+  
 
 input {
     width: 100%;
